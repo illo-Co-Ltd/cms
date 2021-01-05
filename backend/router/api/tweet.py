@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify, current_app
-from my_util.my_logger import my_logger
-from my_model import user_model
-from my_model import tweet_model
-from my_util.auth_util import token_required
+from util.my_logger import my_logger
+from model import user_model
+from model import tweet_model
+from util.auth_util import token_required
 
 import jwt
 import datetime
