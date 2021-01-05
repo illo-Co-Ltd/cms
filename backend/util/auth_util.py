@@ -1,7 +1,7 @@
 import jwt
 from flask import request, jsonify, current_app
-from my_model.user_model import User
-from my_util.my_logger import my_logger
+from model.user_model import User
+from util.my_logger import my_logger
 from functools import wraps
 
 
