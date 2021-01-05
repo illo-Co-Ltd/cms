@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  frontend:
+    container_name: cms-front
+    build:
+      context: frontend
+      dockerfile: front.dev.Dockerfile
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    volumes:
+      - ./frontend:/app-front
+
+  backend:
+    container_name: cms-back
+    build:
+      context: backend
+      dockerfile: back.dev.Dockerfile
+    expose:
+      - 5000
+    ports:
+      - 5000:5000
+    volumes:
+      - ./backend:/app-back
