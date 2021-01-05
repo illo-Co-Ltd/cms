@@ -3,8 +3,8 @@
 url route split
 """
 from flask import Blueprint, request, jsonify, current_app
-from my_util.my_logger import my_logger
-from my_model import user_model
+from util.my_logger import my_logger
+from model import user_model
 
 import jwt
 import datetime
