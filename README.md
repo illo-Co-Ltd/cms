@@ -5,25 +5,33 @@
 ```bash
 .
 ├── README.md
-├── backend
+├── docker-compose.yml
+├── backend/
+│   ├── model
+│   ├── provider
+│   ├── router
+│   ├── util
 │   ├── app.py
 │   ├── back.dev.Dockerfile
-│   └── requirements.txt
-├── docker-compose.yml
-├── frontend
+│   ├── requirements.txt
+│   ├── .env*
+│   └── .gitignore
+│
+├── frontend/
 │   ├── CHANGELOG.md
 │   ├── ISSUES_TEMPLATE.md
 │   ├── LICENSE.md
 │   ├── README.md
 │   ├── babel.config.js
 │   ├── front.dev.Dockerfile
-│   ├── node_modules
+│   ├── node_modules*
 │   ├── package.json
 │   ├── public
 │   ├── src
 │   ├── vue.config.js
 │   └── yarn.lock
-└── requirements.txt
+├── requirements.txt
+└── .gitignore
 ```
 
 ## how to run?
