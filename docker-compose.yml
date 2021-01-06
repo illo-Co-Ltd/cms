@@ -1,5 +1,8 @@
 version: '3'
 
+volumes:
+  mysql_dev: {}
+
 services:
   frontend:
     container_name: cms-front
@@ -24,3 +27,18 @@ services:
       - 5000:5000
     volumes:
       - ./backend:/app-back
+
+  db:
+    container_name: cms-mysql
+    image: mysql:8.0
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: "1234"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_dev:/var/lib/mysql
