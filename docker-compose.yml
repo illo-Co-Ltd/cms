@@ -1,0 +1,53 @@
+version: '3'
+
+volumes:
+  mysql_dev: {}
+
+services:
+  frontend:
+    container_name: cms-front
+    build:
+      context: frontend
+      dockerfile: front.dev.Dockerfile
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    volumes:
+      - ./frontend:/app-front:delegated
+
+  backend:
+    container_name: cms-back
+    build:
+      context: backend
+      dockerfile: back.dev.Dockerfile
+    expose:
+      - 5000
+    ports:
+      - 5000:5000
+    volumes:
+      - ./backend:/app-back:delegated
+
+  db:
+    container_name: cms-mysql
+    build:
+      context: db
+      dockerfile: db.dev.Dockerfile
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+    environment:
+      # TODO
+      # 추후 외부 secret파일이나 db에서 읽어오도록 구현할 것
+      MYSQL_DATABASE: "cms"
+      MYSQL_USER: "jahn"
+      MYSQL_PASSWORD: "1234"
+      MYSQL_ROOT_PASSWORD: "1234"
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql_dev:/var/lib/mysql
