@@ -14,7 +14,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./frontend:/app-front
+      - ./frontend:/app-front:delegated
 
   backend:
     container_name: cms-back
@@ -26,7 +26,7 @@ services:
     ports:
       - 5000:5000
     volumes:
-      - ./backend:/app-back
+      - ./backend:/app-back:delegated
 
   db:
     container_name: cms-mysql
@@ -36,6 +36,8 @@ services:
     ports:
       - 3306:3306
     environment:
+      MYSQL_USER: "jahn"
+      MYSQL_PASSWORD: "1234"
       MYSQL_ROOT_PASSWORD: "1234"
     command:
       - --character-set-server=utf8mb4
