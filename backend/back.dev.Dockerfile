@@ -1,6 +1,7 @@
 FROM python:3
 
 WORKDIR /app-back
+ENV PYTHONUNBEFFERED=0
 
 ADD . .
 
