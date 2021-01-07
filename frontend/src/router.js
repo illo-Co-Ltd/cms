@@ -2,11 +2,26 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import DashboardLayout from '@/layout/DashboardLayout'
 import AuthLayout from '@/layout/AuthLayout'
+import MainLayout from '@/layout/MainLayout'
+
 Vue.use(Router)
 
 export default new Router({
   linkExactActiveClass: 'active',
   routes: [
+    {
+      path: '/',
+      redirect: 'test',
+      component: MainLayout,
+      children: [
+        {
+          path: '/test',
+          name: 'test',
+          component: () => import(/* webpackChunkName: "demo" */ './views/Register.vue')
+        }
+      ]
+      
+    },
     {
       path: '/',
       redirect: 'dashboard',
@@ -58,6 +73,6 @@ export default new Router({
           component: () => import(/* webpackChunkName: "demo" */ './views/Register.vue')
         }
       ]
-    }
+    },
   ]
 })
