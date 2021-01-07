@@ -29,6 +29,10 @@ services:
       - 5000:5000
     volumes:
       - ./backend:/app-back:delegated
+    links:
+      - db
+    depends_on:
+      - frontend
 
   db:
     container_name: cms-mysql

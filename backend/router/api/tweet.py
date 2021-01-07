@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, current_app
-from util.my_logger import my_logger
+from util.logger import logger
 from model import user_model
 from model import tweet_model
 from util.auth_util import token_required
@@ -13,7 +13,7 @@ tweet_route = Blueprint('tweet_route', __name__)
 @tweet_route.route('/tweet', methods=["GET"])
 @token_required
 def tweet_list(current_user):
-    my_logger.info("get Tweet List")
+    logger.info("get Tweet List")
     tweet_list = tweet_model.Tweet.query.all()
     return jsonify([t.to_dict() for t in tweet_list])
 
@@ -21,7 +21,7 @@ def tweet_list(current_user):
 @tweet_route.route('/tweet', methods=["POST"])
 @token_required
 def create_tweet(current_user):
-    my_logger.info("Tweet Post!")
+    logger.info("Tweet Post!")
     try:
         data = request.get_json()
         title = data.get("title")
@@ -41,5 +41,5 @@ def create_tweet(current_user):
         db.session.commit()
         return jsonify(tweet.to_dict()), 200
     except Exception as e:
-        my_logger.error(e)
+        logger.error(e)
         return jsonify({'message': 'fail to save tweet'}), 200
