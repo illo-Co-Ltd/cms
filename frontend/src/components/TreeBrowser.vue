@@ -1,7 +1,7 @@
 <template>
   <div>
     <div @click="nodeClicked"
-         :style="{'margin-left': `${depth * 15}px`}"
+         :style="{'margin-left': `${depth * 10}px`}"
          class="node"
     >
     <span v-if="hasChildren" 

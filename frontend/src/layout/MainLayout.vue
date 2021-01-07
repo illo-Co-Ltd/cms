@@ -5,14 +5,14 @@
                      @onClick="nodeWasClicked"/>
         </div>
         <div class="image_hierarchy">
-            <tree-browser :node="root"
-                     @onClick="nodeWasClicked"/>
+            <thumbnail-card></thumbnail-card>
         </div>
     </div>
 </template>
 
 <script>
 import TreeBrowser from '../components/TreeBrowser.vue';
+import ThumbnailCard from '../components/ThumbnailCard.vue'
 
 export default {
     name: 'app',
@@ -43,6 +43,7 @@ export default {
     },
     components: {
         TreeBrowser,
+        ThumbnailCard,
     },
     methods: {
         nodeWasClicked(node) {
