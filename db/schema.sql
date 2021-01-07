@@ -1,8 +1,26 @@
 --
+-- Table structure for table `user`
+--
+#DROP TABLE IF EXISTS `user`;
+CREATE TABLE `user` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `company` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created` timestamp NULL DEFAULT NULL,
+  `created_by` int DEFAULT NULL,
+  `last_edited` timestamp NULL DEFAULT NULL,
+  `edited_by` int DEFAULT NULL,
+  `is_admin` tinyint(1) DEFAULT NULL,
+  `is_deleted` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_company_uindex` (`company`),
+  UNIQUE KEY `user_username_uindex` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자정보';
+
+--
 -- Table structure for table `device`
 --
-
-DROP TABLE IF EXISTS `device`;
+#DROP TABLE IF EXISTS `device`;
 CREATE TABLE `device` (
   `id` int NOT NULL AUTO_INCREMENT,
   `model` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -26,8 +44,7 @@ CREATE TABLE `device` (
 --
 -- Table structure for table `image`
 --
-
-DROP TABLE IF EXISTS `image`;
+#DROP TABLE IF EXISTS `image`;
 CREATE TABLE `image` (
   `id` int NOT NULL AUTO_INCREMENT,
   `project` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -50,25 +67,5 @@ CREATE TABLE `image` (
   CONSTRAINT `image_device_id_fk` FOREIGN KEY (`device`) REFERENCES `device` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `image_user_id_fk` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='이미지 메타데이터';
-
---
--- Table structure for table `user`
---
-
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `username` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `company` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `created` timestamp NULL DEFAULT NULL,
-  `created_by` int DEFAULT NULL,
-  `last_edited` timestamp NULL DEFAULT NULL,
-  `edited_by` int DEFAULT NULL,
-  `is_admin` tinyint(1) DEFAULT NULL,
-  `is_deleted` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `user_company_uindex` (`company`),
-  UNIQUE KEY `user_username_uindex` (`username`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자정보';
 
 -- Dump completed on 2021-01-06  9:37:51
