@@ -12,34 +12,23 @@ import datetime
 auth_route = Blueprint('auth_route', __name__)
 
 
-@auth_route.route('/logout', methods=['POST'])
-def logout():
-    return jsonify("hi!")
-
-
-@auth_route.route('/get_user', methods=['GET'])
-def get_login_user():
-    return jsonify("hi!")
-
-
-@auth_route.route('/signup', methods=['POST'])
-def user_register():
-    # 로그
+@auth_route.route('/register', methods=['POST'])
+def register_user():
     logger.info("user register")
     data = request.get_json()
     db = user_model.db
 
     user_data = user_model.User.query.filter_by(username=data.get('username')).first()
     if user_data is not None:
-        logger.error("Username is Already exist")
-        return {"success": "username is already exist"}
+        logger.error("Username already exists")
+        return {"failed": "username is already exist"}
 
     user = user_model.User(**data)
     user.has_password()
     db.session.add(user)
     db.session.commit()
 
-    logger.info("user Save Success")
+    logger.info("User registration successful")
 
     return jsonify(user.to_dict()), 200
 
@@ -71,3 +60,13 @@ def login():
     else:
         logger.error("User Does Not Exist")
         return jsonify({'message': 'User Does Not Exist', "authenticated": False}), 401
+
+
+@auth_route.route('/logout', methods=['POST'])
+def logout():
+    return jsonify("Bye!")
+
+
+@auth_route.route('/get_user', methods=['GET'])
+def get_login_user():
+    return jsonify("hi!")

@@ -7,10 +7,10 @@ from util.auth_util import token_required
 import jwt
 import datetime
 
-tweet_route = Blueprint('tweet_route', __name__)
+device_route = Blueprint('device_route', __name__)
 
 
-@tweet_route.route('/tweet', methods=["GET"])
+@device_route.route('/tweet', methods=["GET"])
 @token_required
 def tweet_list(current_user):
     logger.info("get Tweet List")
@@ -18,7 +18,7 @@ def tweet_list(current_user):
     return jsonify([t.to_dict() for t in tweet_list])
 
 
-@tweet_route.route('/tweet', methods=["POST"])
+@device_route.route('/tweet', methods=["POST"])
 @token_required
 def create_tweet(current_user):
     logger.info("Tweet Post!")

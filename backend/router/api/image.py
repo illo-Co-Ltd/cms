@@ -1,26 +1,26 @@
 from flask import Blueprint, request, jsonify, current_app
 from util.logger import logger
 from model import user_model
-from model import device_model
+from model import image_model
 from util.auth_util import token_required
 
 import jwt
 import datetime
 
-tweet_route = Blueprint('tweet_route', __name__)
+image_route = Blueprint('image_route', __name__)
 
 
-@tweet_route.route('/tweet', methods=["GET"])
+@image_route.route('/image', methods=["GET"])
 @token_required
-def tweet_list(current_user):
+def image_list(current_user):
     logger.info("get Tweet List")
-    tweet_list = device_model.Tweet.query.all()
-    return jsonify([t.to_dict() for t in tweet_list])
+    image_list = image_model.Tweet.query.all()
+    return jsonify([t.to_dict() for t in image_list])
 
 
-@tweet_route.route('/tweet', methods=["POST"])
+@image_route.route('/image', methods=["POST"])
 @token_required
-def create_tweet(current_user):
+def create_image(current_user):
     logger.info("Tweet Post!")
     try:
         data = request.get_json()
@@ -29,8 +29,8 @@ def create_tweet(current_user):
         created_at = datetime.datetime.utcnow()
         updated_at = datetime.datetime.utcnow()
 
-        db = device_model.db
-        tweet = device_model.Tweet(
+        db = image_model.db
+        tweet = image_model.Tweet(
             title=title,
             words=words,
             creator=current_user.username,

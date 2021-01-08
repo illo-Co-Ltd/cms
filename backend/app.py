@@ -8,7 +8,8 @@ from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 
 from router.api.auth import auth_route
-from router.api.tweet import tweet_route
+from router.api.device import device_route
+from router.api.image import image_route
 
 from provider.baseball_scrapper import get_baseball_rank
 from model import user_model
@@ -16,8 +17,6 @@ from model import user_model
 from util.logger import logger
 from util.auth_util import token_required
 
-# load environment variables
-load_dotenv(verbose=True)
 # instantiate the app
 app = Flask(__name__)
 app.secret_key = 'laksdjfoiawjewfansldkfnzcvjlzskdf'
@@ -39,7 +38,8 @@ bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
 app.register_blueprint(auth_route, url_prefix='/api2/auth')
-app.register_blueprint(tweet_route, url_prefix='/api2/board')
+app.register_blueprint(device_route, url_prefix='/api/device')
+app.register_blueprint(image_route, url_prefix='/api/image')
 
 
 # sanity check route
@@ -155,4 +155,7 @@ def auth_logout():
 
 
 if __name__ == '__main__':
+    # load environment variables
+    load_dotenv(verbose=True)
+    print(list(os.environ))
     app.run(host='0.0.0.0', port=os.getenv('FLASK_RUN_PORT'), debug=os.getenv('FLASK_DEBUG'))
