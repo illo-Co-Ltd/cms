@@ -1,26 +1,20 @@
 <template>
   <div class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
-    <side-bar
-      :background-color="sidebarBackground"
-      short-title="Argon"
-      title="Argon"
-    >
+    <side-bar :background-color="sidebarBackground"
+              short-title="Argon"
+              title="Argon">
       <template slot="links">
         <my-comp :node="root" @onClick="nodeWasClicked" />
       </template>
     </side-bar>
 
     <div class="main-content">
-      <div class="image_hierarchy">
-        <tree-browser :node="root" @onClick="nodeWasClicked" />
-        <thumbnail-card></thumbnail-card>
-      </div>
+      <thumbnail-card :node="imgroot"></thumbnail-card>
     </div>
   </div>
 </template>
 
 <script>
-import TreeBrowser from "../components/TreeBrowser.vue";
 import ThumbnailCard from "../components/ThumbnailCard.vue";
 import MyComp from "../components/MyComp.vue";
 
@@ -49,10 +43,17 @@ export default {
           },
         ],
       },
+      imgroot: [
+        {
+          path: require("../images/blend-dst.jpg")
+        },
+        {
+          path: require("../images/blend-src.jpg")
+        },
+      ],
     };
   },
   components: {
-    TreeBrowser,
     ThumbnailCard,
     MyComp,
   },

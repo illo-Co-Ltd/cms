@@ -1,13 +1,25 @@
 <template>
-  <div>
-    <img
-      class="card_size" 
-      src="./blend-dst.jpg" />
-  </div>
+<div class="card-deck">
+  <card v-for="item in node" :key="item.path">
+    <img class="card-img-top" 
+         :src="item.path"
+         alt="Card image cap">
+    <h5 class="card-title">Card title</h5>
+  </card>
+</div>
 </template>
 
 <script>
-export default {};
+export default {
+  props: {
+    node: Object,
+  },
+  computed: {
+    hasChildren() {
+      return this.node.children;
+    }
+  }
+};
 </script>
 
 <style scoped>
