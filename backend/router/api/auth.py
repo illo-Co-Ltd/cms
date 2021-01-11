@@ -1,5 +1,4 @@
 """
-@oliver
 url route split
 """
 from flask import Blueprint, request, jsonify, current_app
