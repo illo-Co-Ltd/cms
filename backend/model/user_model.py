@@ -24,11 +24,14 @@ class User(db.Model):
     is_admin = db.Column(db.BOOLEAN)
     is_deleted = db.Column(db.BOOLEAN)
 
+    def __repr__(self):
+        return '<User %r>' % self.username
+
     def has_password(self):
-        self.userpwd = generate_password_hash(self.userpwd).decode('utf8')
+        self.password = generate_password_hash(self.password).decode('utf8')
 
     def check_password(self, password):
-        return check_password_hash(self.userpwd, password)
+        return check_password_hash(self.password, password)
 
     def to_dict(self):
         return dict(_id=self._id,

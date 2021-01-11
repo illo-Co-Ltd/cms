@@ -29,16 +29,17 @@ services:
       - 5000:5000
     volumes:
       - ./backend:/app-back:delegated
-    links:
-      - db
     depends_on:
       - frontend
+      - db
 
   db:
     container_name: cms-mysql
     build:
       context: db
       dockerfile: db.dev.Dockerfile
+    cap_add:
+      - SYS_NICE  # CAP_SYS_NICE
     expose:
       - 3306
     ports:
