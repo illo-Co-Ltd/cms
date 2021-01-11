@@ -5,7 +5,7 @@
 CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
   `userid` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
   `username` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
   `company` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created` timestamp NULL DEFAULT NULL,

@@ -14,7 +14,7 @@ class Image(db.Model):
         {'mysql_collate': 'utf8mb4_unicode_ci'}
     )
 
-    _id = db.Column(db.INTEGER, primary_key=True, nullable=False, autoincrement=True)
+    id = db.Column(db.INTEGER, primary_key=True, nullable=False, autoincrement=True)
     project = db.Column(db.VARCHAR(20), nullable=False)
     target = db.Column(db.VARCHAR(20), nullable=False)
     path = db.Column(db.VARCHAR(260), nullable=False)
@@ -30,7 +30,7 @@ class Image(db.Model):
     pos_z = db.Column(db.INTEGER, nullable=False)
 
     def to_dict(self):
-        return dict(_id=self._id,
+        return dict(id=self.id,
                     project=self.project,
                     target=self.target,
                     path=self.path,

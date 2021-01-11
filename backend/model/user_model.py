@@ -15,9 +15,9 @@ class User(db.Model):
         }
     )
 
-    _id = db.Column(db.INTEGER, primary_key=True, nullable=False, autoincrement=True)
+    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
     userid = db.Column(db.VARCHAR(16), nullable=False)
-    password = db.Column(db.VARCHAR(16), nullable=False)
+    password = db.Column(db.VARCHAR(60), nullable=False)
     username = db.Column(db.VARCHAR(16), nullable=False)
     company = db.Column(db.VARCHAR(16), nullable=False)
     created = db.Column(db.TIMESTAMP)
@@ -30,14 +30,14 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
-    def has_password(self):
+    def hash_password(self):
         self.password = generate_password_hash(self.password).decode('utf8')
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
     def to_dict(self):
-        return dict(_id=self._id,
+        return dict(id=self.id,
                     userid=self.userid,
                     password=self.password,
                     username=self.username,

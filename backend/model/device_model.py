@@ -14,7 +14,7 @@ class Device(db.Model):
         {'mysql_collate': 'utf8mb4_unicode_ci'}
     )
 
-    _id = db.Column(db.INTEGER, primary_key=True, nullable=False, autoincrement=True, )
+    id = db.Column(db.INTEGER, primary_key=True, nullable=False, autoincrement=True, )
     model = db.Column(db.VARCHAR(16), nullable=False)
     serial = db.Column(db.VARCHAR(20), nullable=False)
     owner = db.Column(db.INTEGER, ForeignKey('user.id', onupdate='CASCADE',ondelete='CASCADE'), nullable=False)
@@ -25,7 +25,7 @@ class Device(db.Model):
     is_deleted = db.Column(db.BOOLEAN)
 
     def to_dict(self):
-        return dict(_id=self._id,
+        return dict(id=self.id,
                     model=self.model,
                     serial=self.serial,
                     owner=self.owner,
