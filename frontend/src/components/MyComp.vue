@@ -1,23 +1,20 @@
 <template slot="links">
   <div>
-    <div @click="nodeClicked">
+    <div @click="nodeClicked"
+         @onClick="(node) => $emit('onClick', node)">
       <div v-if="hasChildren">
-        <sidebar-item
-          v-if="!expanded"
-          :link="{
-            name: node.name,
-            icon: 'ni ni-bold-right text-primary',
-            path: '#',
-          }"
-        />
-        <sidebar-item
-          v-else
-          :link="{
-            name: node.name,
-            icon: 'ni ni-bold-down text-primary',
-            path: '#',
-          }"
-        />
+        <sidebar-item v-if="!expanded"
+                     :link="{
+                        name: node.name,
+                        icon: 'ni ni-bold-right text-primary',
+                        path: '#',
+                     }"/>
+        <sidebar-item v-else
+                      :link="{
+                        name: node.name,
+                        icon: 'ni ni-bold-down text-primary',
+                        path: '#',
+                      }"/>
       </div>
       <div v-else>
         <sidebar-item :link="{ name: node.name, path: '#' }" />
@@ -59,9 +56,7 @@ export default {
   methods: {
     nodeClicked() {
       this.expanded = !this.expanded;
-      if (!this.hasChildren()) {
-        this.$emit("onClick", this.node);
-      }
+      this.$emit("onClick", this.node);
     },
   },
   computed: {

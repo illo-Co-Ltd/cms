@@ -10,6 +10,7 @@
 
     <div class="main-content">
       <thumbnail-card :node="imgroot"></thumbnail-card>
+      <h5>{{directoryPath}}</h5>
     </div>
   </div>
 </template>
@@ -22,33 +23,52 @@ export default {
   name: "app",
   data() {
     return {
+      sidebarBackground: 'vue', //vue|blue|orange|green|red|primary
       root: {
-        name: "/",
+        name: "devices",
+        path: "@/devices/",
         children: [
           {
-            name: "music",
+            name: "test_animals",
+            path: "@/devices/test_animals/",
             children: [
               {
-                name: "song.mp3",
-              },
-            ],
+                name: "lion",
+                path: "@/devices/test_animals/lion/",
+              }
+            ]
           },
           {
-            name: "workspace",
-            children: [
-              {
-                name: "source.js",
-              },
-            ],
+            name: "test_people",
+            path: "@/devices/test_people/",
           },
         ],
       },
+      directoryPath: "@/devices/",
       imgroot: [
         {
-          path: require("../images/blend-dst.jpg")
+          name: 'img1',
+          path: require("@/devices/test_people/img1.jpg")
         },
         {
-          path: require("../images/blend-src.jpg")
+          name: 'img2',
+          path: require("@/devices/test_people/img2.jpg")
+        },
+        {
+          name: 'img3',
+          path: require("@/devices/test_people/img3.jpg")
+        },
+        {
+          name: 'img4',
+          path: require("@/devices/test_people/img4.jpg")
+        },
+        {
+          name: 'img5',
+          path: require("@/devices/test_people/img5.jpg")
+        },
+        {
+          name: 'img6',
+          path: require("@/devices/test_people/img6.jpg")
         },
       ],
     };
@@ -59,35 +79,8 @@ export default {
   },
   methods: {
     nodeWasClicked(node) {
-      alert(node.name);
+      this.directoryPath = node.path;
     },
   },
 };
 </script>
-
-<style>
-.container {
-  width: 100%;
-  height: 100%;
-}
-.dir_hierarchy {
-  border-right: solid;
-  border-right-width: thin;
-  border-right-color: black;
-  background-color: burlywood;
-  width: 20%;
-  height: 100%;
-  min-height: 100vh;
-  float: left;
-}
-.image_hierarchy {
-  border-right: solid;
-  border-right-width: thin;
-  border-right-color: black;
-  background-color: rgb(243, 235, 225);
-  width: 20%;
-  height: 100%;
-  min-height: 100vh;
-  float: left;
-}
-</style>

@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div @click="nodeClicked" class="node">
+    <div @click="nodeClicked" class="node"
+         @onClick="(node) => $emit('onClick', node)">
       <span v-if="hasChildren" class="type">
         {{ expanded ? "&#9660;" : "&#9658;" }}
       </span>
@@ -13,7 +14,6 @@
         :key="child.name"
         :node="child"
         :depth="depth + 1"
-        @onClick="(node) => $emit('onClick', node)"
       >
       </tree-browser>
     </ul>
@@ -38,10 +38,7 @@ export default {
   methods: {
     nodeClicked() {
       this.expanded = !this.expanded;
-      if (!this.hasChildren()) {
-        console.log("delete onclick");
-        this.$emit("onClick", this.node);
-      }
+      this.$emit("onClick", this.node);
     },
   },
   computed: {
