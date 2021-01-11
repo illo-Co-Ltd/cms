@@ -1,22 +1,8 @@
 <template>
 <div class="card-deck">
-  <card>
+  <card v-for="item in node" :key="item.path">
     <img class="card-img-top" 
-         src="./blend-dst.jpg"
-         alt="Card image cap">
-    <h5 class="card-title">Card title</h5>
-  </card>
-
-  <card>
-    <img class="card-img-top" 
-         src="./blend-src.jpg"
-         alt="Card image cap">
-    <h5 class="card-title">Card title</h5>
-  </card>
-
-  <card>
-    <img class="card-img-top" 
-         src="./blend-dst.jpg"
+         :src="item.path"
          alt="Card image cap">
     <h5 class="card-title">Card title</h5>
   </card>
@@ -25,7 +11,14 @@
 
 <script>
 export default {
-
+  props: {
+    node: Object,
+  },
+  computed: {
+    hasChildren() {
+      return this.node.children;
+    }
+  }
 };
 </script>
 

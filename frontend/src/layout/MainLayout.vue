@@ -9,7 +9,7 @@
     </side-bar>
 
     <div class="main-content">
-      <thumbnail-card></thumbnail-card>
+      <thumbnail-card :node="imgroot"></thumbnail-card>
     </div>
   </div>
 </template>
@@ -43,6 +43,14 @@ export default {
           },
         ],
       },
+      imgroot: [
+        {
+          path: require("../images/blend-dst.jpg")
+        },
+        {
+          path: require("../images/blend-src.jpg")
+        },
+      ],
     };
   },
   components: {
