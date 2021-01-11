@@ -9,7 +9,10 @@ class User(db.Model):
     __tablename__ = 'user'
     __table_args__ = (
         db.UniqueConstraint('userid', name='user_userid_uindex'),
-        {'mysql_collate': 'utf8mb4_unicode_ci'}
+        {
+            'schema':'cms',
+            'mysql_collate': 'utf8mb4_unicode_ci'
+        }
     )
 
     _id = db.Column(db.INTEGER, primary_key=True, nullable=False, autoincrement=True)
