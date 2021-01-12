@@ -11,7 +11,7 @@ from router.api.check import check_route
 from router.api.device import device_route
 from router.api.image import image_route
 
-from model import user_model, device_model, image_model
+from model import db_base
 
 from util.logger import logger
 
@@ -29,9 +29,7 @@ def create_app():
     app.config['SECRET_KEY'] = 'qwersdaiofjhoqwihlzxcjvjl'
 
     # initialize db
-    user_model.db.init_app(app)
-    device_model.db.init_app(app)
-    image_model.db.init_app(app)
+    db_base.db.init_app(app)
 
     # enable CORS
     CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
