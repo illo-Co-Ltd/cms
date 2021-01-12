@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
+  <div class="wrapper">
     <side-bar :background-color="sidebarBackground"
               short-title="Argon"
               title="Argon">
@@ -8,9 +8,14 @@
       </template>
     </side-bar>
 
-    <div class="main-content">
+    <div class="card-wrapper">
       <thumbnail-card :node="imgroot"></thumbnail-card>
-      <h5>{{directoryPath}}</h5>
+    </div>
+
+    <div class="my-main-content">
+      <img class="card-img-top" 
+       src="@/devices/test_animals/img3.jpg"
+       alt="Card image cap"/>
     </div>
   </div>
 </template>
@@ -18,6 +23,7 @@
 <script>
 import ThumbnailCard from "../components/ThumbnailCard.vue";
 import MyComp from "../components/MyComp.vue";
+import SideBar from '../components/SidebarPlugin/SideBar.vue';
 
 export default {
   name: "app",
@@ -70,12 +76,21 @@ export default {
           name: 'img6',
           path: require("@/devices/test_people/img6.jpg")
         },
+        {
+          name: 'img6',
+          path: require("@/devices/test_people/img6.jpg")
+        },
+        {
+          name: 'img6',
+          path: require("@/devices/test_people/img6.jpg")
+        },
       ],
     };
   },
   components: {
     ThumbnailCard,
     MyComp,
+    SideBar,
   },
   methods: {
     nodeWasClicked(node) {
@@ -84,3 +99,20 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.card-wrapper {
+  display: block;
+  position: fixed;
+  width: 250px;
+  margin-left: 250px;
+  top: 0;
+  bottom: 0;
+  background-color: rgb(255, 255, 255);
+  overflow-x: auto;
+}
+.my-main-content {
+  position: relative;
+  margin-left: 500px;
+}
+</style>

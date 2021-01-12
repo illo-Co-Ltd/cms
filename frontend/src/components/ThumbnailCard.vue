@@ -1,11 +1,11 @@
 <template>
-<div class="card-group">
-  <card v-for="item in node" :key="item.path">
-    <img class="card-img-top" 
-         :src="item.path"
-         alt="Card image cap"/>
-    <h5 class="card-title">{{item.name}}</h5>
-  </card>
+<div>
+<div class="card-item" v-for="item in node" :key="item.path">
+  <img class="card-img-top" 
+       :src="item.path"
+       alt="Card image cap"/>
+  <h5 class="card-title">{{item.name}}</h5>
+</div>
 </div>
 </template>
 
@@ -16,3 +16,20 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.card-item {
+    position: relative;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+}
+</style>
