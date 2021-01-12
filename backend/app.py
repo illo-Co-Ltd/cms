@@ -1,28 +1,22 @@
-import os, traceback
+import os
 from dotenv import load_dotenv
 
 from flask import Flask, jsonify, request, session, Response
-from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 
 from router.api.auth import auth_route
+from router.api.check import check_route
 from router.api.device import device_route
 from router.api.image import image_route
 
-from model import user_model
+from model import user_model, device_model, image_model
 
 from util.logger import logger
-from util.auth_util import token_required
-
-db = SQLAlchemy()
-# load environment variables
-load_dotenv(verbose=True)
-logger.info('Loaded ENV:' + str(list(os.environ)))
 
 
-def init():
+def create_app():
     # instantiate the app
     app = Flask(__name__)
     app.secret_key = 'laksdjfoiawjewfansldkfnzcvjlzskdf'
@@ -35,14 +29,9 @@ def init():
     app.config['SECRET_KEY'] = 'qwersdaiofjhoqwihlzxcjvjl'
 
     # initialize db
-    # TODO
-    # ORM만으로 db초기화를 해보려했으나 잘 되지않음. 그냥 sql로 초기화하도록 했음
-    """
-    db.init_app(app)
-    with app.app_context():
-        from model import user_model, device_model, image_model
-        db.create_all()
-    """
+    user_model.db.init_app(app)
+    device_model.db.init_app(app)
+    image_model.db.init_app(app)
 
     # enable CORS
     CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
@@ -50,6 +39,7 @@ def init():
     bcrypt = Bcrypt(app)
     jwt = JWTManager(app)
 
+    app.register_blueprint(check_route, url_prefix='')
     app.register_blueprint(auth_route, url_prefix='/api/auth')
     app.register_blueprint(device_route, url_prefix='/api/device')
     app.register_blueprint(image_route, url_prefix='/api/image')
@@ -57,42 +47,13 @@ def init():
     return app
 
 
-app = init()
-db.init_app(app)
-
-
-# sanity check route
-@app.route('/', methods=['GET'])
-def test_router():
-    logger.info("hello this is root url!")
-    return jsonify('This is Docker Test developments Server!')
-
-
-@app.route('/dbcreate', methods=['GET'])
-def db_create():
-    db.create_all()
-    return jsonify('')
-
-
-@app.route('/dbcheck', methods=['POST'])
-def db_check():
-    logger.info(app.config["SQLALCHEMY_DATABASE_URI"])
-    # test
-    data = request.get_json()
-    logger.info(data)
-    user = user_model.User(**data)
-    db.session.add(user)
-    db.session.commit()
-    return jsonify('')
-
-
-@app.route('/health_check', methods=['GET'])
-def health_check():
-    logger.info("health check route url!")
-    return jsonify('good')
-
-
 if __name__ == '__main__':
+    # load environment variables
+    load_dotenv(verbose=True)
+    logger.info('Loaded ENV:' + str(list(os.environ)))
+
+    app = create_app()
     app.run(host='0.0.0.0',
             port=os.getenv('FLASK_RUN_PORT'),
             debug=os.getenv('FLASK_DEBUG'))
+

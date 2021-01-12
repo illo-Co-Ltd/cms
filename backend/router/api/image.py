@@ -12,34 +12,50 @@ image_route = Blueprint('image_route', __name__)
 
 @image_route.route('/image', methods=["GET"])
 @token_required
-def image_list(current_user):
-    logger.info("get Tweet List")
-    image_list = image_model.Tweet.query.all()
-    return jsonify([t.to_dict() for t in image_list])
+def list_image(current_user):
+    logger.info("Get image list")
+    image_list = image_model.Image.query.all()
+    return jsonify([i.to_dict() for i in image_list])
 
 
 @image_route.route('/image', methods=["POST"])
 @token_required
 def create_image(current_user):
-    logger.info("Tweet Post!")
+    logger.info("Create image metadata")
     try:
         data = request.get_json()
-        title = data.get("title")
-        words = data.get("words")
-        created_at = datetime.datetime.utcnow()
-        updated_at = datetime.datetime.utcnow()
+        project = data.get('project')
+        target = data.get('target')
+        path = data.get('path')
+        device = data.get('device')
+        created_by = data.get('created_by')
+        label = data.get('label')
+        offset_x = data.get('offset_x')
+        offset_y = data.get('offset_y')
+        offset_z = data.get('offset_z')
+        pos_x = data.get('pos_x')
+        pos_y = data.get('pos_y')
+        pos_z = data.get('pos_z')
 
         db = image_model.db
-        tweet = image_model.Tweet(
-            title=title,
-            words=words,
-            creator=current_user.username,
-            created_at=created_at,
-            updated_at=updated_at
+        image = image_model.Image(
+            project=project,
+            target=target,
+            path=path,
+            device=device,
+            created=datetime.datetime.utcnow(),
+            created_by=created_by,
+            label=label,
+            offset_x=offset_x,
+            offset_y=offset_y,
+            offset_z=offset_z,
+            pos_x=pos_x,
+            pos_y=pos_y,
+            pos_z=pos_z
         )
-        db.session.add(tweet)
+        db.session.add(image)
         db.session.commit()
-        return jsonify(tweet.to_dict()), 200
+        return jsonify(image.to_dict()), 200
     except Exception as e:
         logger.error(e)
-        return jsonify({'message': 'fail to save tweet'}), 200
+        return jsonify({'message': 'Fail to create image metadata'}), 200

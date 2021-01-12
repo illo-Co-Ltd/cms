@@ -32,3 +32,7 @@ class VideoCamera(object):
         # encode OpenCV raw frame to jpg and displaying it
         ret, jpeg = cv2.imencode('.jpg', frame)
         return jpeg.tobytes()
+
+class TestCamera:
+    def __init__(self):
+        self.video = cv2.VideoCapture()
