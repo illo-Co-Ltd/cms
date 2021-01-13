@@ -13,6 +13,8 @@ from router.api.image import image_route
 
 from util.logger import logger
 
+global logger
+
 
 def create_app():
     # instantiate the app
@@ -47,8 +49,6 @@ def create_app():
 
 
 if __name__ == '__main__':
-    # load environment variables
-    load_dotenv(verbose=True)
     logger.info('Loaded ENV:' + str(list(os.environ)))
 
     app = create_app()

@@ -8,5 +8,4 @@ ADD . .
 RUN python3 -m pip install -U pip
 RUN pip3 install -r requirements.txt
 
-ENTRYPOINT ["bash", "wait-for-it.sh", "db:3306", "--"]
-CMD ["python3",  "app.py"]
+CMD ["python3",  "tasks.py"]
