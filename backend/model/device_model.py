@@ -14,9 +14,12 @@ class Device(db.Model):
     edited_by = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
     is_deleted = db.Column(db.Integer)
 
-    user = db.relationship('User', primaryjoin='Device.created_by == User.id', backref='user_user_devices')
-    user1 = db.relationship('User', primaryjoin='Device.edited_by == User.id', backref='user_user_devices_0')
-    user2 = db.relationship('User', primaryjoin='Device.owner == User.id', backref='user_user_devices')
+    r_created_by = db.relationship('User', primaryjoin='Device.created_by == User.id', backref='user_id_device_create_by')
+    r_edited_by = db.relationship('User', primaryjoin='Device.edited_by == User.id', backref='user_id_device_edited_by')
+    r_owner = db.relationship('User', primaryjoin='Device.owner == User.id', backref='user_id_device_owner')
+
+    def __repr__(self):
+        return f'<Device {self.model} | {self.serial}>'
 
     def to_dict(self):
         return dict(

@@ -18,7 +18,7 @@ class User(db.Model):
     is_deleted = db.Column(db.Integer)
 
     def __repr__(self):
-        return '<User %r>' % self.username
+        return f'<User {self.username}>'
 
     def hash_password(self):
         self.password = generate_password_hash(self.password).decode('utf8')

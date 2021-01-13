@@ -19,8 +19,11 @@ class Image(db.Model):
     pos_y = db.Column(db.Integer, nullable=False)
     pos_z = db.Column(db.Integer, nullable=False)
 
-    user = db.relationship('User', primaryjoin='Image.created_by == User.id', backref='images')
-    device1 = db.relationship('Device', primaryjoin='Image.device == Device.id', backref='images')
+    r_created_by = db.relationship('User', primaryjoin='Image.created_by == User.id', backref='user_id_image_create_by')
+    r_device = db.relationship('Device', primaryjoin='Image.device == Device.id', backref='device_id_image_device')
+
+    def __repr__(self):
+        return f'<Image {self.project} | {self.target} | {self.path}>'
 
     def to_dict(self):
         return dict(
