@@ -1,4 +1,4 @@
-from db_base import db
+from .db_base import db
 
 
 class Device(db.Model):

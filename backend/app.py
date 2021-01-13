@@ -11,8 +11,6 @@ from router.api.check import check_route
 from router.api.device import device_route
 from router.api.image import image_route
 
-from model import db_base
-
 from util.logger import logger
 
 
@@ -29,7 +27,10 @@ def create_app():
     app.config['SECRET_KEY'] = 'qwersdaiofjhoqwihlzxcjvjl'
 
     # initialize db
-    db_base.db.init_app(app)
+    with app.app_context():
+        from model import db_base, user_model, device_model, image_model
+        db_base.db.init_app(app)
+        db_base.db.create_all()
 
     # enable CORS
     CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
@@ -54,4 +55,3 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0',
             port=os.getenv('FLASK_RUN_PORT'),
             debug=os.getenv('FLASK_DEBUG'))
-

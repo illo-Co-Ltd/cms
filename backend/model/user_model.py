@@ -1,5 +1,5 @@
 from flask_bcrypt import generate_password_hash, check_password_hash
-from db_base import db
+from .db_base import db
 
 
 class User(db.Model):
