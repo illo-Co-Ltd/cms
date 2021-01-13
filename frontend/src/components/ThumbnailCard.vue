@@ -1,10 +1,10 @@
 <template>
 <div>
-<div class="card-item" v-for="item in node" :key="item.path">
+<div class="card-item" v-for="item in node" :key="item.name">
   <img class="card-img-top" 
-       :src="item.path"
+       :src="item.name"
        alt="Card image cap"/>
-  <h5 class="card-title">{{item.name}}</h5>
+  <h5 class="card-title">{{item.type}}</h5>
 </div>
 </div>
 </template>
@@ -12,7 +12,7 @@
 <script>
 export default {
   props: {
-    node: Array,
+    node: Object,
   },
 };
 </script>

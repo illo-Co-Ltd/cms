@@ -1,5 +1,5 @@
 <template>
-    <li class="nav-item">
+    <div class="nav-item">
         <router-link
                 :to="link.path"
                 @click.native="linkClick"
@@ -11,7 +11,7 @@
                 <span class="nav-link-text">{{ link.name }}</span>
             </template>
         </router-link>
-    </li>
+    </div>
 </template>
 <script>
   export default {
