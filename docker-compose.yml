@@ -25,6 +25,7 @@ services:
     container_name: cms-back
     env_file:
       - backend/.env
+      - worker/.env
     build:
       context: backend
       dockerfile: back.dev.Dockerfile
@@ -38,7 +39,7 @@ services:
       - data-volume:/data:z
     depends_on:
       - db
-      - cache
+      - redis
 
   db:
     container_name: cms-mysql
@@ -58,13 +59,13 @@ services:
     volumes:
       - mysql-volume:/var/lib/mysql
 
-  cache:
+  redis:
     container_name: cms-redis
     env_file:
-      - task/.env
+      - redis/.env
     build:
-      context: task
-      dockerfile: cache.dev.Dockerfile
+      context: redis
+      dockerfile: redis.dev.Dockerfile
     image: cms-img-redis
     ports:
       - 6379:6379
@@ -76,13 +77,16 @@ services:
       timeout: 1s
       retries: 5
 
-  task:
-    container_name: cms-task
+  worker:
+    container_name: cms-worker
+    env_file:
+      - worker/.env
     build:
-      context: task
-      dockerfile: task.dev.Dockerfile
-    image: cms-img-task
+      context: worker
+      dockerfile: worker.dev.Dockerfile
+    image: cms-img-worker
     depends_on:
-      - cache
+      - redis
     volumes:
-    - data-volume:/data:z
+      - data-volume:/data:z
+      - ./backend/task:/task

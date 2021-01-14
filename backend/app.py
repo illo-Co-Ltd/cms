@@ -40,7 +40,7 @@ def create_app():
     bcrypt = Bcrypt(app)
     jwt = JWTManager(app)
 
-    app.register_blueprint(check_route, url_prefix='')
+    app.register_blueprint(check_route, url_prefix='/', )
     app.register_blueprint(auth_route, url_prefix='/api/auth')
     app.register_blueprint(device_route, url_prefix='/api/device')
     app.register_blueprint(image_route, url_prefix='/api/image')
