@@ -1,10 +1,10 @@
 <template>
-<div>
-  <div class="sidebar-left">
+<div class="side-bar-parent">
+  <div class="side-bar-div1">
     <my-comp :node="root"
              @onClick="nodeClicked"/>
   </div>
-  <div class="sidebar-right" >
+  <div class="side-bar-div2" >
     <thumbnail-card :node="selectedNodeTarget.children"/>
   </div>
 </div>
@@ -117,29 +117,24 @@ export default {
 </script>
 
 <style scoped>
-.sidebar-left {
-  display: block;
-  position: fixed;
-  top: 0;
-  bottom: 0;
+.side-bar-parent {
+  display: grid;
   width: 100%;
-  max-width: 250px;
-  padding-left: 0.3rem;
-  padding-right: 0.3rem;
+  height: 100%;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 1fr;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+}
+
+.side-bar-div1 { 
+  grid-area: 1 / 1 / 2 / 2; 
   background-color: rgb(255, 255, 255);
   overflow-x: auto;
 }
-.sidebar-right {
-  display: block;
-  position: fixed;
-  width: 100%;
-  max-width: 250px;
-  margin-left: 250px;
-  top: 0;
-  bottom: 0;
+.side-bar-div2 { 
+  grid-area: 1 / 2 / 2 / 3; 
   background-color: rgb(255, 255, 255);
-  border-left: 2px;
-  border-left-color: rgb(248, 249, 254);
   overflow-x: auto;
 }
 </style>
