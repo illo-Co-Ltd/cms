@@ -1,6 +1,7 @@
 <template>
 <div class="side-bar-parent">
   <div class="side-bar-div1">
+    <button @click="fetchStructures">{{this.result}}</button>
     <my-comp :node="root"
              @onClick="nodeClicked"/>
   </div>
@@ -13,14 +14,15 @@
 <script>
 import MyComp from '../MyComp.vue'
 import ThumbnailCard from '../ThumbnailCard.vue';
+import axios from 'axios';
+
 export default {
   components: { MyComp, ThumbnailCard },
 
   data() {
     return {
-      selectedNodeTarget: {
-        
-      },
+      result: 'default',
+      selectedNodeTarget: {},
       root: {
         type: 'root',
         name: 'root',
@@ -111,6 +113,26 @@ export default {
         this.selectedNodeTarget = node;
       else
         this.selectedNodeTarget = {};
+    },
+    fetchStructures: function() {
+      axios({
+        methods: 'GET',
+        url: '/api/',
+      }).then((response) => {
+        console.log(response);
+        this.result = response.data;
+      }).catch((e) => {
+        console.log("err:",e)
+      })
+    },
+    addStructures: function() {
+      
+    },
+    upadateStructures: function() {
+      
+    },
+    deleteStructures: function() {
+      
     },
   },  
 }

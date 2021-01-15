@@ -7,8 +7,8 @@
       <side-bar-custom></side-bar-custom>
     </div>
     <div class="main-fragment">
-        <h5>hello</h5>
-      </div>
+      <h5>hello</h5>
+    </div>
   </div>
 </template>
 
