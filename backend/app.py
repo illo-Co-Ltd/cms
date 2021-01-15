@@ -10,6 +10,7 @@ from router.api.auth import auth_route
 from router.api.check import check_route
 from router.api.device import device_route
 from router.api.image import image_route
+from router.api.camera import camera_route
 
 from util.logger import logger
 
@@ -40,10 +41,11 @@ def create_app():
     bcrypt = Bcrypt(app)
     jwt = JWTManager(app)
 
-    app.register_blueprint(check_route, url_prefix='/', )
+    app.register_blueprint(check_route, url_prefix='/')
     app.register_blueprint(auth_route, url_prefix='/api/auth')
     app.register_blueprint(device_route, url_prefix='/api/device')
     app.register_blueprint(image_route, url_prefix='/api/image')
+    app.register_blueprint(camera_route, url_prefix='/api/camera')
 
     return app
 

@@ -5,7 +5,7 @@ ds_factor = 1
 DEVICE_IP = os.getenv('DEVICE_IP')
 
 
-class VideoCamera(object):
+class VideoCamera:
     def __init__(self):
         print('Camera initializing...')
         # capturing video
@@ -23,9 +23,7 @@ class VideoCamera(object):
         ret, frame = self.video.read()
         frame = cv2.resize(frame, None, fx=ds_factor, fy=ds_factor,
                            interpolation=cv2.INTER_AREA)
-        # encode OpenCV raw frame to jpg and displaying it
-        ret, jpeg = cv2.imencode('.jpg', frame)
-        return jpeg.tobytes()
+        return frame
 
 class TestCamera:
     def __init__(self):

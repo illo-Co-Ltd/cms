@@ -36,7 +36,7 @@ services:
       - 5000:5000
     volumes:
       - ./backend:/app:delegated
-      - data-volume:/data:z
+      - ./data:/data:z
     depends_on:
       - db
       - redis
@@ -88,5 +88,4 @@ services:
     depends_on:
       - redis
     volumes:
-      - data-volume:/data:z
-      - ./backend/task:/task
+      - ./data:/data:z
