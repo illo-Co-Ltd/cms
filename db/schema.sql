@@ -4,6 +4,8 @@
 #DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `userid` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(60) COLLATE utf8mb4_unicode_ci NOT NULL,
   `username` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
   `company` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created` timestamp NULL DEFAULT NULL,
@@ -13,8 +15,7 @@ CREATE TABLE `user` (
   `is_admin` tinyint(1) DEFAULT NULL,
   `is_deleted` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `user_company_uindex` (`company`),
-  UNIQUE KEY `user_username_uindex` (`username`)
+  UNIQUE KEY `user_userid_uindex` (`userid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='사용자정보';
 
 --

@@ -1,7 +1,7 @@
 import jwt
 from flask import request, jsonify, current_app
 from model.user_model import User
-from util.my_logger import my_logger
+from util.logger import logger
 from functools import wraps
 
 
@@ -34,7 +34,7 @@ def token_required(f):
         except jwt.ExpiredSignatureError:
             return jsonify(expired_msg), 401  # 401 is Unauthorized HTTP status code
         except (jwt.InvalidTokenError, Exception) as e:
-            my_logger.error(e)
+            logger.error(e)
             return jsonify(invalid_msg), 401
 
     return _verify

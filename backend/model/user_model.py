@@ -1,31 +1,41 @@
-# coding: utf-8
 from flask_bcrypt import generate_password_hash, check_password_hash
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+from .db_base import db
 
 
 class User(db.Model):
     __tablename__ = 'user'
 
-    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
-    username = db.Column(db.String(20), primary_key=True, nullable=False)
-    useremail = db.Column(db.String(100))
-    userpwd = db.Column(db.String(100), nullable=False)
-    bio = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, server_default=db.FetchedValue())
-    updated_at = db.Column(db.DateTime, server_default=db.FetchedValue())
+    id = db.Column(db.Integer, primary_key=True)
+    userid = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    password = db.Column(db.String(60, 'utf8mb4_unicode_ci'), nullable=False)
+    username = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
+    company = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
+    created = db.Column(db.DateTime)
+    created_by = db.Column(db.Integer)
+    last_edited = db.Column(db.DateTime)
+    edited_by = db.Column(db.Integer)
+    is_admin = db.Column(db.Integer)
+    is_deleted = db.Column(db.Integer)
 
-    def has_password(self):
-        self.userpwd = generate_password_hash(self.userpwd).decode('utf8')
+    def __repr__(self):
+        return f'<User {self.username}>'
+
+    def hash_password(self):
+        self.password = generate_password_hash(self.password).decode('utf8')
 
     def check_password(self, password):
-        return check_password_hash(self.userpwd, password)
+        return check_password_hash(self.password, password)
 
     def to_dict(self):
-        return dict(id=self.id,
-                    username=self.username,
-                    useremail=self.useremail,
-                    bio=self.bio,
-                    created_at=self.created_at,
-                    updated_at=self.updated_at)
+        return dict(
+            id=self.id,
+            userid=self.userid,
+            password=self.password,
+            username=self.username,
+            company=self.company,
+            created=self.created,
+            last_edited=self.last_edited,
+            edited_by=self.edited_by,
+            is_admin=self.is_admin,
+            is_deleted=self.is_deleted
+        )
