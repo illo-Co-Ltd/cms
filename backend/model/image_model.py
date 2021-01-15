@@ -5,8 +5,8 @@ class Image(db.Model):
     __tablename__ = 'image'
 
     id = db.Column(db.Integer, primary_key=True)
-    project = db.Column(db.String(20, 'utf8mb4_unicode_ci'), nullable=False)
-    target = db.Column(db.String(20, 'utf8mb4_unicode_ci'), nullable=False)
+    project = db.Column(db.ForeignKey('project.id', onupdate='CASCADE'), nullable=False, index=True)
+    target = db.Column(db.ForeignKey('target.id', onupdate='CASCADE'), nullable=False, index=True)
     path = db.Column(db.String(260, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
     device = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), nullable=False, index=True)
     created = db.Column(db.DateTime, nullable=False)
@@ -19,8 +19,11 @@ class Image(db.Model):
     pos_y = db.Column(db.Integer, nullable=False)
     pos_z = db.Column(db.Integer, nullable=False)
 
-    r_created_by = db.relationship('User', primaryjoin='Image.created_by == User.id', backref='user_id_image_create_by')
-    r_device = db.relationship('Device', primaryjoin='Image.device == Device.id', backref='device_id_image_device')
+    r_created_by = db.relationship('User', primaryjoin='Image.created_by == User.id', backref='image_create_by_user_id')
+    r_device = db.relationship('Device', primaryjoin='Image.device == Device.id', backref='image_device_device_id')
+    r_project = db.relationship('Project', primaryjoin='Image.project == Project.id',
+                                backref='image_project_project_id')
+    r_target = db.relationship('Target', primaryjoin='Image.target == Target.id', backref='image_target_target_id')
 
     def __repr__(self):
         return f'<Image {self.project} | {self.target} | {self.path}>'

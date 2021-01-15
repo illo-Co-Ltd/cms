@@ -9,13 +9,15 @@ class User(db.Model):
     userid = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
     password = db.Column(db.String(60, 'utf8mb4_unicode_ci'), nullable=False)
     username = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
-    company = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
+    company = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), nullable=False, index=True)
     created = db.Column(db.DateTime)
     created_by = db.Column(db.Integer)
     last_edited = db.Column(db.DateTime)
     edited_by = db.Column(db.Integer)
     is_admin = db.Column(db.Integer)
     is_deleted = db.Column(db.Integer)
+
+    r_company = db.relationship('Company', primaryjoin='User.company == Company.id', backref='user_company_company_id')
 
     def __repr__(self):
         return f'<User {self.username}>'

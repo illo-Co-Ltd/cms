@@ -31,7 +31,7 @@ def create_app():
 
     # initialize db
     with app.app_context():
-        from model import db_base, user_model, device_model, image_model
+        from model import db_base, company_model, user_model, project_model, target_model, device_model, image_model
         db_base.db.init_app(app)
         db_base.db.create_all()
 
