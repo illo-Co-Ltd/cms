@@ -1,93 +1,53 @@
 <template>
-  <div class="wrapper" :class="{ 'nav-open': $sidebar.showSidebar }">
-    <side-bar :background-color="sidebarBackground"
-              short-title="Argon"
-              title="Argon">
-      <template slot="links">
-        <my-comp :node="root" @onClick="nodeWasClicked" />
-      </template>
-    </side-bar>
-
-    <div class="main-content">
-      <thumbnail-card :node="imgroot"></thumbnail-card>
+  <div class="parent">
+    <div class="div1">
+      <headder></headder>
     </div>
+    <div class="div2">
+      <side-bar-custom></side-bar-custom>
+    </div>
+    <div class="main-fragment">
+        <h5>hello</h5>
+      </div>
   </div>
 </template>
 
 <script>
-import ThumbnailCard from "../components/ThumbnailCard.vue";
-import MyComp from "../components/MyComp.vue";
+import Headder from '../components/Headder.vue';
+import SideBarCustom from '../components/SidebarPlugin/SideBarCustom.vue';
 
 export default {
   name: "app",
   data() {
     return {
-      root: {
-        name: "/",
-        children: [
-          {
-            name: "music",
-            children: [
-              {
-                name: "song.mp3",
-              },
-            ],
-          },
-          {
-            name: "workspace",
-            children: [
-              {
-                name: "source.js",
-              },
-            ],
-          },
-        ],
-      },
-      imgroot: [
-        {
-          path: require("../images/blend-dst.jpg")
-        },
-        {
-          path: require("../images/blend-src.jpg")
-        },
-      ],
-    };
+
+    }
   },
   components: {
-    ThumbnailCard,
-    MyComp,
-  },
-  methods: {
-    nodeWasClicked(node) {
-      alert(node.name);
-    },
+    Headder,
+    SideBarCustom,
   },
 };
 </script>
 
-<style>
-.container {
+<style scoped>
+.parent {
+  display: grid;
   width: 100%;
   height: 100%;
+  grid-template-columns: repeat(2, 250px) 1fr;
+  grid-template-rows: 56px 1fr;
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
 }
-.dir_hierarchy {
-  border-right: solid;
-  border-right-width: thin;
-  border-right-color: black;
-  background-color: burlywood;
-  width: 20%;
-  height: 100%;
-  min-height: 100vh;
-  float: left;
+
+.div1 { 
+  grid-area: 1 / 1 / 2 / 4; 
+  z-index: 2;
 }
-.image_hierarchy {
-  border-right: solid;
-  border-right-width: thin;
-  border-right-color: black;
-  background-color: rgb(243, 235, 225);
-  width: 20%;
-  height: 100%;
-  min-height: 100vh;
-  float: left;
+.div2 { 
+  grid-area: 2 / 1 / 3 / 3; 
+  z-index: 1;
 }
+.main-fragment { grid-area: 2 / 3 / 3 / 4; }
 </style>

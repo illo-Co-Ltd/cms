@@ -1,36 +1,41 @@
 <template slot="links">
   <div>
-    <div @click="nodeClicked">
+    <!-- 호출시 표시될 하나의 노드 -->
+    <div :style="{'margin-left': `${depth * 10}px`}"
+         @click="nodeClicked"
+         @onClick="(node) => $emit('onClick', node)">
       <div v-if="hasChildren">
-        <sidebar-item
-          v-if="!expanded"
-          :link="{
-            name: node.name,
-            icon: 'ni ni-bold-right text-primary',
-            path: '#',
-          }"
-        />
-        <sidebar-item
-          v-else
-          :link="{
-            name: node.name,
-            icon: 'ni ni-bold-down text-primary',
-            path: '#',
-          }"
-        />
-      </div>
-      <div v-else>
-        <sidebar-item :link="{ name: node.name, path: '#' }" />
+        <div v-if="node.type!='target'">
+          <sidebar-item v-if="!expanded"
+                      :link="{
+                          name: node.name,
+                          icon: 'ni ni-bold-right text-primary',
+                          path: '',
+                      }"/>
+          <sidebar-item v-else
+                        :link="{
+                          name: node.name,
+                          icon: 'ni ni-bold-down text-primary',
+                          path: '',
+                        }"/>
+        </div>
+        <div v-else>
+          <sidebar-item :link="{
+                          name: node.name,
+                          icon: 'ni ni-app text-yellow',
+                          path: '',
+                        }"/>
+        </div>
       </div>
     </div>
+    <!-- 확장시 자식 노드들 표시 -->
     <div v-if="expanded">
       <my-comp
         v-for="child in node.children"
         :key="child.name"
         :node="child"
         :depth="depth + 1"
-        @onClick="(node) => $emit('onClick', node)"
-      />
+        @onClick="(node) => $emit('onClick', node)"/>
     </div>
   </div>
 </template>
@@ -59,9 +64,7 @@ export default {
   methods: {
     nodeClicked() {
       this.expanded = !this.expanded;
-      if (!this.hasChildren()) {
-        this.$emit("onClick", this.node);
-      }
+      this.$emit("onClick", this.node);
     },
   },
   computed: {
