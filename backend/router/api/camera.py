@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 
 from tasks.cv_task import add, add_result, capture
 from util.logger import logger
@@ -24,3 +24,17 @@ def img_capture():
     logger.info('Capture with camera')
     task_id = capture()
     return jsonify(task_id)
+
+@camera_route.route('/timelapse', methods=['POST'])
+def start_timelapse():
+    logger.info('Start timelapse')
+    try:
+        data = request.get_json()
+        project = data.get('project')
+        target = data.get('target')
+        device = data.get('device')
+
+#        return jsonify(image.to_dict()), 200
+    except Exception as e:
+        logger.error(e)
+        return jsonify({'message': 'Fail to create image metadata'}), 200
