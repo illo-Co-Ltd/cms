@@ -10,18 +10,58 @@ import datetime
 image_route = Blueprint('image_route', __name__)
 
 
-@image_route.route('/image', methods=["GET"])
+@image_route.route('/tree', methods=['GET'])
+def get_structure():
+    logger.info('Get hierachical structure of image.')
+    with image_model.db.engine.connect() as conn:
+        res = conn.execute(
+            """select json_object(
+    'type','project',
+    'name', p.name,
+    'children', json_arrayagg(json_object(
+                                'type', 'target',
+                                'name', t.name,
+                                'children', t.children
+                                ))
+) as json
+from project p
+         left join (
+    select t.name,
+           t.project,
+           json_arrayagg(json_object(
+                   'type', 'image',
+                   'id', i.id,
+                   'path', i.path
+               )) as children
+    from target t
+             left join image i on t.id = i.target
+    group by t.id
+) t on t.project = p.id
+group by p.id;""")
+        import json
+        rows = [dict(row)['json'] for row in res]
+        logger.info(type(rows))
+        logger.info(type(rows[0]))
+        ret = {
+            'type': 'company',
+            'name': 'illo',
+            'children': [json.loads(row) for row in rows]
+        }
+        return jsonify(ret)
+
+
+@image_route.route('/list', methods=['GET'])
 @token_required
 def list_image(current_user):
-    logger.info("Get image list")
+    logger.info('Get image list')
     image_list = image_model.Image.query.all()
     return jsonify([i.to_dict() for i in image_list])
 
 
-@image_route.route('/image', methods=["POST"])
+@image_route.route('/create', methods=['POST'])
 @token_required
 def create_image(current_user):
-    logger.info("Create image metadata")
+    logger.info('Create image metadata')
     try:
         data = request.get_json()
         project = data.get('project')

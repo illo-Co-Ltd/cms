@@ -11,8 +11,11 @@ class VideoCamera:
         # capturing video
         # url설정
         url = f'rtsp://{DEVICE_IP}/stream1'
-        self.video = cv2.VideoCapture(url)
-        print('Camera initialized.')
+        try:
+            self.video = cv2.VideoCapture(url)
+            print('Camera initialized.')
+        except:
+            print('Failed to initialize.')
 
     def __del__(self):
         # releasing camera
