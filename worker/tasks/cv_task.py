@@ -36,3 +36,8 @@ def capture():
 
     except Exception as e:
         return 'Failed'
+
+
+@celery.task(name='cam_task.periodic_capture')
+def periodic_capture():
+    pass

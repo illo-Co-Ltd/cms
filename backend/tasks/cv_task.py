@@ -26,3 +26,7 @@ def add_result(task_id: int) -> int:
 def capture():
     task = celery_app.send_task('cam_task.capture')
     return task.id
+
+def periodic_capture():
+    task = celery_app.send_task('cam_task.periodic_capture')
+    return task.id
