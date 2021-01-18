@@ -9,6 +9,10 @@ import datetime
 
 image_route = Blueprint('image_route', __name__)
 
+@image_route.route('/test', methods=['GET'])
+def create_test():
+    pass
+
 
 @image_route.route('/tree', methods=['GET'])
 def get_structure():

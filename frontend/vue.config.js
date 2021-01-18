@@ -23,11 +23,11 @@ module.exports = {
   },
   devServer: {
     proxy: {
-      '/api': {
+      '/server': {
         target: 'http://backend:5000',
         changeOrigin: true,
         pathRewrite: {
-          '^/api': ''
+          '^/server': ''
         }
       }
     }
