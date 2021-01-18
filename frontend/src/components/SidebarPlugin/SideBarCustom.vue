@@ -1,11 +1,12 @@
 <template>
 <div class="side-bar-parent">
-  <div class="side-bar-div1">
-    <button @click="fetchStructures">{{this.result}}</button>
+  <div class="side-bar-parent-div1">
+    <button @click="fetchStructures" style="display:none">{{this.result}}</button>
+    <add-item-control></add-item-control>
     <my-comp :node="root"
              @onClick="nodeClicked"/>
   </div>
-  <div class="side-bar-div2" >
+  <div class="side-bar-parent-div2" >
     <thumbnail-card :node="selectedNodeTarget.children"/>
   </div>
 </div>
@@ -15,9 +16,10 @@
 import MyComp from '../MyComp.vue'
 import ThumbnailCard from '../ThumbnailCard.vue';
 import axios from 'axios';
+import AddItemControl from '../AddItemControl.vue';
 
 export default {
-  components: { MyComp, ThumbnailCard },
+  components: { MyComp, ThumbnailCard, AddItemControl },
 
   data() {
     return {
@@ -109,6 +111,7 @@ export default {
   }, //data() end
   methods: {
     nodeClicked(node) {
+      console.log(this.selectedNodeTarget);
       if(node.type == 'target')
         this.selectedNodeTarget = node;
       else
@@ -149,14 +152,18 @@ export default {
   grid-row-gap: 0px;
 }
 
-.side-bar-div1 { 
+.side-bar-parent-div1 { 
   grid-area: 1 / 1 / 2 / 2; 
   background-color: rgb(255, 255, 255);
   overflow-x: auto;
+  box-shadow: 1px 2px rgb(241, 241, 241);
+  z-index: 2;
 }
-.side-bar-div2 { 
+.side-bar-parent-div2 { 
   grid-area: 1 / 2 / 2 / 3; 
   background-color: rgb(255, 255, 255);
   overflow-x: auto;
+  box-shadow: 1px 2px rgb(241, 241, 241);
+  z-index: 1;
 }
-</style>
+</style>`~``
