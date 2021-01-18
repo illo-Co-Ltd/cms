@@ -3,7 +3,7 @@
   <div class="side-bar-parent-div1">
     <h5 @click="fetchStructures">{{this.result}}</h5>
     <add-item-control></add-item-control>
-    <my-comp :node="root"
+    <my-comp :node="result"
              @onClick="nodeClicked"/>
   </div>
   <div class="side-bar-parent-div2" >
@@ -24,7 +24,7 @@ export default {
 
   data() {
     return {
-      result: 'default',
+      result: {},
       selectedNodeTarget: {},
       selectedImagePath: '',
       root: {
@@ -130,7 +130,7 @@ export default {
     fetchStructures: function() {
       axios({
         methods: 'GET',
-        url: '/api/',
+        url: '/api/api/image/tree/',
       }).then((response) => {
         console.log(response);
         this.result = response.data;
