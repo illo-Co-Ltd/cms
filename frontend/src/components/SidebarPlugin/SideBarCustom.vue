@@ -1,13 +1,14 @@
 <template>
 <div class="side-bar-parent">
   <div class="side-bar-parent-div1">
-    <button @click="fetchStructures" style="display:none">{{this.result}}</button>
+    <h5 @click="fetchStructures">{{this.result}}</h5>
     <add-item-control></add-item-control>
     <my-comp :node="root"
              @onClick="nodeClicked"/>
   </div>
   <div class="side-bar-parent-div2" >
-    <thumbnail-card :node="selectedNodeTarget.children"/>
+    <thumbnail-card :node="selectedNodeTarget.children"
+                    @onClick="imageClicked"/>
   </div>
 </div>
 </template>
@@ -25,6 +26,7 @@ export default {
     return {
       result: 'default',
       selectedNodeTarget: {},
+      selectedImagePath: '',
       root: {
         type: 'root',
         name: 'root',
@@ -109,13 +111,21 @@ export default {
       },
     }
   }, //data() end
+  mounted() {
+    this.fetchStructures();
+  },
   methods: {
     nodeClicked(node) {
-      console.log(this.selectedNodeTarget);
       if(node.type == 'target')
         this.selectedNodeTarget = node;
       else
         this.selectedNodeTarget = {};
+      console.log(this.selectedNodeTarget);
+    },
+    imageClicked(img_path) {
+      this.selectedImagePath = img_path;
+      console.log(this.selectedImagePath);
+      this.$emit('onClick', this.selectedImagePath);
     },
     fetchStructures: function() {
       axios({

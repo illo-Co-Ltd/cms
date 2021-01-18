@@ -4,10 +4,10 @@
       <headder></headder>
     </div>
     <div class="div2">
-      <side-bar-custom></side-bar-custom>
+      <side-bar-custom @onClick="getImage"></side-bar-custom>
     </div>
     <div class="main-fragment">
-      <h5>hello</h5>
+      <analyzer></analyzer>
     </div>
   </div>
 </template>
@@ -15,17 +15,25 @@
 <script>
 import Headder from '../components/Headder.vue';
 import SideBarCustom from '../components/SidebarPlugin/SideBarCustom.vue';
+import Analyzer from '../views/Analyzer.vue';
 
 export default {
   name: "app",
   data() {
     return {
-
+      imagePath: '',
     }
   },
   components: {
     Headder,
     SideBarCustom,
+    Analyzer,
+  },
+  methods: {
+    getImage(path) {
+      this.imagePath=path;
+      console.log(this.imagePath);
+    }
   },
 };
 </script>
