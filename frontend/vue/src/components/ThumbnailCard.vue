@@ -3,7 +3,7 @@
 <div class="card-item" v-for="item in node" :key="item.name"
      style="cursor: pointer;"
      @click="itemClicked(item.path)">
-  <img src="https://3.bp.blogspot.com/-AVD-cnoXX5g/WZylqmZin3I/AAAAAAAAE90/Xr1aKHjuQoUFJarFCwsAei8DonImF0TjQCLcBGAs/s1600/Monocot-microscope.jpg"
+  <img :src="'@/assets/data/' + item.path"
        class="card-img-top"
        alt="Card image cap"/>
   <h5 class="card-title">{{item.path}}</h5>

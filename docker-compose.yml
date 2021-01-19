@@ -9,7 +9,7 @@ services:
   vue:
     container_name: cms-vue
     build:
-      context: vue
+      context: frontend/vue
       dockerfile: vue.dev.Dockerfile
     image: cms-img-vue
     environment:
@@ -19,8 +19,8 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./vue:/app:delegated
-      - ./data:/app/src/assets/data:z
+      - ./frontend/vue:/app:delegated
+      - ./data:/app/src/assets/data
 
   flask:
     container_name: cms-flask
@@ -91,3 +91,4 @@ services:
     volumes:
       - ./worker:/worker
       - ./data:/data:z
+

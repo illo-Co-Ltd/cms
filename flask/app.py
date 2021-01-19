@@ -8,7 +8,6 @@ from flask_jwt_extended import JWTManager
 from route.auth import auth_route
 from route.check import check_route
 from route.crud import crud_route
-from route.image import image_route
 from route.camera import camera_route
 
 from util.logger import logger
