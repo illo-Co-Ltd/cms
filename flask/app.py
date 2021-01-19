@@ -7,7 +7,7 @@ from flask_jwt_extended import JWTManager
 
 from route.auth import auth_route
 from route.check import check_route
-from route.device import device_route
+from route.crud import crud_route
 from route.image import image_route
 from route.camera import camera_route
 
@@ -41,9 +41,8 @@ def create_app():
     jwt = JWTManager(app)
 
     app.register_blueprint(check_route, url_prefix='/')
-    app.register_blueprint(auth_route, url_prefix='/api/auth')
-    app.register_blueprint(device_route, url_prefix='/api/device')
-    app.register_blueprint(image_route, url_prefix='/api/image')
+    app.register_blueprint(auth_route, url_prefix='/auth')
+    app.register_blueprint(crud_route, url_prefix='/api')
     app.register_blueprint(camera_route, url_prefix='/api/camera')
 
     return app

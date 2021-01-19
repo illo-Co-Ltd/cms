@@ -1,8 +1,0 @@
-.dockerignore
-./log
-./tmp
-.git
-.gitignore
-*Dockerfile*
-*docker-compose*
-node_modules
