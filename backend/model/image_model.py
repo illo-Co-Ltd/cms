@@ -28,7 +28,6 @@ class Image(db.Model):
     def to_dict(self):
         return dict(
             id=self.id,
-            project=self.project,
             target=self.target,
             path=self.path,
             device=self.device,

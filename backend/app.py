@@ -1,16 +1,15 @@
 import os
-from dotenv import load_dotenv
 
-from flask import Flask, jsonify, request, session, Response
+from flask import Flask
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
 
-from router.api.auth import auth_route
-from router.api.check import check_route
-from router.api.device import device_route
-from router.api.image import image_route
-from router.api.camera import camera_route
+from route.auth import auth_route
+from route.check import check_route
+from route.device import device_route
+from route.image import image_route
+from route.camera import camera_route
 
 from util.logger import logger
 
@@ -31,7 +30,7 @@ def create_app():
 
     # initialize db
     with app.app_context():
-        from model import db_base, company_model, user_model, project_model, target_model, device_model, image_model
+        from model import db_base
         db_base.db.init_app(app)
         db_base.db.create_all()
 

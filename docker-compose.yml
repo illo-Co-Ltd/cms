@@ -89,4 +89,5 @@ services:
     depends_on:
       - redis
     volumes:
+      - ./worker:/worker
       - ./data:/data:z

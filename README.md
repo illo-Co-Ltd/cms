@@ -9,7 +9,7 @@
 ├── backend/
 │   ├── model/
 │   ├── provider/
-│   ├── router/
+│   ├── route/
 │   ├── util/
 │   ├── app.py
 │   ├── back.dev.Dockerfile
@@ -37,7 +37,7 @@
 │   │   ├── App.vue
 │   │   ├── main.js
 │   │   ├── registerServiceWorker.js
-│   │   └── router.js
+│   │   └── route.js
 │   ├── vue.config.js
 │   └── yarn.lock
 ├── requirements.txt

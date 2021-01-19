@@ -1,6 +1,6 @@
 import os
 import time
-import datetime
+import datetime, pytz
 from celery import Celery
 import cv2
 
@@ -23,11 +23,11 @@ def add(x: int, y: int, wait: int) -> int:
 
 
 @celery.task(name='cam_task.capture')
-def capture():
+def capture(header: str):
     try:
         cam = camera.VideoCamera()
         frame = cam.get_frame()
-        path = f'/data/img_{datetime.datetime.now()}.jpg'
+        path = f'/data/{header}_{datetime.datetime.now(pytz.timezone("Asia/Seoul")).strftime("%Y%m%d-%H%M%S")}.jpg'
         res = cv2.imwrite(path, frame)
         if res:
             return path
