@@ -6,24 +6,24 @@
 .
 ├── README.md
 ├── docker-compose.yml
-├── backend/
+├── flask/
 │   ├── model/
 │   ├── provider/
 │   ├── route/
 │   ├── util/
 │   ├── app.py
-│   ├── back.dev.Dockerfile
+│   ├── flask.dev.Dockerfile
 │   ├── requirements.txt
-│   ├── .env*
+│   ├── .env.dev*
 │   └── .gitignore
 │
-├── frontend/
+├── vue/
 │   ├── CHANGELOG.md
 │   ├── ISSUES_TEMPLATE.md
 │   ├── LICENSE.md
 │   ├── README.md
 │   ├── babel.config.js
-│   ├── front.dev.Dockerfile
+│   ├── vue.dev.Dockerfile
 │   ├── node_modules/*
 │   ├── package.json
 │   ├── public/
@@ -60,12 +60,12 @@
     ```bash
     # yarn 미설치시
     $ npm install yarn
-    # frontend 폴더에서
+    # vue 폴더에서
     $ yarn install && yarn run serve
     ```
 
     ```bash
-    # backend 폴더에서
+    # flask 폴더에서
     $ python3 -m pip virtualenv 
     $ virtualenv venv && source venv/bin/activate
     (venv) $ pip install -r requirements.txt

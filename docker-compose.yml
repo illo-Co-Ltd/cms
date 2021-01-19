@@ -6,12 +6,12 @@ volumes:
   data-volume: {}
 
 services:
-  frontend:
-    container_name: cms-front
+  vue:
+    container_name: cms-vue
     build:
-      context: frontend
-      dockerfile: front.dev.Dockerfile
-    image: cms-img-front
+      context: vue
+      dockerfile: vue.dev.Dockerfile
+    image: cms-img-vue
     environment:
       - CHOKIDAR_USEPOLLING=true
     expose:
@@ -19,24 +19,24 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./frontend:/app:delegated
+      - ./vue:/app:delegated
       - ./data:/app/src/assets/data:z
 
-  backend:
-    container_name: cms-back
+  flask:
+    container_name: cms-flask
     env_file:
-      - backend/.env
+      - flask/.env.dev
       - worker/.env
     build:
-      context: backend
-      dockerfile: back.dev.Dockerfile
-    image: cms-img-back
+      context: flask
+      dockerfile: flask.dev.Dockerfile
+    image: cms-img-flask
     expose:
       - 5000
     ports:
       - 5000:5000
     volumes:
-      - ./backend:/app:delegated
+      - ./flask:/app:delegated
       - ./data:/data:z
     depends_on:
       - db
