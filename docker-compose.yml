@@ -6,12 +6,12 @@ volumes:
   data-volume: {}
 
 services:
-  vue:
-    container_name: cms-vue
+  front:
+    container_name: cms-front
     build:
-      context: frontend/vue
-      dockerfile: vue.dev.Dockerfile
-    image: cms-img-vue
+      context: frontend
+      dockerfile: front.dev.Dockerfile
+    image: cms-img-front
     environment:
       - CHOKIDAR_USEPOLLING=true
     expose:

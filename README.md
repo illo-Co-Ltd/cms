@@ -23,7 +23,7 @@
 │   ├── LICENSE.md
 │   ├── README.md
 │   ├── babel.config.js
-│   ├── vue.dev.Dockerfile
+│   ├── front.dev.Dockerfile
 │   ├── node_modules/*
 │   ├── package.json
 │   ├── public/
