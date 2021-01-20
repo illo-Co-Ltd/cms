@@ -27,6 +27,7 @@ def capture(header: str):
     task = celery_app.send_task('cam_task.capture', args=[header])
     return task.id
 
+
 def periodic_capture():
     task = celery_app.send_task('cam_task.periodic_capture')
     return task.id

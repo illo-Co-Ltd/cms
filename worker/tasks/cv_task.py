@@ -1,20 +1,16 @@
-import os
+import os, sys, inspect
+
+cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parent = os.path.dirname(cwd)
+sys.path.insert(0, parent)
+
+from app import celery
 import traceback
 import time
 import datetime, pytz
-from celery import Celery
 import cv2
 
 from cv import camera
-
-BROKER = os.environ.get('BROKER')
-CELERY_BACKEND = os.environ.get('CELERY_BACKEND')
-
-celery = Celery(
-    'cv_worker',
-    broker=BROKER,
-    backend=CELERY_BACKEND
-)
 
 
 @celery.task(name='cam_task.add')
@@ -41,5 +37,5 @@ def capture(header: str) -> str:
 
 
 @celery.task(name='cam_task.periodic_capture')
-def periodic_capture():
+def periodic_capture(td: datetime.timedelta):
     pass
