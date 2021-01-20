@@ -1,4 +1,5 @@
 import os
+import traceback
 import time
 import datetime, pytz
 from celery import Celery
@@ -23,7 +24,7 @@ def add(x: int, y: int, wait: int) -> int:
 
 
 @celery.task(name='cam_task.capture')
-def capture(header: str):
+def capture(header: str) -> str:
     try:
         cam = camera.VideoCamera()
         frame = cam.get_frame()
@@ -33,8 +34,9 @@ def capture(header: str):
             return path
         else:
             return 'Failed'
-
-    except Exception as e:
+    except:
+        traceback.print_stack()
+        traceback.print_exc()
         return 'Failed'
 
 

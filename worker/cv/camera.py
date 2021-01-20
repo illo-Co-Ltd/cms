@@ -28,6 +28,7 @@ class VideoCamera:
                            interpolation=cv2.INTER_AREA)
         return frame
 
+
 class TestCamera:
     def __init__(self):
         self.video = cv2.VideoCapture()

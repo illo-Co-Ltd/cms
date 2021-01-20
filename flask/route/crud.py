@@ -1,3 +1,4 @@
+import os
 from flask import Blueprint, request, jsonify, current_app
 
 from model.db_base import db
@@ -273,18 +274,7 @@ def create_test():
     image = db.session.query(Image).first()
     mapper = {
         'target': [targets[0].id] * 3 + [targets[1].id] * 2 + [targets[2].id] * 4 + [targets[3].id],
-        'path': [
-            'test_20210119-173800.jpg',
-            'test_20210119-173801.jpg',
-            'test_20210119-173802.jpg',
-            'test_20210119-173803.jpg',
-            'test_20210119-173813.jpg',
-            'test_20210119-173816.jpg',
-            'test_20210119-173817.jpg',
-            'test_20210119-173818.jpg',
-            'test_20210119-173819.jpg',
-            'test_20210119-173820.jpg',
-        ],
+        'path': list(filter(lambda x: x.endswith('.jpg'), os.listdir('/data'))),
         'device': [device.id] * 10,
         'created': [datetime.now()] * 10,
         'created_by': [user.id] * 10,
@@ -296,6 +286,8 @@ def create_test():
         'pos_y': [1] * 10,
         'pos_z': [1] * 10,
     }
+    logger.info(len(mapper['path']))
+    logger.info(mapper['path'])
     if not image:
         db.session.add_all(
             [Image(**{k: l[i] for k, l in mapper.items()}) for i in range(10)]

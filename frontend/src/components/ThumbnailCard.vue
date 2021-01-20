@@ -3,7 +3,7 @@
 <div class="card-item" v-for="item in node" :key="item.name"
      style="cursor: pointer;"
      @click="itemClicked(item.path)">
-  <img :src="'@/assets/data/' + item.path"
+  <img :src="require(`../assets/data/${item.path}`)"
        class="card-img-top"
        alt="Card image cap"/>
   <h5 class="card-title">{{item.path}}</h5>
