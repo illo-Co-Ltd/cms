@@ -7,7 +7,7 @@
       <side-bar-custom @onClick="getImage"></side-bar-custom>
     </div>
     <div class="main-fragment">
-      <analyzer></analyzer>
+      <analyzer :mainImage="this.imagePath"></analyzer>
     </div>
   </div>
 </template>
