@@ -19,16 +19,16 @@ crud_route = Blueprint('crud_route', __name__)
 
 
 @crud_route.route('/company', methods=["GET"])
-@token_required
-def list_company(current_user):
+#@token_required
+def list_company():
     logger.info("Get company list")
     company_list = Company.query.all()
     return jsonify([x.to_dict() for x in company_list])
 
 
 @crud_route.route('/company', methods=["POST"])
-@token_required
-def register_company(current_user):
+#@token_required
+def register_company():
     logger.info("Register new company")
     try:
         data = request.get_json()
@@ -51,16 +51,16 @@ def register_company(current_user):
 
 
 @crud_route.route('/device', methods=["GET"])
-@token_required
-def list_device(current_user):
+#@token_required
+def list_device():
     logger.info("Get device list")
     device_list = Device.query.all()
     return jsonify([x.to_dict() for x in device_list])
 
 
 @crud_route.route('/device', methods=["POST"])
-@token_required
-def register_device(current_user):
+#@token_required
+def register_device():
     logger.info("Register new device")
     try:
         data = request.get_json()
@@ -89,16 +89,16 @@ def register_device(current_user):
 
 
 @crud_route.route('/project', methods=["GET"])
-@token_required
-def list_project(current_user):
+#@token_required
+def list_project():
     logger.info("Get project list")
     project_list = Project.query.all()
     return jsonify([x.to_dict() for x in project_list])
 
 
 @crud_route.route('/project', methods=["POST"])
-@token_required
-def register_project(current_user):
+#@token_required
+def register_project():
     logger.info("Register new project")
     try:
         data = request.get_json()
@@ -116,16 +116,16 @@ def register_project(current_user):
 
 
 @crud_route.route('/target', methods=["GET"])
-@token_required
-def list_target(current_user):
+#@token_required
+def list_target():
     logger.info("Get target list")
     target_list = Target.query.all()
     return jsonify([x.to_dict() for x in target_list])
 
 
 @crud_route.route('/target', methods=["POST"])
-@token_required
-def register_target(current_user):
+#@token_required
+def register_target():
     logger.info("Register new target")
     try:
         data = request.get_json()
@@ -145,8 +145,8 @@ def register_target(current_user):
 
 
 @crud_route.route('/image', methods=['GET'])
-@token_required
-def list_image(current_user):
+#@token_required
+def list_image():
     logger.info('Get image list')
     image_list = Image.query.all()
     return jsonify([x.to_dict() for x in image_list])
@@ -155,6 +155,13 @@ def list_image(current_user):
 @crud_route.route('/image/tree', methods=['GET'])
 def get_structure():
     logger.info('Get hierachical structure of image.')
+    if not db.session.query(Project).first():
+        ret = {
+            'type': 'company',
+            'name': 'illo',
+            'children': []
+        }
+        return jsonify(ret)
     with db.engine.connect() as conn:
         res = conn.execute(
             """select json_object(
