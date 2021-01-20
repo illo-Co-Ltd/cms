@@ -20,6 +20,7 @@ class Target(db.Model):
     def to_dict(self):
         return dict(
             id=self.id,
+            project=self.project,
             type=self.type,
             detail=self.detail,
             name=self.name,

@@ -23,11 +23,11 @@ module.exports = {
   },
   devServer: {
     proxy: {
-      '/api': {
-        target: 'http://backend:5000',
+      '/server': {
+        target: 'http://flask:5000',
         changeOrigin: true,
         pathRewrite: {
-          '^/api': ''
+          '^/server': ''
         }
       }
     }

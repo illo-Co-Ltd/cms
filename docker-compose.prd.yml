@@ -19,7 +19,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./frontend:/app:delegated
+      - ./frontend/vue:/app:delegated
       - ./data:/app/src/assets/data
 
   flask:

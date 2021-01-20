@@ -130,7 +130,7 @@ export default {
     fetchStructures: function() {
       axios({
         methods: 'GET',
-        url: '/api/api/image/tree/',
+        url: '/server/api/image/tree',
       }).then((response) => {
         console.log(response);
         this.result = response.data;

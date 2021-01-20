@@ -1,6 +1,6 @@
 FROM python:3
 
-WORKDIR /app
+WORKDIR /worker
 ENV PYTHONUNBEFFERED=0
 
 ADD . .
