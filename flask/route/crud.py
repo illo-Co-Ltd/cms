@@ -19,7 +19,7 @@ crud_route = Blueprint('crud_route', __name__)
 
 
 @crud_route.route('/company', methods=["GET"])
-#@token_required
+# @token_required
 def list_company():
     logger.info("Get company list")
     company_list = Company.query.all()
@@ -27,7 +27,7 @@ def list_company():
 
 
 @crud_route.route('/company', methods=["POST"])
-#@token_required
+# @token_required
 def register_company():
     logger.info("Register new company")
     try:
@@ -51,7 +51,7 @@ def register_company():
 
 
 @crud_route.route('/device', methods=["GET"])
-#@token_required
+# @token_required
 def list_device():
     logger.info("Get device list")
     device_list = Device.query.all()
@@ -59,7 +59,7 @@ def list_device():
 
 
 @crud_route.route('/device', methods=["POST"])
-#@token_required
+# @token_required
 def register_device():
     logger.info("Register new device")
     try:
@@ -67,6 +67,7 @@ def register_device():
         model = data.get("model")
         serial = data.get("serial")
         owner = data.get("owner")
+        # owner = db.session.query(User).filter_by(name=data.get("owner")).one()
         created_by = data.get("created_by")
         edited_by = data.get("edited_by")
 
@@ -89,7 +90,7 @@ def register_device():
 
 
 @crud_route.route('/project', methods=["GET"])
-#@token_required
+# @token_required
 def list_project():
     logger.info("Get project list")
     project_list = Project.query.all()
@@ -97,7 +98,7 @@ def list_project():
 
 
 @crud_route.route('/project', methods=["POST"])
-#@token_required
+# @token_required
 def register_project():
     logger.info("Register new project")
     try:
@@ -116,7 +117,7 @@ def register_project():
 
 
 @crud_route.route('/target', methods=["GET"])
-#@token_required
+# @token_required
 def list_target():
     logger.info("Get target list")
     target_list = Target.query.all()
@@ -124,13 +125,13 @@ def list_target():
 
 
 @crud_route.route('/target', methods=["POST"])
-#@token_required
+# @token_required
 def register_target():
     logger.info("Register new target")
     try:
         data = request.get_json()
         target = Target(
-            project=data.get('project'),
+            project=db.session.query(Project).filter_by(name=data.get("project")).one(),
             type=data.get('type'),
             detail=data.get('detail'),
             name=data.get('name'),
@@ -145,7 +146,7 @@ def register_target():
 
 
 @crud_route.route('/image', methods=['GET'])
-#@token_required
+# @token_required
 def list_image():
     logger.info('Get image list')
     image_list = Image.query.all()
