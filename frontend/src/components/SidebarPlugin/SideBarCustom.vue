@@ -1,8 +1,7 @@
 <template>
 <div class="side-bar-parent">
   <div class="side-bar-parent-div1">
-    <h5 @click="fetchStructures">{{this.result}}</h5>
-    <add-item-control></add-item-control>
+    <add-item-control :node="this.selectedNodeProject.name"></add-item-control>
     <my-comp :node="result"
              @onClick="nodeClicked"/>
   </div>
@@ -21,106 +20,26 @@ import AddItemControl from '../AddItemControl.vue';
 
 export default {
   components: { MyComp, ThumbnailCard, AddItemControl },
-
   data() {
     return {
       result: {},
       selectedNodeTarget: {},
       selectedImagePath: '',
-      root: {
-        type: 'root',
-        name: 'root',
-        children: [
-          {
-            type: 'project',
-            name: 'animal',
-            children: [
-              {
-                type: 'target',
-                name: 'lion',
-                children: [
-                  {
-                    type: 'image',
-                    name: require("@/devices/img4.jpg"),
-                  },
-                  {
-                    type: 'image',
-                    name: require("@/devices/img5.jpg"),
-                  },
-                ]
-              },
-              {
-                type: 'target',
-                name: 'dog',
-                children: [
-                  {
-                    type: 'image',
-                    name: require("@/devices/img1.jpg"),
-                  },
-                  {
-                    type: 'image',
-                    name: require("@/devices/img2.jpg"),
-                  },
-                ]
-              },
-              {
-                type: 'target',
-                name: 'cat',
-                children: [
-                  {
-                    type: 'image',
-                    name: require("@/devices/img3.jpg"),
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            type: 'project',
-            name: 'people',
-            children: [
-              {
-                type: 'target',
-                name: 'people',
-                children: [
-                  {
-                    type: 'image',
-                    name: require("@/devices/img6.jpg"),
-                  },
-                  {
-                    type: 'image',
-                    name: require("@/devices/img7.jpg"),
-                  },
-                  {
-                    type: 'image',
-                    name: require("@/devices/img8.jpg"),
-                  },
-                  {
-                    type: 'image',
-                    name: require("@/devices/img9.jpg"),
-                  },
-                  {
-                    type: 'image',
-                    name: require("@/devices/img10.jpg"),
-                  },
-                ]
-              }
-            ]
-          }
-        ]
-      },
+      selectedNodeProject: {},
     }
-  }, //data() end
+  },  
   mounted() {
     this.fetchStructures();
   },
   methods: {
     nodeClicked(node) {
-      if(node.type == 'target')
+      if(node.type == 'project')
+        this.selectedNodeProject = node;
+      else if(node.type == 'target')
         this.selectedNodeTarget = node;
       else
         this.selectedNodeTarget = {};
-      console.log(this.selectedNodeTarget);
+      console.log(node);
     },
     imageClicked(img_path) {
       this.selectedImagePath = img_path;
