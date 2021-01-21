@@ -9,7 +9,7 @@
           </template>
           <template>
             <img class="img-fluid"
-                :src="require(`../assets${mainImage}`)" />
+                :src="require(`../assets/data/${mainImage}`)" />
           </template>
         </card>
       </div>
@@ -74,45 +74,6 @@
     </div>
   </div>
 
-<<<<<<< HEAD
-  <modal :show.sync="modals.capture"
-         size="sm">
-    <card type="secondary"
-          header-classes="bg-transparent pb-5"
-          body-classes="px-lg-5 py-lg-5"
-          class="border-0 mb-0">
-      <template>
-        <div>
-          <div class="text-muted text-left mt-2 mb-3">
-            <h3>Capture Image</h3>
-          </div>
-          <div role="form">
-            <div class="text-center text-muted mb-4">
-              <small>Setting properties of Image</small>
-            </div>
-            <base-input v-model="captureModal.project"
-                        class="mb-3"
-                        placeholder="Project Name">
-            </base-input>
-            <base-input v-model="captureModal.target"
-                        placeholder="Target Name">
-            </base-input>
-            <base-input v-model="captureModal.device"
-                        placeholder="Device">
-            </base-input>
-            <base-input v-model="captureModal.label"
-                        placeholder="Description">
-            </base-input>
-            <base-button type="primary" @click="imageCapture">Create</base-button>
-            <base-button type="link" @click="modals.capture=false">close</base-button>
-          </div>
-        </div>
-      </template>
-    </card>
-  </modal>
-
-=======
->>>>>>> dcd97c19c7fcf18e23ab6b0200281ac49c35bec8
 </div>
 </template>
 <script>
@@ -165,16 +126,6 @@ export default {
       };
       this.bigLineChart.chartData = chartData;
       this.bigLineChart.activeIndex = index;
-    },
-    imageCapture() {
-      axios.post('server/api/camera/capture', this.captureModal)
-      .then((response) => {
-        this.$parent.updateImage();
-        console.log(response);
-      }).catch((e) => {
-        console.log("err:",e)
-      })
-      this.modals.capture = false;
     },
   },
   mounted() {
