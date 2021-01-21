@@ -43,7 +43,6 @@ export default {
     },
     imageClicked(img_path) {
       this.selectedImagePath = img_path;
-      console.log(this.selectedImagePath);
       this.$emit('onClick', this.selectedImagePath);
     },
     fetchStructures: function() {

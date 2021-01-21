@@ -4,7 +4,8 @@
       <headder></headder>
     </div>
     <div class="div2">
-      <side-bar-custom @onClick="getImage"></side-bar-custom>
+      <side-bar-custom @onClick="getImage"
+                       ref="customside"></side-bar-custom>
     </div>
     <div class="main-fragment">
       <analyzer :mainImage="this.imagePath"></analyzer>
@@ -32,7 +33,9 @@ export default {
   methods: {
     getImage(path) {
       this.imagePath=path;
-      console.log(this.imagePath);
+    },
+    updateImage() {
+      this.$ref.customside.fetchStructures();
     }
   },
 };
