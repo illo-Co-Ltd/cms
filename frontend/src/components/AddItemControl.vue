@@ -6,6 +6,9 @@
   <div class="aic-div2">
     <base-button block type="primary" @click="modals.newTarget=true">New Target</base-button>
   </div>
+  <div class="aic-div3">
+    <base-button block type="success" @click="modals.capture=true">Capture Image</base-button>
+  </div>
 
   <modal :show.sync="modals.newProject"
          size="sm">
@@ -75,6 +78,43 @@
       </template>
     </card>
   </modal>
+
+  <modal :show.sync="modals.capture"
+         size="sm">
+    <card type="secondary"
+          header-classes="bg-transparent pb-5"
+          body-classes="px-lg-5 py-lg-5"
+          class="border-0 mb-0">
+      <template>
+        <div>
+          <div class="text-muted text-left mt-2 mb-3">
+            <h3>Capture Image</h3>
+          </div>
+          <div role="form">
+            <div class="text-center text-muted mb-4">
+              <small>Setting properties of Image</small>
+            </div>
+            <base-input v-model="captureModal.project"
+                        class="mb-3"
+                        placeholder="Project Name">
+            </base-input>
+            <base-input v-model="captureModal.target"
+                        placeholder="Target Name">
+            </base-input>
+            <base-input v-model="captureModal.device"
+                        placeholder="Device">
+            </base-input>
+            <base-input v-model="captureModal.label"
+                        placeholder="Description">
+            </base-input>
+            <base-button type="primary" @click="imageCapture">Create</base-button>
+            <base-button type="link" @click="modals.capture=false">close</base-button>
+          </div>
+        </div>
+      </template>
+    </card>
+  </modal>
+
 </div>
 </template>
 <script>
@@ -89,6 +129,7 @@ export default {
       modals: {
         newProject: false,
         newTarget: false,
+        capture: false,
       },
       projectModal: {
         name: '',
@@ -101,6 +142,12 @@ export default {
         type: '',
         detail: '',
         description: '',
+      },
+      captureModal: {
+        project: '',
+        target: '',
+        device: '',
+        label: '',
       },
     }
   },
@@ -128,7 +175,17 @@ export default {
         console.log("err:",e)
       })
       this.modals.newTarget = false;
-    }
+    },
+    imageCapture() {
+      axios.post('server/api/camera/capture', this.captureModal)
+      .then((response) => {
+        this.$parent.fetchStructures();
+        console.log(response);
+      }).catch((e) => {
+        console.log("err:",e)
+      })
+      this.modals.capture = false;
+    },
   }
 }
 </script>
@@ -136,7 +193,7 @@ export default {
 .aic-parent {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   grid-column-gap: 0px;
   grid-row-gap: 0px;
   text-align: center;
@@ -151,5 +208,9 @@ export default {
   grid-area: 1 / 1 / 2 / 2;
   margin-bottom: 10px;
 }
-.aic-div2 { grid-area: 2 / 1 / 3 / 2; }
+.aic-div2 { 
+  grid-area: 2 / 1 / 3 / 2; 
+  margin-bottom: 10px;
+}
+.div3 { grid-area: 3 / 1 / 4 / 2; }
 </style>
