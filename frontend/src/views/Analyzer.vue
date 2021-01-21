@@ -16,9 +16,7 @@
 
       <div class="d-flex justify-content-end mb-3">
         <span>
-        <base-button type="secondary" class="p-3"
-                     @click="modals.capture=true">Capture</base-button>
-        <base-button type="secondary" class="p-3">Timelapse</base-button>
+          <base-button type="secondary" class="p-3">Timelapse</base-button>
         </span>
       </div>
     </div>
@@ -82,47 +80,9 @@
     </div>
   </div>
 
-  <modal :show.sync="modals.capture"
-         size="sm">
-    <card type="secondary"
-          header-classes="bg-transparent pb-5"
-          body-classes="px-lg-5 py-lg-5"
-          class="border-0 mb-0">
-      <template>
-        <div>
-          <div class="text-muted text-left mt-2 mb-3">
-            <h3>Capture Image</h3>
-          </div>
-          <div role="form">
-            <div class="text-center text-muted mb-4">
-              <small>Setting properties of Image</small>
-            </div>
-            <base-input v-model="captureModal.project"
-                        class="mb-3"
-                        placeholder="Project Name">
-            </base-input>
-            <base-input v-model="captureModal.target"
-                        placeholder="Target Name">
-            </base-input>
-            <base-input v-model="captureModal.device"
-                        placeholder="Device">
-            </base-input>
-            <base-input v-model="captureModal.label"
-                        placeholder="Description">
-            </base-input>
-            <base-button type="primary" @click="createTarget">Create</base-button>
-            <base-button type="link" @click="modals.capture=false">close</base-button>
-          </div>
-        </div>
-      </template>
-    </card>
-  </modal>
-
 </div>
 </template>
 <script>
-import axios from 'axios';
-
 // Charts
 import * as chartConfigs from '@/components/Charts/config';
 import LineChart from '@/components/Charts/LineChart';
@@ -136,14 +96,7 @@ export default {
   data() {
     return {
       modals: {
-        capture: false,
         timelapse: false,
-      },
-      captureModal: {
-        project: '',
-        target: '',
-        device: '',
-        label: '',
       },
       timelapseModal: {
         project: '',
@@ -190,16 +143,6 @@ export default {
       };
       this.bigLineChart.chartData = chartData;
       this.bigLineChart.activeIndex = index;
-    },
-    imageCapture() {
-      axios.post('server/api/capture', this.captureModal)
-      .then((response) => {
-        this.$parent.updateImage();
-        console.log(response);
-      }).catch((e) => {
-        console.log("err:",e)
-      })
-      this.modals.capture = false;
     },
   },
   mounted() {
