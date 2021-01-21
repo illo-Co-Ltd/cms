@@ -95,4 +95,4 @@ export default {
   box-shadow: 1px 2px rgb(241, 241, 241);
   z-index: 1;
 }
-</style>`~``
+</style>

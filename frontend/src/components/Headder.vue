@@ -2,10 +2,10 @@
   <div class="headder-parent">
     <div class="d-flex justify-content-end mb-3">
       <div class="p-2">
-        <base-button>Login</base-button>
+        <base-button type="link">Login</base-button>
       </div>
       <div class="p-2">
-        <base-button>Register</base-button>
+        <base-button type="link">Register</base-button>
       </div>
     </div>
   </div>
