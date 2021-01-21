@@ -2,3 +2,4 @@ celery==5.0.5
 celery-redbeat==2.0.0
 redis==3.5.3
 opencv-python==4.4.0.46
+requests==2.24.0

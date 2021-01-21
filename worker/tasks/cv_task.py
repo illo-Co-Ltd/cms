@@ -19,29 +19,41 @@ from cv import camera
 FLASK_BACKEND = os.environ.get('FLASK_BACKEND')
 
 
-class CallbackTask(Task):
-    def on_success(self, retval, task_id, args, kwargs):
-        data = json.dumps({})
-        requests.post(f'{FLASK_BACKEND}/api/image', data=data)
-
-    def on_failure(self, exc, task_id, args, kwargs, einfo):
-        pass
-
-
 @celery.task(name='cam_task.add')
 def add(x: int, y: int, wait: int) -> int:
     time.sleep(wait)
     return x + y
 
 
-@celery.task(name='cam_task.capture', base=CallbackTask)
-def capture(header: str) -> str:
+@celery.task(name='cam_task.capture')
+def capture(header: str, params: dict) -> str:
     try:
         cam = camera.VideoCamera()
         frame = cam.get_frame()
-        path = f'/data/{header}_{datetime.datetime.now(pytz.timezone("Asia/Seoul")).strftime("%Y%m%d-%H%M%S")}.jpg'
+        ctime = datetime.datetime.now(pytz.timezone("Asia/Seoul"))
+        path = f'/data/{header}_{ctime.strftime("%Y%m%d-%H%M%S-%f")}.jpg'
         res = cv2.imwrite(path, frame)
-        if res:
+        if res:  # success -> request callback route
+            headers = {'Content-Type': 'application/json; charset=utf-8'}
+            data = {
+                'target': params.get('target'),
+                'path': path,
+                'device': params.get('device'),
+                'created': ctime.timestamp(),
+                # TODO 요청한 유저로 수정
+                'created_by': 4,
+                'label': params.get('label'),
+                # TODO 현재 오프셋 받아오게 수정
+                'offset_x': 0,
+                'offset_y': 0,
+                'offset_z': 0,
+                'pos_x': 0,
+                'pos_y': 0,
+                'pos_z': 0
+            }
+            print(data)
+            print(type(data))
+            requests.post(f'{FLASK_BACKEND}/api/image', headers=headers, data=json.dumps(data))
             return path
         else:
             return 'Failed'
@@ -52,12 +64,12 @@ def capture(header: str) -> str:
 
 
 @celery.task(name='cam_task.periodic_capture')
-def periodic_capture(header: str, run_every: float) -> str:
+def periodic_capture(header: str, run_every: float, expire_at: str, params: dict) -> str:
     interval = celery.schedules.schedule(run_every=run_every)  # seconds
     entry = RedBeatSchedulerEntry(
         'periodic_capture',
         'cam_task.capture',
         interval,
-        args=[header]
+        args=[header, params]
     )
     entry.save()
