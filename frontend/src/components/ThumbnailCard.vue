@@ -43,5 +43,8 @@ export default {
   word-wrap: break-word;
   background-color: #fff;
   background-clip: border-box;
+  border-radius: .375rem;
+  box-shadow: 0 0 1rem 0 rgba(136,152,170,.15);
+  margin: 0.4rem;
 }
 </style>

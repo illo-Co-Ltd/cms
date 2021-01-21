@@ -1,10 +1,10 @@
 <template>
 <div class="aic-parent">
   <div class="aic-div1">
-    <base-button @click="modals.newProject=true">New Project</base-button>
+    <base-button block type="primary" @click="modals.newProject=true">New Project</base-button>
   </div>
   <div class="aic-div2">
-    <base-button @click="modals.newTarget=true">New Target</base-button>
+    <base-button block type="primary" @click="modals.newTarget=true">New Target</base-button>
   </div>
 
   <modal :show.sync="modals.newProject"
@@ -18,7 +18,7 @@
           <div class="text-muted text-left mt-2 mb-3">
             <h3>New Project</h3>
           </div>
-          <b-form role="form">
+          <div role="form">
             <div class="text-center text-muted mb-4">
               <small>Input project's information</small>
             </div>
@@ -34,7 +34,7 @@
             </base-input>
             <base-button type="primary" @click="createProject">Create</base-button>
             <base-button type="link" @click="modals.newProject=false">close</base-button>
-          </b-form>
+          </div>
         </div>
       </template>
     </card>
@@ -51,7 +51,7 @@
           <div class="text-muted text-left mt-2 mb-3">
             <h3>New Target</h3>
           </div>
-          <b-form role="form">
+          <div role="form">
             <div class="text-center text-muted mb-4">
               <small>Input target's information</small>
             </div>
@@ -70,7 +70,7 @@
             </base-input>
             <base-button type="primary" @click="createTarget">Create</base-button>
             <base-button type="link" @click="modals.newTarget=false">close</base-button>
-          </b-form>
+          </div>
         </div>
       </template>
     </card>
@@ -116,7 +116,7 @@ export default {
       }).catch((e) => {
         console.log("err:",e)
       })
-      this.newProject = false;
+      this.modals.newProject = false;
     },
     createTarget: function () {
       this.targetModal.project = this.node;
@@ -127,7 +127,7 @@ export default {
       }).catch((e) => {
         console.log("err:",e)
       })
-      this.newTarget = false;
+      this.modals.newTarget = false;
     }
   }
 }
@@ -140,8 +140,10 @@ export default {
   grid-column-gap: 0px;
   grid-row-gap: 0px;
   text-align: center;
-  padding-top: 15px;
-  padding-bottom: 15px;
+  padding-top: 12px;
+  padding-bottom: 10px;
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
   border-bottom: 2px solid rgb(241, 241, 241);
 }
 

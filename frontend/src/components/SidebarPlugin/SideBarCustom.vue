@@ -43,7 +43,6 @@ export default {
     },
     imageClicked(img_path) {
       this.selectedImagePath = img_path;
-      console.log(this.selectedImagePath);
       this.$emit('onClick', this.selectedImagePath);
     },
     fetchStructures: function() {
@@ -95,4 +94,4 @@ export default {
   box-shadow: 1px 2px rgb(241, 241, 241);
   z-index: 1;
 }
-</style>`~``
+</style>
