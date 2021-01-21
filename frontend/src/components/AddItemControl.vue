@@ -123,7 +123,6 @@
 <script>
 import BaseButton from './BaseButton.vue'
 import axios from 'axios';
-
 export default {
   components: { BaseButton },
   name: 'AddItemControl',
@@ -215,7 +214,6 @@ export default {
   padding-right: 0.4rem;
   border-bottom: 2px solid rgb(241, 241, 241);
 }
-
 .aic-div1 { 
   grid-area: 1 / 1 / 2 / 2;
   margin-bottom: 10px;

@@ -17,7 +17,6 @@ import MyComp from '../MyComp.vue'
 import ThumbnailCard from '../ThumbnailCard.vue';
 import axios from 'axios';
 import AddItemControl from '../AddItemControl.vue';
-
 export default {
   components: { MyComp, ThumbnailCard, AddItemControl },
   data() {
@@ -35,8 +34,10 @@ export default {
     nodeClicked(node) {
       if(node.type == 'project')
         this.selectedNodeProject = node;
-      else if(node.type == 'target')
+      else if(node.type == 'target') {
         this.selectedNodeTarget = node;
+        this.fetchStructures();
+      }
       else
         this.selectedNodeTarget = {};
       console.log(node);
@@ -79,7 +80,6 @@ export default {
   grid-column-gap: 0px;
   grid-row-gap: 0px;
 }
-
 .side-bar-parent-div1 { 
   grid-area: 1 / 1 / 2 / 2; 
   background-color: rgb(255, 255, 255);
