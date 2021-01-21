@@ -9,7 +9,7 @@
           </template>
           <template>
             <img class="img-fluid"
-                :src="require(`../assets/data/${mainImage}`)" />
+                :src="require(`../assets${mainImage}`)" />
           </template>
         </card>
       </div>
@@ -110,7 +110,7 @@
             <base-input v-model="captureModal.label"
                         placeholder="Description">
             </base-input>
-            <base-button type="primary" @click="createTarget">Create</base-button>
+            <base-button type="primary" @click="imageCapture">Create</base-button>
             <base-button type="link" @click="modals.capture=false">close</base-button>
           </div>
         </div>
@@ -192,7 +192,7 @@ export default {
       this.bigLineChart.activeIndex = index;
     },
     imageCapture() {
-      axios.post('server/api/capture', this.captureModal)
+      axios.post('server/api/camera/capture', this.captureModal)
       .then((response) => {
         this.$parent.updateImage();
         console.log(response);
