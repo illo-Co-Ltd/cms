@@ -13,12 +13,6 @@
           </template>
         </card>
       </div>
-
-      <div class="d-flex justify-content-end mb-3">
-        <span>
-          <base-button type="secondary" class="p-3">Timelapse</base-button>
-        </span>
-      </div>
     </div>
   </base-header>
   <div class="container-fluid mt--7">
@@ -134,17 +128,6 @@ export default {
   },
   data() {
     return {
-      modals: {
-        timelapse: false,
-      },
-      timelapseModal: {
-        project: '',
-        target: '',
-        device: '',
-        label: '',
-        interval: 0,
-        expire_at: '',
-      },
       bigLineChart: {
         allData: [
           [0, 20, 10, 30, 15, 40, 20, 60, 60],
