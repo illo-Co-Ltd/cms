@@ -16,9 +16,7 @@
 
       <div class="d-flex justify-content-end mb-3">
         <span>
-        <base-button type="secondary" class="p-3"
-                     @click="modals.capture=true">Capture</base-button>
-        <base-button type="secondary" class="p-3">Timelapse</base-button>
+          <base-button type="secondary" class="p-3">Timelapse</base-button>
         </span>
       </div>
     </div>
@@ -82,6 +80,7 @@
     </div>
   </div>
 
+<<<<<<< HEAD
   <modal :show.sync="modals.capture"
          size="sm">
     <card type="secondary"
@@ -118,11 +117,11 @@
     </card>
   </modal>
 
+=======
+>>>>>>> dcd97c19c7fcf18e23ab6b0200281ac49c35bec8
 </div>
 </template>
 <script>
-import axios from 'axios';
-
 // Charts
 import * as chartConfigs from '@/components/Charts/config';
 import LineChart from '@/components/Charts/LineChart';
@@ -136,14 +135,7 @@ export default {
   data() {
     return {
       modals: {
-        capture: false,
         timelapse: false,
-      },
-      captureModal: {
-        project: '',
-        target: '',
-        device: '',
-        label: '',
       },
       timelapseModal: {
         project: '',
