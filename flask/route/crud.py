@@ -131,7 +131,7 @@ def register_target():
     try:
         data = request.get_json()
         target = Target(
-            project=db.session.query(Project).filter_by(name=data.get("project")).one(),
+            project=db.session.query(Project).filter_by(name=data.get("project")).one().id,
             type=data.get('type'),
             detail=data.get('detail'),
             name=data.get('name'),
@@ -151,6 +151,32 @@ def list_image():
     logger.info('Get image list')
     image_list = Image.query.all()
     return jsonify([x.to_dict() for x in image_list])
+
+
+@crud_route.route('/image', methods=['POST'])
+def register_image():
+    logger.info("Add image record after capture success.")
+    try:
+        data = request.get_json()
+        project = db.session.query(Project).filter_by(name=data.get("project")).one().id,
+        image = Image(
+            target=data.get('target'),
+            path=data.get('path'),
+            device=data.get('device'),
+            created=data.get('created'),
+            created_by=data.get('created_by'),
+            label=data.get('label'),
+            offset_x=data.get('offset_x'),
+            offset_y=data.get('offset_y'),
+            offset_z=data.get('offset_z'),
+            pos_x=data.get('pos_x'),
+            pos_y=data.get('pos_y'),
+            pos_z=data.get('pos_z')
+        )
+        db.session.add(image)
+        db.session.commit()
+    except Exception as e:
+        logger.error(e)
 
 
 @crud_route.route('/image/tree', methods=['GET'])

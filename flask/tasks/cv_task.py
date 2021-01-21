@@ -1,5 +1,4 @@
 import os
-from flask import Flask, jsonify
 from celery import Celery
 
 BROKER = os.environ.get('BROKER')
@@ -28,6 +27,6 @@ def capture(header: str):
     return task.id
 
 
-def periodic_capture():
-    task = celery_app.send_task('cam_task.periodic_capture')
+def periodic_capture(header: str, run_every: float):
+    task = celery_app.send_task('cam_task.periodic_capture', args=[header, run_every])
     return task.id
