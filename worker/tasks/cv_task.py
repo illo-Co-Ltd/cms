@@ -31,17 +31,18 @@ def capture(header: str, params: dict) -> str:
         cam = camera.VideoCamera()
         frame = cam.get_frame()
         ctime = datetime.datetime.now(pytz.timezone("Asia/Seoul"))
-        path = f'/data/{header}_{ctime.strftime("%Y%m%d-%H%M%S-%f")}.jpg'
+        fname = f'{header}_{ctime.strftime("%Y%m%d-%H%M%S-%f")}.jpg'
+        path = f'/data/{fname}'
         res = cv2.imwrite(path, frame)
         if res:  # success -> request callback route
             headers = {'Content-Type': 'application/json; charset=utf-8'}
             data = {
                 'target': params.get('target'),
-                'path': path,
+                'path': fname,
                 'device': params.get('device'),
                 'created': ctime.timestamp(),
                 # TODO 요청한 유저로 수정
-                'created_by': 4,
+                'created_by': 1,
                 'label': params.get('label'),
                 # TODO 현재 오프셋 받아오게 수정
                 'offset_x': 0,
