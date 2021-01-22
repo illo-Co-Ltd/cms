@@ -80,7 +80,7 @@ export default {
       })
     },
     downPressed(){
-      axios.get('/api/camera/pos_offset?x=-100&y=0&z=0')
+      axios.get('server/api/camera/pos_offset?x=-100&y=0&z=0')
       .then((response) => {
         console.log(response);
       }).catch((e) => {
@@ -88,7 +88,7 @@ export default {
       })
     },
     leftPressed(){
-      axios.get('/api/camera/pos_offset?x=0&y=-100&z=0')
+      axios.get('server/api/camera/pos_offset?x=0&y=-100&z=0')
       .then((response) => {
         console.log(response);
       }).catch((e) => {
@@ -96,7 +96,7 @@ export default {
       })
     },
     rightPressed(){
-      axios.get('/api/camera/pos_offset?x=0&y=100&z=0')
+      axios.get('server/api/camera/pos_offset?x=0&y=100&z=0')
       .then((response) => {
         console.log(response);
       }).catch((e) => {
