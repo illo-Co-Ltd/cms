@@ -72,7 +72,7 @@ export default {
   },
   methods: {
     upPressed(){
-      axios.get('/api/camera/pos_offset?x=0&y=100&z=0')
+      axios.get('server/api/camera/pos_offset?x=0&y=100&z=0')
       .then((response) => {
         console.log(response);
       }).catch((e) => {
