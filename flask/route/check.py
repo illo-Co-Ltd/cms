@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, current_app
 
 from util.logger import logger
 
@@ -10,3 +10,9 @@ check_route = Blueprint('check_route', __name__)
 def health_check():
     logger.info("This is root url.")
     return jsonify('This is Docker Test developments Server')
+
+
+@check_route.route('/config', methods=['GET'])
+def config_check():
+    logger.info("This is root url.")
+    return jsonify(str(dict(current_app.config)))

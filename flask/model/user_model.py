@@ -1,15 +1,21 @@
 from flask_bcrypt import generate_password_hash, check_password_hash
-from .db_base import db
+from .db_base import db, env
 
 
 class User(db.Model):
     __tablename__ = 'user'
 
     id = db.Column(db.Integer, primary_key=True)
-    userid = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-    password = db.Column(db.String(60, 'utf8mb4_unicode_ci'), nullable=False)
-    username = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
-    company = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), nullable=False, index=True)
+    if env == 'development':
+        userid = db.Column(db.String(16, 'utf8mb4_unicode_ci'), unique=True)
+        password = db.Column(db.String(60, 'utf8mb4_unicode_ci'))
+        username = db.Column(db.String(16, 'utf8mb4_unicode_ci'))
+        company = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), index=True)
+    else:
+        userid = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+        password = db.Column(db.String(60, 'utf8mb4_unicode_ci'), nullable=False)
+        username = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
+        company = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), nullable=False, index=True)
     created = db.Column(db.DateTime)
     created_by = db.Column(db.Integer)
     last_edited = db.Column(db.DateTime)
