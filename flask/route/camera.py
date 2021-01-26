@@ -100,13 +100,42 @@ def get_position_range():
 # /pos?x=n&y=n&z=n
 @camera_route.route('/pos', methods=['GET'])
 def update_position():
-    logger.info('Update camera position')
+    logger.info('Update absolute camera position')
     x = request.args.get('x')
     y = request.args.get('y')
     z = request.args.get('z')
 
-    logger.info(f'newpos: {"x":x,"y":y, "z":z}')
-    resp = requests.get(f'http://{DEVICE_IP}/isp/appispmu.cgi?btOK=submit&i_mt_dirx={x}&i_mt_diry={y}&i_mt_dirz={z}')
+    logger.info('newpos: ', {"x": x, "y": y, "z": z})
+    headers = {'Authorization': f'Digest username="admin", realm="IP Camera HTTP server", nonce="003520RqNuT25eRkajM09uTl9nM09uTl9nMz5OX25PZz==", uri="/isp/appispmu.cgi?btOK=submit&i_mt_dirx=4000&i_mt_diry=2000&i_mt_dirz=0", algorithm=MD5, response="b98c1edba237db83ee73da4f87c0dc07", opaque="5ccc069c403ebaf9f0171e9517f40e41", qop=auth, nc=0000704a, cnonce="f75166951fcf2767"'}
+    resp = requests.get(
+        f'http://{DEVICE_IP}/isp/appispmu.cgi?btOK=submit&i_mt_dirx={x}&i_mt_diry={y}&i_mt_dirz={z}',
+        headers=headers
+    )
+    if resp.status_code == 200:
+        return jsonify({
+            'message': 'Successfully updated camera position.',
+            'result': {"x": x, "y": y, "z": z}
+        }), 200
+    else:
+        return jsonify({
+            'message': 'Cannot connect to device'
+        }), 404
+
+
+# /pos_offset?x=n&y=n&z=n
+@camera_route.route('/pos_offset', methods=['GET'])
+def offset_position():
+    logger.info('Update relative camera position')
+    x = request.args.get('x')
+    y = request.args.get('y')
+    z = request.args.get('z')
+
+    logger.info('offset: '+str({"x": x, "y": y, "z": z}))
+    headers = {'Authorization': 'Digest username="admin", realm="IP Camera HTTP server", nonce="003520RqNuT25eRkajM09uTl9nM09uTl9nMz5OX25PZz==", uri="/isp/appispmu.cgi?btOK=submit&i_mt_incx=1&i_mt_incy=0&i_mt_incz=0", algorithm=MD5, response="2980c258d7f9491bdf2a7f4ef9e05723", opaque="5ccc069c403ebaf9f0171e9517f40e41", qop=auth, nc=0000363a, cnonce="58945be698ac39f4"'}
+    resp = requests.get(
+        f'http://{DEVICE_IP}/isp/appispmu.cgi?btOK=submit&i_mt_incx={x}&i_mt_incy={y}&i_mt_incz={z}',
+        headers=headers
+    )
     if resp.status_code == 200:
         return jsonify({
             'message': 'Successfully updated camera position.',
