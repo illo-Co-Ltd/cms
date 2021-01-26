@@ -42,7 +42,7 @@ def capture(header: str, params: dict) -> str:
                 'device': params.get('device'),
                 'created': ctime.timestamp(),
                 # TODO 요청한 유저로 수정
-                'created_by': 1,
+                'created_by': None,
                 'label': params.get('label'),
                 # TODO 현재 오프셋 받아오게 수정
                 'offset_x': 0,
