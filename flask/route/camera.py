@@ -109,12 +109,9 @@ def update_position():
     z = request.args.get('z')
 
     logger.info('newpos: ', {"x": x, "y": y, "z": z})
-    headers = {
-        'Authorization': 'Digest username="admin", realm="IP Camera HTTP server", nonce="003E6CRqNuT25eRkajM09uTl9nM09uTl9nMz5OX25PZz==", uri="/isp/appispmu.cgi?btOK=submit&i_mt_dirx=3000&i_mt_diry=2206&i_mt_dirz=0", algorithm=MD5, response="c9a1e41244449a3f2477f4cca03c97b0", opaque="5ccc069c403ebaf9f0171e9517f40e41", qop=auth, nc=00000026, cnonce="e05ebfb1f30eace8"'
-    }
     resp = requests.get(
         f'http://{DEVICE_IP}/isp/appispmu.cgi?btOK=submit&i_mt_dirx={x}&i_mt_diry={y}&i_mt_dirz={z}',
-        headers=headers
+        auth=HTTPDigestAuth(DEVICE_ID, DEVICE_PW)
     )
     # logger.info(resp.text)
     if resp.status_code == 200:
@@ -137,9 +134,6 @@ def offset_position():
     z = request.args.get('z')
 
     logger.info('offset: ' + str({"x": x, "y": y, "z": z}))
-    # headers = {
-    #    'Authorization': 'Digest username="admin", realm="IP Camera HTTP server", nonce="003E6CRqNuT25eRkajM09uTl9nM09uTl9nMz5OX25PZz==", uri="/isp/appispmu.cgi?btOK=submit&i_mt_dirx=3000&i_mt_diry=2206&i_mt_dirz=0", algorithm=MD5, response="c9a1e41244449a3f2477f4cca03c97b0", opaque="5ccc069c403ebaf9f0171e9517f40e41", qop=auth, nc=00000026, cnonce="e05ebfb1f30eace8"'
-    # }
     resp = requests.get(
         f'http://{DEVICE_IP}/isp/appispmu.cgi?btOK=submit&i_mt_incx={x}&i_mt_incy={y}&i_mt_incz={z}',
         auth=HTTPDigestAuth(DEVICE_ID, DEVICE_PW)
@@ -162,7 +156,10 @@ def update_focus():
     logger.info('Update camera focus')
     newfocus = request.args.get('value')
     logger.info(f'newfocus: {newfocus}')
-    resp = requests.get(f'http://{DEVICE_IP}/isp/appispmu.cgi?i_c1_dirfcs={newfocus}&btOK=move')
+    resp = requests.get(
+        f'http://{DEVICE_IP}/isp/appispmu.cgi?i_c1_dirfcs={newfocus}&btOK=move',
+        auth=HTTPDigestAuth(DEVICE_ID, DEVICE_PW)
+    )
     if resp.status_code == 200:
         return jsonify({
             'message': 'Successfully updated camera focus.',
