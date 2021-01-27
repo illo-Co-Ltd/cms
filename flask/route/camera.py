@@ -1,5 +1,6 @@
 import os
 import requests
+from requests.auth import HTTPDigestAuth
 import traceback
 from flask import Blueprint, jsonify, request
 
@@ -12,6 +13,8 @@ from util.logger import logger
 
 camera_route = Blueprint('camera_route', __name__)
 DEVICE_IP = os.environ.get('DEVICE_IP')
+DEVICE_ID = os.environ.get('DEVICE_ID')
+DEVICE_PW = os.environ.get('DEVICE_PW')
 
 
 @camera_route.route('/capture', methods=['POST'])
@@ -106,11 +109,14 @@ def update_position():
     z = request.args.get('z')
 
     logger.info('newpos: ', {"x": x, "y": y, "z": z})
-    headers = {'Authorization': f'Digest username="admin", realm="IP Camera HTTP server", nonce="003520RqNuT25eRkajM09uTl9nM09uTl9nMz5OX25PZz==", uri="/isp/appispmu.cgi?btOK=submit&i_mt_dirx=4000&i_mt_diry=2000&i_mt_dirz=0", algorithm=MD5, response="b98c1edba237db83ee73da4f87c0dc07", opaque="5ccc069c403ebaf9f0171e9517f40e41", qop=auth, nc=0000704a, cnonce="f75166951fcf2767"'}
+    headers = {
+        'Authorization': 'Digest username="admin", realm="IP Camera HTTP server", nonce="003E6CRqNuT25eRkajM09uTl9nM09uTl9nMz5OX25PZz==", uri="/isp/appispmu.cgi?btOK=submit&i_mt_dirx=3000&i_mt_diry=2206&i_mt_dirz=0", algorithm=MD5, response="c9a1e41244449a3f2477f4cca03c97b0", opaque="5ccc069c403ebaf9f0171e9517f40e41", qop=auth, nc=00000026, cnonce="e05ebfb1f30eace8"'
+    }
     resp = requests.get(
         f'http://{DEVICE_IP}/isp/appispmu.cgi?btOK=submit&i_mt_dirx={x}&i_mt_diry={y}&i_mt_dirz={z}',
         headers=headers
     )
+    # logger.info(resp.text)
     if resp.status_code == 200:
         return jsonify({
             'message': 'Successfully updated camera position.',
@@ -130,12 +136,15 @@ def offset_position():
     y = request.args.get('y')
     z = request.args.get('z')
 
-    logger.info('offset: '+str({"x": x, "y": y, "z": z}))
-    headers = {'Authorization': 'Digest username="admin", realm="IP Camera HTTP server", nonce="003520RqNuT25eRkajM09uTl9nM09uTl9nMz5OX25PZz==", uri="/isp/appispmu.cgi?btOK=submit&i_mt_incx=1&i_mt_incy=0&i_mt_incz=0", algorithm=MD5, response="2980c258d7f9491bdf2a7f4ef9e05723", opaque="5ccc069c403ebaf9f0171e9517f40e41", qop=auth, nc=0000363a, cnonce="58945be698ac39f4"'}
+    logger.info('offset: ' + str({"x": x, "y": y, "z": z}))
+    # headers = {
+    #    'Authorization': 'Digest username="admin", realm="IP Camera HTTP server", nonce="003E6CRqNuT25eRkajM09uTl9nM09uTl9nMz5OX25PZz==", uri="/isp/appispmu.cgi?btOK=submit&i_mt_dirx=3000&i_mt_diry=2206&i_mt_dirz=0", algorithm=MD5, response="c9a1e41244449a3f2477f4cca03c97b0", opaque="5ccc069c403ebaf9f0171e9517f40e41", qop=auth, nc=00000026, cnonce="e05ebfb1f30eace8"'
+    # }
     resp = requests.get(
         f'http://{DEVICE_IP}/isp/appispmu.cgi?btOK=submit&i_mt_incx={x}&i_mt_incy={y}&i_mt_incz={z}',
-        headers=headers
+        auth=HTTPDigestAuth(DEVICE_ID, DEVICE_PW)
     )
+    logger.info(resp.text)
     if resp.status_code == 200:
         return jsonify({
             'message': 'Successfully updated camera position.',
@@ -163,3 +172,15 @@ def update_focus():
         return jsonify({
             'message': 'Cannot connect to device'
         }), 404
+
+
+@camera_route.route('/repeat/<x>/<y>/<delay>', methods=['GET'])
+def repeat(x, y, delay):
+    import time
+    for i in range(10):
+        requests.get(
+            f'http://{DEVICE_IP}/isp/appispmu.cgi?btOK=submit&i_mt_incx={x}&i_mt_incy={y}&i_mt_incz=0',
+            auth=HTTPDigestAuth(DEVICE_ID, DEVICE_PW)
+        )
+        time.sleep(float(delay))
+    return jsonify({'message': 'Success', }), 200
