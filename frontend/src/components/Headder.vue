@@ -88,7 +88,7 @@ export default {
       })
     },
     leftPressed(){
-      axios.get('server/api/camera/pos_offset?x=-100&y=0&z=0')
+      axios.get('server/api/camera/pos_offset?x=-6000&y=0&z=0')
       .then((response) => {
         console.log(response);
       }).catch((e) => {
