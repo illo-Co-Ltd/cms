@@ -69,8 +69,8 @@ services:
       context: redis
       dockerfile: redis.dev.Dockerfile
     image: cms-img-redis
-    ports:
-      - 6379:6379
+    #ports:
+      #- 6380:6380
     volumes:
       - redis-volume:/data
     healthcheck:
