@@ -21,7 +21,11 @@ class VideoCamera:
         # releasing camera
         self.video.release()
 
-    def load
+    def load_instance(self):
+        pass
+
+    def save_instance(self):
+        pass
 
     def get_frame(self):
         # extracting frames
