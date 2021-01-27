@@ -1,12 +1,16 @@
-from .db_base import db
+from .db_base import db, env
 
 
 class Project(db.Model):
     __tablename__ = 'project'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(20, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-    shorthand = db.Column(db.String(5, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    if env == 'development':
+        name = db.Column(db.String(20, 'utf8mb4_unicode_ci'), unique=True)
+        shorthand = db.Column(db.String(5, 'utf8mb4_unicode_ci'), unique=True)
+    else:
+        name = db.Column(db.String(20, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+        shorthand = db.Column(db.String(5, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
     description = db.Column(db.String(200, 'utf8mb4_unicode_ci'))
 
     def __repr__(self):

@@ -26,20 +26,24 @@ def img_capture():
         target = data.get('target')
         device = data.get('device')
         label = data.get('label')
+        debug = data.get('debug')
 
-        prj = db.session.query(Project).filter_by(name=project).one()
-        tgt = db.session.query(Target) \
-            .filter_by(project=prj.id) \
-            .filter_by(name=target).one()
-        dev = db.session.query(Device).filter_by(serial=device).one()
-        task_id = cv_task.capture(
-            header=f'{prj.shorthand}_{tgt.name}',
-            params={
-                'target': tgt.id,
-                'device': dev.id,
-                'label': label
-            }
-        )
+        # skip integrity check if debugging
+        if not debug:
+            pid = db.session.query(Project).filter_by(name=project).one()
+            tid = db.session.query(Target) \
+                .filter_by(project=pid.id) \
+                .filter_by(name=target).one()
+            did = db.session.query(Device).filter_by(serial=device).one()
+            task_id = cv_task.capture(header=f'{pid.shorthand}_{tid.name}',
+                                      params={'target': tid.id,
+                                              'device': did.id,
+                                              'label': label})
+        else:
+            task_id = cv_task.capture(header=f'{project}_{target}',
+                                      params={'target': None,
+                                              'device': None,
+                                              'label': None})
         return jsonify(task_id)
     # TODO
     # 각 DB exception 에 따라 예외처리 세분화
@@ -61,24 +65,27 @@ def img_timelapse():
         label = data.get('label')
         interval = data.get('interval')
         expire_at = data.get('expire_at')
+        debug = data.get('debug')
 
-        prj = db.session.query(Project).filter_by(name=project).one()
-        tgt = db.session.query(Target) \
-            .filter_by(project=prj.id) \
-            .filter_by(name=target).one()
-        dev = db.session.query(Device).filter_by(serial=device).one()
+        # skip integrity check if debugging
+        if not debug:
+            pid = db.session.query(Project).filter_by(name=project).one()
+            tid = db.session.query(Target) \
+                .filter_by(project=pid.id) \
+                .filter_by(name=target).one()
+            did = db.session.query(Device).filter_by(serial=device).one()
 
         cv_task.periodic_capture(
-            header=prj.shorthand,
+            header=pid.shorthand,
             run_every=interval,
             expire_at=expire_at,
             params={
-                'target': tgt.id,
-                'device': dev.id,
+                'target': tid.id,
+                'device': did.id,
                 'label': label
             }
         )
-        return jsonify({'message': f'Timelapse task for device {dev.serial} registered'}), 200
+        return jsonify({'message': f'Timelapse task for device {did.serial} registered'}), 200
     except Exception as e:
         # TODO
         # 각 DB exception 에 따라 예외처리 세분화

@@ -21,14 +21,11 @@ class VideoCamera:
         # releasing camera
         self.video.release()
 
+    def load
+
     def get_frame(self):
         # extracting frames
         ret, frame = self.video.read()
         frame = cv2.resize(frame, None, fx=ds_factor, fy=ds_factor,
                            interpolation=cv2.INTER_AREA)
         return frame
-
-
-class TestCamera:
-    def __init__(self):
-        self.video = cv2.VideoCapture()

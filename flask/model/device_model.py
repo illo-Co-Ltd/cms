@@ -1,15 +1,22 @@
-from .db_base import db
+from .db_base import db, env
 
 
 class Device(db.Model):
     __tablename__ = 'device'
 
     id = db.Column(db.Integer, primary_key=True)
-    model = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
-    serial = db.Column(db.String(20, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-    company = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), nullable=False, index=True)
-    owner = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), nullable=False, index=True)
-    ip = db.Column(db.String(15, 'utf8mb4_unicode_ci'), nullable=False, unique=True, server_default=db.FetchedValue())
+    if env == 'development':
+        model = db.Column(db.String(16, 'utf8mb4_unicode_ci'))
+        serial = db.Column(db.String(20, 'utf8mb4_unicode_ci'))
+        company = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), index=True)
+        owner = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
+        ip = db.Column(db.String(15, 'utf8mb4_unicode_ci'), server_default=db.FetchedValue())
+    else:
+        model = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
+        serial = db.Column(db.String(20, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+        company = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), nullable=False, index=True)
+        owner = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), nullable=False, index=True)
+        ip = db.Column(db.String(15, 'utf8mb4_unicode_ci'), nullable=False, unique=True, server_default=db.FetchedValue())
     created = db.Column(db.DateTime)
     created_by = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
     last_edited = db.Column(db.DateTime)

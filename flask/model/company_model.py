@@ -1,11 +1,14 @@
-from .db_base import db
+from .db_base import db, env
 
 
 class Company(db.Model):
     __tablename__ = 'company'
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    if env == 'development':
+        name = db.Column(db.String(16, 'utf8mb4_unicode_ci'))
+    else:
+        name = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
     subscription = db.Column(db.Integer)
     expiration_date = db.Column(db.DateTime)
 
