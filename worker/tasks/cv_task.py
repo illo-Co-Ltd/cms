@@ -6,7 +6,7 @@ cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parent = os.path.dirname(cwd)
 sys.path.insert(0, parent)
 
-from celery import Task
+from celery.signals import worker_init, worker_shutdown
 from app import celery
 from redbeat import RedBeatSchedulerEntry
 import traceback
@@ -17,6 +17,19 @@ import cv2
 from cv import camera
 
 FLASK_BACKEND = os.environ.get('FLASK_BACKEND')
+vcam = None
+
+
+@worker_init.connect
+def worker_init_handler(**kwargs):
+    global vcam
+    vcam = camera.VideoCamera()
+
+
+@worker_shutdown.connect
+def worker_shutdown_handler(**kwargs):
+    global vcam
+    del vcam
 
 
 @celery.task(name='cam_task.add')
@@ -28,8 +41,7 @@ def add(x: int, y: int, wait: int) -> int:
 @celery.task(name='cam_task.capture')
 def capture(header: str, params: dict) -> str:
     try:
-        cam = camera.VideoCamera()
-        frame = cam.get_frame()
+        frame = vcam.get_frame()
         ctime = datetime.datetime.now(pytz.timezone("Asia/Seoul"))
         fname = f'{header}_{ctime.strftime("%Y%m%d-%H%M%S-%f")}.jpg'
         path = f'/data/{fname}'
