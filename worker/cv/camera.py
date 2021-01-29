@@ -21,8 +21,6 @@ class VideoCamera:
         # releasing camera
         self.video.release()
 
-    def load
-
     def get_frame(self):
         # extracting frames
         ret, frame = self.video.read()

@@ -31,7 +31,7 @@
         <template>
           <div class="modal-parent">
             <div class="modal-div1">
-              <base-button outline block @click="upPressed">up</base-button>
+              <base-button outline block @keydown.up="upKeyDown" @keyup.up="upKeyUp">up</base-button>
             </div>
             <div class="modal-div2">
               <base-button outline block @click="downPressed">down</base-button>
@@ -56,6 +56,14 @@ import Modal from './Modal.vue'
 import axios from 'axios';
 
 export default {
+  mounted() {
+    window.addEventListener('keydown', event=>{
+      if (event.keyCode === 37){this.upKeyDown()}
+    })
+    window.addEventListener('keyup', event=>{
+      if (event.keyCode === 37){this.upKeyUp()}
+    })
+  },
   components: { BaseButton, Card, Modal },
     data() {
     return {
@@ -71,6 +79,17 @@ export default {
     }
   },
   methods: {
+    upKeyDown(){
+      this.key.up = true
+      console.log("test")
+      //while (this.key.up ==true)
+        //setTimeout(()=>{
+          //console.log("test")
+        //},100)
+    },
+    upKeyUp(){
+      this.key.up = false
+    },
     upPressed(){
       axios.get('server/api/camera/pos_offset?x=0&y=100&z=0')
       .then((response) => {
