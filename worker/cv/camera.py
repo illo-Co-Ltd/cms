@@ -6,16 +6,16 @@ DEVICE_IP = os.getenv('DEVICE_IP')
 
 
 class VideoCamera:
+    '''
+    Camera preprocess codes
+    '''
     def __init__(self):
-        print('Camera initializing...')
-        # capturing video
-        # url설정
         url = f'rtsp://{DEVICE_IP}/stream1'
         try:
             self.video = cv2.VideoCapture(url)
-            print('Camera initialized.')
         except:
-            print('Failed to initialize.')
+            raise Exception(f'Cannot connect to {url}')
+
 
     def __del__(self):
         # releasing camera
@@ -24,6 +24,7 @@ class VideoCamera:
     def get_frame(self):
         # extracting frames
         ret, frame = self.video.read()
-        frame = cv2.resize(frame, None, fx=ds_factor, fy=ds_factor,
-                           interpolation=cv2.INTER_AREA)
-        return frame
+        if ret:
+            return frame
+        else:
+            raise Exception('Video read failed')

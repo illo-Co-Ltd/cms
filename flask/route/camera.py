@@ -4,7 +4,7 @@ from requests.auth import HTTPDigestAuth
 import traceback
 from flask import Blueprint, jsonify, request
 
-from tasks import cv_task
+from tasks import cam_task
 from model.db_base import db
 from model.target_model import Target
 from model.project_model import Project
@@ -18,7 +18,7 @@ DEVICE_PW = os.environ.get('DEVICE_PW')
 
 
 @camera_route.route('/capture', methods=['POST'])
-def img_capture():
+def capture():
     logger.info('Capture with camera')
     try:
         data = request.get_json()
@@ -35,15 +35,15 @@ def img_capture():
                 .filter_by(project=pid.id) \
                 .filter_by(name=target).one()
             did = db.session.query(Device).filter_by(serial=device).one()
-            task_id = cv_task.capture(header=f'{pid.shorthand}_{tid.name}',
-                                      params={'target': tid.id,
-                                              'device': did.id,
-                                              'label': label})
+            task_id = cam_task.capture_send(header=f'{pid.shorthand}_{tid.name}',
+                                            params={'target': tid.id,
+                                                    'device': did.id,
+                                                    'label': label})
         else:
-            task_id = cv_task.capture(header=f'{project}_{target}',
-                                      params={'target': None,
-                                              'device': None,
-                                              'label': None})
+            task_id = cam_task.capture_send(header=f'{project}_{target}',
+                                            params={'target': None,
+                                                    'device': None,
+                                                    'label': None})
         return jsonify(task_id)
     # TODO
     # 각 DB exception 에 따라 예외처리 세분화
@@ -54,8 +54,8 @@ def img_capture():
         return jsonify({'message': 'Failed to capture'}), 200
 
 
-@camera_route.route('/timelapse', methods=['POST'])
-def img_timelapse():
+@camera_route.route('/timelapse/start', methods=['POST'])
+def start_timelapse():
     logger.info('Start timelapse')
     try:
         data = request.get_json()
@@ -68,31 +68,59 @@ def img_timelapse():
         debug = data.get('debug')
 
         # skip integrity check if debugging
-        if not debug:
+        if debug:
+            kwargs = {
+                'header': 'test',
+                'run_every': 1,
+                'expire_at': None,
+                'params': {
+                    'target': 0,
+                    'device': 0,
+                    'label': 'test'
+                }
+            }
+        else:
             pid = db.session.query(Project).filter_by(name=project).one()
             tid = db.session.query(Target) \
                 .filter_by(project=pid.id) \
                 .filter_by(name=target).one()
             did = db.session.query(Device).filter_by(serial=device).one()
-
-        cv_task.periodic_capture(
-            header=pid.shorthand,
-            run_every=interval,
-            expire_at=expire_at,
-            params={
-                'target': tid.id,
-                'device': did.id,
-                'label': label
+            kwargs = {
+                'header': pid.shorthand,
+                'run_every': interval,
+                'expire_at': expire_at,
+                'params': {
+                    'target': tid.id,
+                    'device': did.id,
+                    'label': label
+                }
             }
-        )
-        return jsonify({'message': f'Timelapse task for device {did.serial} registered'}), 200
+        logger.info(kwargs)
+        status, key = cam_task.start_timelapse_send(**kwargs)
+        if status:
+            return jsonify({
+                'message': f'Timelapse task for device {kwargs.get("params").get("device")} queued',
+                'key': key
+            }), 200
+        else:
+            raise Exception('Result false')
     except Exception as e:
         # TODO
         # 각 DB exception 에 따라 예외처리 세분화
-        logger.error(e)
         traceback.print_stack()
         traceback.print_exc()
+        logger.error(e)
         return jsonify({'message': 'Failed to start timelapse'}), 200
+
+
+@camera_route.route('/timelapse/stop', methods=['POST'])
+def stop_timelapse():
+    data = request.get_json()
+    key = data.get('key')
+    if cam_task.stop_timelapse_send(key):
+        return jsonify({'message': f'Timelapse task for key {key} deleted'}), 200
+    else:
+        return jsonify({'message': f'Cannot delete Timelapse task for key {key}'}), 200
 
 
 @camera_route.route('/range', methods=['GET'])
