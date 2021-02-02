@@ -1,37 +1,29 @@
-import os
 import celery
-from celery import Celery
-from . import celeryconfig
+
+from .taskmanager import celery_app
 from util import logger
 
-BROKER = os.environ.get('BROKER')
-CELERY_BACKEND = os.environ.get('CELERY_BACKEND')
-
-celery_app = Celery('cam_worker')
-celery_app.config_from_object(celeryconfig)
 
 
-def capture_send(header: str, params: dict):
+def capture_send(header: str, data: dict):
     name = 'cam_task.capture_task'
-    task = celery_app.send_task(name, args=[header, params])
+    task = celery_app.send_task(name, args=[header, data])
     return task.id
 
 
-def start_timelapse_send(header: str, run_every: float, expire_at: str, params: dict):
-    '''
+def start_timelapse_send(header: str, run_every: float, expire_at: str, data: dict):
     from redbeat import RedBeatSchedulerEntry
     interval = celery.schedules.schedule(run_every=run_every)  # seconds
     entry = RedBeatSchedulerEntry(
         'timelapse',
-        'cam_task.capture',
+        'cam_task.capture_task',
         interval,
-        args=[header, params],
+        args=[header, data],
         app=celery_app
     )
     entry.save()
     return True, entry.key
-    '''
-    task = celery_app.send_task('cam_task.start_timelapse_task', args=[header, run_every, expire_at, params])
+    # task = celery_app.send_task('cam_task.start_timelapse_task', args=[header, run_every, expire_at, data])
     return task.get()
 
 

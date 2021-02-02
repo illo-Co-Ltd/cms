@@ -71,6 +71,8 @@ services:
     image: cms-img-redis
     volumes:
       - redis-volume:/data
+    ports:
+    - 6379:6379
     healthcheck:
       test: "redis-cli -h 127.0.0.1 ping"
       interval: 3s
