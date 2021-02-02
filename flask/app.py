@@ -9,6 +9,7 @@ from route.auth import auth_route
 from route.check import check_route
 from route.crud import crud_route
 from route.camera import camera_route
+from tasks.task_callback import task_callback_route
 
 from util.logger import logger
 
@@ -43,6 +44,7 @@ def create_app():
     app.register_blueprint(auth_route, url_prefix='/auth')
     app.register_blueprint(crud_route, url_prefix='/api')
     app.register_blueprint(camera_route, url_prefix='/api/camera')
+    app.register_blueprint(task_callback_route, url_prefix='/task_callback')
 
     return app
 

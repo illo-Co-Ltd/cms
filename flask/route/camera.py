@@ -36,12 +36,12 @@ def capture():
                 .filter_by(name=target).one()
             did = db.session.query(Device).filter_by(serial=device).one()
             task_id = cam_task.capture_send(header=f'{pid.shorthand}_{tid.name}',
-                                            params={'target': tid.id,
+                                            data={'target': tid.id,
                                                     'device': did.id,
                                                     'label': label})
         else:
             task_id = cam_task.capture_send(header=f'{project}_{target}',
-                                            params={'target': None,
+                                            data={'target': None,
                                                     'device': None,
                                                     'label': None})
         return jsonify(task_id)
@@ -63,7 +63,7 @@ def start_timelapse():
         target = data.get('target')
         device = data.get('device')
         label = data.get('label')
-        interval = data.get('interval')
+        run_every = data.get('run_every')
         expire_at = data.get('expire_at')
         debug = data.get('debug')
 
@@ -71,12 +71,12 @@ def start_timelapse():
         if debug:
             kwargs = {
                 'header': 'test',
-                'run_every': 1,
+                'run_every': run_every,
                 'expire_at': None,
-                'params': {
-                    'target': 0,
-                    'device': 0,
-                    'label': 'test'
+                'data': {
+                    'target': None,
+                    'device': None,
+                    'label': None
                 }
             }
         else:
@@ -87,9 +87,9 @@ def start_timelapse():
             did = db.session.query(Device).filter_by(serial=device).one()
             kwargs = {
                 'header': pid.shorthand,
-                'run_every': interval,
+                'run_every': run_every,
                 'expire_at': expire_at,
-                'params': {
+                'data': {
                     'target': tid.id,
                     'device': did.id,
                     'label': label
@@ -99,7 +99,7 @@ def start_timelapse():
         status, key = cam_task.start_timelapse_send(**kwargs)
         if status:
             return jsonify({
-                'message': f'Timelapse task for device {kwargs.get("params").get("device")} queued',
+                'message': f'Timelapse task for device {kwargs.get("data").get("device")} queued',
                 'key': key
             }), 200
         else:

@@ -1,8 +1,11 @@
 import os
 from celery import Celery
 
-BROKER = os.environ.get('BROKER')
-CELERY_BACKEND = os.environ.get('CELERY_BACKEND')
+from . import celeryconfig
+from util import logger
+
+celery_app = Celery('cam_worker')
+celery_app.config_from_object(celeryconfig)
 
 
 class TaskManager:

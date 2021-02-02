@@ -1,5 +1,7 @@
 import os
+import datetime
 from flask import Blueprint, request, jsonify, current_app
+import jwt
 
 from model.db_base import db
 from model.company_model import Company
@@ -11,9 +13,6 @@ from model.image_model import Image
 
 from util.logger import logger
 from util.auth_util import token_required
-
-import jwt
-import datetime
 
 crud_route = Blueprint('crud_route', __name__)
 
@@ -151,34 +150,6 @@ def list_image():
     logger.info('Get image list')
     image_list = Image.query.all()
     return jsonify([x.to_dict() for x in image_list])
-
-
-@crud_route.route('/image', methods=['POST'])
-def register_image():
-    logger.info("Add image record after capture success.")
-    try:
-        data = request.get_json()
-        logger.info(f'data: {data}')
-        image = Image(
-            target=data.get('target'),
-            path=data.get('path'),
-            device=data.get('device'),
-            created=datetime.datetime.fromtimestamp(data.get('created')),
-            created_by=data.get('created_by'),
-            label=data.get('label'),
-            offset_x=data.get('offset_x'),
-            offset_y=data.get('offset_y'),
-            offset_z=data.get('offset_z'),
-            pos_x=data.get('pos_x'),
-            pos_y=data.get('pos_y'),
-            pos_z=data.get('pos_z')
-        )
-        db.session.add(image)
-        db.session.commit()
-        return jsonify('Successfully registered image record'), 200
-    except Exception as e:
-        logger.error(e)
-        return jsonify('Failed to register image record'), 200
 
 
 @crud_route.route('/image/tree', methods=['GET'])
