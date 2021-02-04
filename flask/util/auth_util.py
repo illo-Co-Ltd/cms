@@ -25,7 +25,7 @@ def token_required(f):
 
         try:
             token = auth_headers[1]
-            data = jwt.decode(token, 'qwersdaiofjhoqwihlzxcjvjl')
+            data = jwt.decode(token, current_app.config['SECRET_KEY'])
             parse_name = data['sub']
             user = User.query.filter_by(username=parse_name).first()
             if not user:

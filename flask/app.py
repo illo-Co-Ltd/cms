@@ -26,7 +26,7 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
     app.config['JWT_COOKIE_CSRF_PROTECT'] = os.getenv('JWT_COOKIE_CSRF_PROTECT')
     app.config['JWT_COOKIE_SECURE'] = os.getenv('JWT_COOKIE_SECURE')
-    app.config['SECRET_KEY'] = 'qwersdaiofjhoqwihlzxcjvjl'
+    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
     # initialize db
     with app.app_context():

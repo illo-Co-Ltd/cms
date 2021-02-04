@@ -55,7 +55,7 @@ def login():
             'sub': user_data.userid,
             'iat': datetime.datetime.utcnow(),
             'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
-        }, 'qwersdaiofjhoqwihlzxcjvjl')
+        }, current_app.config['SECRET_KEY'])
 
         logger.info("Set up Success")
         logger.debug(token.decode('UTF-8'))
