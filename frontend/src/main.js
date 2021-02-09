@@ -16,15 +16,20 @@
 
 */
 import Vue from 'vue'
+import Vuex from 'vuex'
 import App from './App.vue'
 import router from './router'
+import store from './store/directoryhierarchy'
+import 'es6-promise/auto'
 import './registerServiceWorker'
 import ArgonDashboard from './plugins/argon-dashboard'
 
 Vue.config.productionTip = false
-
+Vue.use(Vuex)
 Vue.use(ArgonDashboard)
+
 new Vue({
+  store,
   router,
   render: h => h(App)
 }).$mount('#app')
