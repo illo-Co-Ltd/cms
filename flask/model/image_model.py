@@ -1,22 +1,36 @@
-from .db_base import db
+from .db_base import db, env
 
 
 class Image(db.Model):
     __tablename__ = 'image'
 
     id = db.Column(db.Integer, primary_key=True)
-    target = db.Column(db.ForeignKey('target.id', onupdate='CASCADE'), nullable=False, index=True)
-    path = db.Column(db.String(260, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-    device = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), nullable=False, index=True)
-    created = db.Column(db.DateTime, nullable=False)
-    created_by = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
-    label = db.Column(db.String(20, 'utf8mb4_unicode_ci'))
-    offset_x = db.Column(db.Integer, nullable=False)
-    offset_y = db.Column(db.Integer, nullable=False)
-    offset_z = db.Column(db.Integer, nullable=False)
-    pos_x = db.Column(db.Integer, nullable=False)
-    pos_y = db.Column(db.Integer, nullable=False)
-    pos_z = db.Column(db.Integer, nullable=False)
+    if env == 'development':
+        target = db.Column(db.ForeignKey('target.id', onupdate='CASCADE'), index=True)
+        path = db.Column(db.String(260, 'utf8mb4_unicode_ci'), unique=True)
+        device = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), index=True)
+        created = db.Column(db.DateTime)
+        created_by = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
+        label = db.Column(db.String(20, 'utf8mb4_unicode_ci'))
+        offset_x = db.Column(db.Integer)
+        offset_y = db.Column(db.Integer)
+        offset_z = db.Column(db.Integer)
+        pos_x = db.Column(db.Integer)
+        pos_y = db.Column(db.Integer)
+        pos_z = db.Column(db.Integer)
+    else:
+        target = db.Column(db.ForeignKey('target.id', onupdate='CASCADE'), nullable=False, index=True)
+        path = db.Column(db.String(260, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+        device = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), nullable=False, index=True)
+        created = db.Column(db.DateTime, nullable=False)
+        created_by = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
+        label = db.Column(db.String(20, 'utf8mb4_unicode_ci'))
+        offset_x = db.Column(db.Integer, nullable=False)
+        offset_y = db.Column(db.Integer, nullable=False)
+        offset_z = db.Column(db.Integer, nullable=False)
+        pos_x = db.Column(db.Integer, nullable=False)
+        pos_y = db.Column(db.Integer, nullable=False)
+        pos_z = db.Column(db.Integer, nullable=False)
 
     r_created_by = db.relationship('User', primaryjoin='Image.created_by == User.id', backref='image_create_by_user_id')
     r_device = db.relationship('Device', primaryjoin='Image.device == Device.id', backref='image_device_device_id')

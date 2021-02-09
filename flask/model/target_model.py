@@ -1,4 +1,4 @@
-from .db_base import db
+from .db_base import db, env
 
 
 class Target(db.Model):
@@ -8,7 +8,10 @@ class Target(db.Model):
     project = db.Column(db.ForeignKey('project.id', onupdate='CASCADE'), index=True)
     type = db.Column(db.String(16, 'utf8mb4_unicode_ci'))
     detail = db.Column(db.String(16, 'utf8mb4_unicode_ci'))
-    name = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
+    if env == 'development':
+        name = db.Column(db.String(16, 'utf8mb4_unicode_ci'), unique=True)
+    else:
+        name = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
     description = db.Column(db.String(200, 'utf8mb4_unicode_ci'))
 
     r_project = db.relationship('Project', primaryjoin='Target.project == Project.id',

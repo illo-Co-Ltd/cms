@@ -9,5 +9,6 @@ imports = ('tasks.cam_task',)
 # task specific configuration
 task_annotations = {'cam_task': {'rate_limit': '10/s'}}
 # redbeat config
+#redis_url = os.environ.get('REDBEAT_BACKEND')
 redbeat_redis_url = os.environ.get('REDBEAT_BACKEND')
 redbeat_lock_key = None
