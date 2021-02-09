@@ -1,7 +1,11 @@
 FROM redis:6
 
+MAINTAINER Jaehan Ahn <ajh508@naver.com>
+
 WORKDIR /data
 
-ADD . .
+ADD redis.conf /data/redis.conf
 
-CMD ["redis-server", "--requirepass", "$(REDIS_PASSWORD)"]
+#ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+
+CMD [ "redis-server","/data/redis.conf" ]
