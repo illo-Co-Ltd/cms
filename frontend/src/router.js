@@ -1,11 +1,24 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import MyAuthLayout from '@/layout/MyAuthLayout'
+import DashBoardLayout from '@/layout/DashBoardLayout'
 Vue.use(Router)
 
 export default new Router({
   linkExactActiveClass: 'active',
   routes: [
+    {
+      path: '/',
+      redirect: 'dashboard',
+      component: DashBoardLayout,
+      children: [
+        {
+          path: '/dashboard',
+          name: 'dashboard',
+          
+        },
+      ],
+    },
     {
       path: '/',
       redirect: 'login',
