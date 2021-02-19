@@ -2,7 +2,9 @@ import os
 import requests
 from requests.auth import HTTPDigestAuth
 import traceback
+
 from flask import Blueprint, jsonify, request
+from flask_jwt_extended import jwt_required
 
 from tasks import cam_task
 from model.db_base import db
@@ -18,6 +20,7 @@ DEVICE_PW = os.environ.get('DEVICE_PW')
 
 
 @camera_route.route('/capture', methods=['POST'])
+@jwt_required()
 def capture():
     logger.info('Capture with camera')
     try:
@@ -37,13 +40,13 @@ def capture():
             did = db.session.query(Device).filter_by(serial=device).one()
             task_id = cam_task.capture_send(header=f'{pid.shorthand}_{tid.name}',
                                             data={'target': tid.id,
-                                                    'device': did.id,
-                                                    'label': label})
+                                                  'device': did.id,
+                                                  'label': label})
         else:
             task_id = cam_task.capture_send(header=f'{project}_{target}',
                                             data={'target': None,
-                                                    'device': None,
-                                                    'label': None})
+                                                  'device': None,
+                                                  'label': None})
         return jsonify(task_id)
     # TODO
     # 각 DB exception 에 따라 예외처리 세분화
@@ -55,6 +58,7 @@ def capture():
 
 
 @camera_route.route('/timelapse/start', methods=['POST'])
+@jwt_required()
 def start_timelapse():
     logger.info('Start timelapse')
     try:
@@ -114,6 +118,7 @@ def start_timelapse():
 
 
 @camera_route.route('/timelapse/stop', methods=['POST'])
+@jwt_required()
 def stop_timelapse():
     data = request.get_json()
     key = data.get('key')
@@ -124,12 +129,14 @@ def stop_timelapse():
 
 
 @camera_route.route('/range', methods=['GET'])
+@jwt_required()
 def get_position_range():
     logger.info('Fetch camera min/max range')
 
 
 # /pos?x=n&y=n&z=n
 @camera_route.route('/pos', methods=['GET'])
+@jwt_required()
 def update_position():
     logger.info('Update absolute camera position')
     x = request.args.get('x')
@@ -155,6 +162,7 @@ def update_position():
 
 # /pos_offset?x=n&y=n&z=n
 @camera_route.route('/pos_offset', methods=['GET'])
+@jwt_required()
 def offset_position():
     logger.info('Update relative camera position')
     x = request.args.get('x')
@@ -180,6 +188,7 @@ def offset_position():
 
 # /focus?value=n
 @camera_route.route('/focus', methods=['GET'])
+@jwt_required()
 def update_focus():
     logger.info('Update camera focus')
     newfocus = request.args.get('value')
@@ -199,7 +208,9 @@ def update_focus():
         }), 404
 
 
+# for test
 @camera_route.route('/repeat/<x>/<y>/<delay>', methods=['GET'])
+@jwt_required()
 def repeat(x, y, delay):
     import time
     for i in range(10):

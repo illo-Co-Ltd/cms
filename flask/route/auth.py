@@ -1,29 +1,52 @@
 import traceback
-from flask import Blueprint, request, jsonify, session, current_app
+from flask import Blueprint, request, jsonify, session, current_app, make_response
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
-from util.logger import logger
-from model import user_model
-from model import company_model
+from model.db_base import db
+from model.user_model import User
+from model.company_model import Company
 
-import jwt
-import datetime
+from app import jwt
+from util.logger import logger
 
 auth_route = Blueprint('auth_route', __name__)
+jwt = current_app.extensions['flask-jwt-extended']
+
+
+@jwt.user_identity_loader
+def user_identity_lookup(user):
+    return user.id
+
+
+@jwt.user_lookup_loader
+def user_lookup_callback(_jwt_header, jwt_data):
+    identity = jwt_data["sub"]
+    return User.query.filter_by(id=identity).one_or_none()
+
+
+@auth_route.route("/whoami", methods=["GET"])
+@jwt_required()
+def whoami():
+    return jsonify(
+        id=current_user.id,
+        userid=current_user.userid,
+        username=current_user.username,
+        company=current_user.company
+    )
 
 
 @auth_route.route('/register', methods=['POST'])
 def register_user():
-    db = user_model.db
     logger.info("user register")
     data = request.get_json()
     try:
         comp_name = data.get('company')
         if comp_name is None:
             raise ValueError('Company name is empty.')
-        data.update({'company': company_model.Company.query.filter_by(name=comp_name).one().id})
+        data.update({'company': Company.query.filter_by(name=comp_name).one().id})
 
-        user_data = user_model.User.query.filter_by(userid=data.get('userid')).first()
+        user_data = User.query.filter_by(userid=data.get('userid')).first()
         if user_data is not None:
             logger.error("Userid already exists")
             return jsonify({
@@ -31,7 +54,7 @@ def register_user():
                 'reason': 'userid already exists'
             }), 200
 
-        user = user_model.User(**data)
+        user = User(**data)
         user.hash_password()
         db.session.add(user)
         db.session.commit()
@@ -57,24 +80,18 @@ def login():
         return jsonify({'message': f'Already logged in with {session.get("userid")}'}), 200
 
     data = request.get_json()
-    user_data = user_model.User.query.filter_by(userid=data.get('userid')).first()
+    user_data = User.query.filter_by(userid=data.get('userid')).first()
 
     if user_data is not None:
         if not user_data.check_password(data.get("password")):
             logger.error("Authentication error: Wrong userid or password")
             return jsonify({'message': 'Authentication error: Wrong userid or password', "authenticated": False}), 401
 
-        logger.info("User Authentication token setting")
-        token = jwt.encode({
-            'sub': user_data.userid,
-            'iat': datetime.datetime.utcnow(),
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=current_app.config['TOKEN_EXPR_SECS'])
-        }, current_app.config['SECRET_KEY'])
-
-        logger.info("Set up Success")
-        logger.debug(token.decode('UTF-8'))
+        access_token = create_access_token(identity=user_data)
+        logger.info("Access token created")
+        logger.debug(f'access_token: {access_token}')
         session['userid'] = user_data.userid
-        return jsonify({"token": token.decode('UTF-8')})
+        return jsonify(access_token=access_token)
     else:
         logger.error("User Does Not Exist")
         return jsonify({'message': 'User Does Not Exist', "authenticated": False}), 401

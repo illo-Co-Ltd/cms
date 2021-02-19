@@ -1,3 +1,7 @@
+import os
+import datetime
+
+
 class Config(object):
     DEBUG = False
     TESTING = False
@@ -8,9 +12,35 @@ class ProductionConfig(Config):
 
 
 class DevelopmentConfig(Config):
+    # flask
     DEBUG = True
-    DATABASE_URI = 'mysql://user@localhost/foo'
+    FLASK_APP = 'app.py'
+    FLASK_RUN_PORT = 5000
+
+    # ORM
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:1010@db:3306/cms'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    # jwt auth
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    JWT_SECRET_KEY = os.getenv('SECRET_KEY')
+    JWT_TOKEN_LOCATION = ['headers', 'cookies']
+    JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(minutes=15)
+    JWT_REFRESH_TOKEN_EXPIRES = datetime.timedelta(days=14)
+    JWT_ALGORITHM = 'HS256'
+    JWT_HEADER_NAME = 'Authorization'
+    JWT_HEADER_TYPE = 'Bearer'
+    JWT_COOKIE_CSRF_PROTECT = False
+    JWT_COOKIE_SECURE = False
+    TOKEN_EXPR_SECS = 1800
 
 
 class TestingConfig(Config):
     TESTING = True
+
+
+configmap = {
+    'production': ProductionConfig,
+    'development': DevelopmentConfig,
+    'test': TestingConfig
+}
