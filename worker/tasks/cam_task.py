@@ -20,7 +20,7 @@ from cv import camera
 from app import app
 
 FLASK_BACKEND = os.environ.get('FLASK_BACKEND')
-CAM_MAX_RETRY = 10
+CAM_MAX_RETRY = 100
 CAM_RETRY_INTERVAL = 3
 
 logger = get_task_logger(__name__)
@@ -47,8 +47,11 @@ def worker_init_handler(**kwargs):
         try:
             vcam = camera.VideoCamera()
             frame = vcam.get_frame()
-        except:
+        except ValueError:
             continue
+        except ConnectionError as e:
+            logger.error(traceback.format_exc())
+            raise e
         if frame is not None:
             logger.info(f'VideoCamera initialized (shape):{frame.shape}')
             return

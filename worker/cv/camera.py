@@ -11,11 +11,11 @@ class VideoCamera:
     """
 
     def __init__(self):
-        url = f'rtsp://{DEVICE_IP}/stream1'
+        self.url = f'rtsp://{DEVICE_IP}/stream1'
         try:
-            self.video = cv2.VideoCapture(url)
+            self.video = cv2.VideoCapture(self.url)
         except:
-            raise Exception(f'Cannot connect to {url}')
+            raise ConnectionError(f'Cannot connect to {self.url}')
 
     def __del__(self):
         # releasing camera
@@ -27,4 +27,11 @@ class VideoCamera:
         if ret:
             return frame
         else:
-            raise Exception('Video read failed')
+            raise ValueError('Video read failed')
+
+    def reinitialize(self):
+        self.video.release()
+        try:
+            self.video = cv2.VideoCapture(self.url)
+        except:
+            raise Exception(f'Cannot reinitialize')
