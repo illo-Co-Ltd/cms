@@ -12,8 +12,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install ffmpeg
-COPY ffmpeg_install.sh ffmpeg_install.sh
-RUN  ["/bin/bash", "-c", "./ffmpeg_install.sh"]
+#COPY ffmpeg_install.sh ffmpeg_install.sh
+#RUN  ["/bin/bash", "-c", "./ffmpeg_install.sh"]
 
 # Download and decompress Nginx
 RUN mkdir -p /tmp/build/nginx && \
