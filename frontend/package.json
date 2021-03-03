@@ -23,7 +23,9 @@
     "vue-flatpickr-component": "8.1.5",
     "vue-router": "3.3.4",
     "vue2-transitions": "0.3.0",
-    "yarn": "^1.22.10"
+    "yarn": "^1.22.10",
+    "es6-promise": "^4.2.8",
+    "vuex": "^3.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.4.6",
