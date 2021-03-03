@@ -8,8 +8,12 @@ ENV NGINX_RTMP_MODULE_VERSION 1.2.1
 
 # Install dependencies
 RUN apt-get update && \
-    apt-get install -y ca-certificates openssl libssl-dev ffmpeg && \
+    apt-get install -y ca-certificates openssl libssl-dev && \
     rm -rf /var/lib/apt/lists/*
+
+# Install ffmpeg
+COPY ffmpeg_install.sh ffmpeg_install.sh
+RUN  ["/bin/bash", "-c", "./ffmpeg_install.sh"]
 
 # Download and decompress Nginx
 RUN mkdir -p /tmp/build/nginx && \
@@ -54,6 +58,4 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
 # Set up config file
 COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 8080
-EXPOSE 1935
 CMD ["nginx", "-g", "daemon off;"]
