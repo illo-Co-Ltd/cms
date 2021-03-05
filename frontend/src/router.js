@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import MyAuthLayout from '@/layout/MyAuthLayout'
 import DashBoardLayout from '@/layout/DashBoardLayout'
+import ManageLayout from '@/layout/ManageLayout'
+
 Vue.use(Router)
 
 export default new Router({
@@ -36,5 +38,17 @@ export default new Router({
         },
       ],
     },
+    {
+      path: '/',
+      redirect: 'manage',
+      component: ManageLayout,
+      children: [
+        {
+          path: '/manage',
+          name: 'manage',
+          component: () => import('./views/Manage.vue')
+        }
+      ]
+    }
   ]
 })
