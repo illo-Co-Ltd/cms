@@ -7,5 +7,13 @@ export default new Vuex.Store({
   state: {
     header: 0,
     sidebar_w: 250,
+
+    modals: {
+      project: false,
+
+    }
   },
+  mutations: {
+    
+  }
 });
