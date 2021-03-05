@@ -17,6 +17,11 @@ import SideBar from '../components/SidebarPlugin/SideBar.vue'
 import { FadeTransition } from 'vue2-transitions'
 
 export default {
+  mounted() {
+    window.addEventListener("keypress", e => {
+      console.log(String.fromCharCode(e.keyCode));
+    });
+  },
   components: {
     MyHeader,
     SideBar,

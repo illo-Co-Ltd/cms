@@ -1,6 +1,7 @@
 import traceback
 from flask import Blueprint, request, jsonify, session, current_app, make_response
-from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user
+from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, \
+    jwt_required, current_user
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
 from model.db_base import db
@@ -88,24 +89,21 @@ def login():
             return jsonify({'message': 'Authentication error: Wrong userid or password', "authenticated": False}), 401
 
         access_token = create_access_token(identity=user_data)
+        refresh_token = create_refresh_token(identity=user_data)
         logger.info("Access token created")
         logger.debug(f'access_token: {access_token}')
         session['userid'] = user_data.userid
-        return jsonify(access_token=access_token)
+        resp = jsonify({'login': True})
+        set_access_cookies(resp, access_token)
+        set_refresh_cookies(resp, refresh_token)
+        return resp, 200
     else:
         logger.error("User Does Not Exist")
         return jsonify({'message': 'User Does Not Exist', "authenticated": False}), 401
 
 
 @auth_route.route('/logout', methods=['POST'])
+# @jwt_required()
 def logout():
     session.pop('userid', None)
     return jsonify("Bye!")
-
-
-@auth_route.route('/get_user', methods=['GET'])
-def get_login_user():
-    try:
-        return jsonify({'userid': session.get('userid')})
-    except:
-        return jsonify({'Status': 'Not logged in'})

@@ -156,8 +156,8 @@ def update_position():
         }), 200
     else:
         return jsonify({
-            'message': 'Cannot connect to device'
-        }), 404
+            'message': 'Something went wrong'
+        }), resp.status_code
 
 
 # /pos_offset?x=n&y=n&z=n
@@ -182,8 +182,8 @@ def offset_position():
         }), 200
     else:
         return jsonify({
-            'message': 'Cannot connect to device'
-        }), 404
+            'message': 'Something went wrong'
+        }), resp.status_code
 
 
 # /focus?value=n
@@ -204,8 +204,8 @@ def update_focus():
         }), 200
     else:
         return jsonify({
-            'message': 'Cannot connect to device'
-        }), 404
+            'message': 'Something went wrong'
+        }), resp.status_code
 
 
 # for test
