@@ -45,7 +45,8 @@ export default {
     },
     logOut() {
       const userid = this.$store.state.auth.userid
-
+      localStorage.removeItem('accessToken')
+      location.reload()
       axios.post('server/auth/logout', userid)
       .then((response) => {
         console.log(response);

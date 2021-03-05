@@ -44,7 +44,7 @@ with app.app_context():
             db.session.commit()
 
 # enable CORS
-CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
+CORS(app, resources={r'*': {'origins': '*'}}, supports_credentials=True)
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
