@@ -93,7 +93,11 @@ def login():
         logger.info("Access token created")
         logger.debug(f'access_token: {access_token}')
         session['userid'] = user_data.userid
-        resp = jsonify({'login': True})
+        resp = jsonify({
+            'login': True,
+            'access_token': access_token,
+            'refresh_token': refresh_token
+        })
         set_access_cookies(resp, access_token)
         set_refresh_cookies(resp, refresh_token)
         return resp, 200
