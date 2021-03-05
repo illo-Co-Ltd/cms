@@ -1,7 +1,8 @@
+from datetime import datetime, timedelta, timezone
 import traceback
 from flask import Blueprint, request, jsonify, session, current_app, make_response
 from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, \
-    jwt_required, current_user
+    jwt_required, current_user, unset_jwt_cookies, get_jwt, get_jwt_identity, verify_jwt_in_request
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
 from model.db_base import db
@@ -17,7 +18,10 @@ jwt = current_app.extensions['flask-jwt-extended']
 
 @jwt.user_identity_loader
 def user_identity_lookup(user):
-    return user.id
+    if user:
+        return user.id
+    else:
+        return None
 
 
 @jwt.user_lookup_loader
@@ -29,6 +33,7 @@ def user_lookup_callback(_jwt_header, jwt_data):
 @auth_route.route("/whoami", methods=["GET"])
 @jwt_required()
 def whoami():
+    logger.info(f'Who am I? : {current_user}')
     return jsonify(
         id=current_user.id,
         userid=current_user.userid,
@@ -75,10 +80,31 @@ def register_user():
 
 
 @auth_route.route('/login', methods=['POST'])
+@jwt_required(optional=True)
 def login():
     logger.info("User Login")
-    if session.get('userid') is not None:
-        return jsonify({'message': f'Already logged in with {session.get("userid")}'}), 200
+    '''
+    try:
+        verify_jwt_in_request()
+        get_jwt_identity()
+    '''
+    logger.info(f'current_user:<{current_user}>')
+    # flask에 로그인된 유저가 있을 때
+    '''
+    if current_user is not None:
+        try:
+            verify_jwt_in_request()
+        except:
+            pass
+        access_token = create_access_token(identity=current_user)
+        resp = jsonify({
+            'login': True,
+            'msg': f'Already logged in as {current_user}. Refreshing token.',
+            'access_token': access_token,
+        })
+        set_access_cookies(resp, access_token)
+        return resp, 200
+        '''
 
     data = request.get_json()
     user_data = User.query.filter_by(userid=data.get('userid')).first()
@@ -92,9 +118,9 @@ def login():
         refresh_token = create_refresh_token(identity=user_data)
         logger.info("Access token created")
         logger.debug(f'access_token: {access_token}')
-        session['userid'] = user_data.userid
         resp = jsonify({
             'login': True,
+            'msg': 'New login',
             'access_token': access_token,
             'refresh_token': refresh_token
         })
@@ -106,8 +132,24 @@ def login():
         return jsonify({'message': 'User Does Not Exist', "authenticated": False}), 401
 
 
+@auth_route.after_request
+def refresh_expiring_jwts(resp):
+    try:
+        exp_timestamp = get_jwt()["exp"]
+        now = datetime.now(timezone.utc)
+        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
+        if target_timestamp > exp_timestamp:
+            access_token = create_access_token(identity=current_user)
+            set_access_cookies(resp, access_token)
+        return resp
+    except (RuntimeError, KeyError):
+        return resp
+
+
 @auth_route.route('/logout', methods=['POST'])
-# @jwt_required()
 def logout():
-    session.pop('userid', None)
-    return jsonify("Bye!")
+    resp = jsonify({
+        'msg': 'Logout successful.'
+    })
+    unset_jwt_cookies(resp)
+    return resp
