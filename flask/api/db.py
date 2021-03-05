@@ -1,15 +1,13 @@
 import os
 import datetime
+import json
 from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from deprecated import deprecated
 
-from model.db_base import db
-from model.company_model import Company
-from model.user_model import User
-from model.device_model import Device
-from model.project_model import Project
-from model.target_model import Target
-from model.image_model import Image
+from models.db_base import db
+from models.model import *
 
 from util.logger import logger
 
@@ -18,15 +16,20 @@ crud_route = Blueprint('crud_route', __name__)
 
 @crud_route.route('/company', methods=["GET"])
 @jwt_required()
-def read_company():
+def get_company():
     logger.info("Get company list")
-    company_list = Company.query.all()
-    return jsonify([x.to_dict() for x in company_list])
+    company_all = Company.query.all()
+    result = [x.to_dict() for x in company_all]
+    return jsonify({
+        'success': True,
+        'msg': f'Returned {len(result)} items.',
+        'data': result
+    }), 200
 
 
 @crud_route.route('/company', methods=["POST"])
 @jwt_required()
-def create_company():
+def post_company():
     logger.info("Register new company")
     try:
         data = request.get_json()
@@ -39,26 +42,41 @@ def create_company():
         )
         db.session.add(company)
         db.session.commit()
-        return jsonify(company.to_dict()), 200
+        return jsonify({
+            'success': True,
+            'msg': f'Posted company<{data.get("name")}> to db.',
+            'data': company.to_dict()
+        }), 200
     except ValueError as e:
         logger.error(e)
-        return jsonify({'message': 'Wrong date format for expiration_date.'}), 400
+        return jsonify({
+            'success': False,
+            'msg': 'Wrong date format for expiration_date.'
+        }), 400
     except Exception as e:
         logger.error(e)
-        return jsonify({'message': 'failed to register device'}), 200
+        return jsonify({
+            'success': False,
+            'msg': 'failed to register device'
+        }), 500
 
 
 @crud_route.route('/device', methods=["GET"])
 @jwt_required()
-def read_device():
+def get_device():
     logger.info("Get device list")
-    device_list = Device.query.all()
-    return jsonify([x.to_dict() for x in device_list])
+    device_all = Device.query.all()
+    result = [x.to_dict() for x in device_all]
+    return jsonify({
+        'success': True,
+        'msg': f'Returned {len(result)} items.',
+        'data': result
+    }), 200
 
 
 @crud_route.route('/device', methods=["POST"])
 @jwt_required()
-def create_device():
+def post_device():
     logger.info("Register new device")
     try:
         data = request.get_json()
@@ -81,23 +99,62 @@ def create_device():
         )
         db.session.add(device)
         db.session.commit()
-        return jsonify(device.to_dict()), 200
+        return jsonify({
+            'success': True,
+            'msg': f'Posted device<{data.get("serial")}> to db.',
+            'data': device.to_dict()
+        }), 200
     except Exception as e:
         logger.error(e)
-        return jsonify({'message': 'failed to register device'}), 200
+        return jsonify({
+            'success': False,
+            'msg': 'Failed to post device.'
+        }), 500
+
+
+@crud_route.route('/device_entry/<proj_name>', methods=["GET"])
+@jwt_required()
+def get_device_entry(proj_name):
+    logger.info("Get DeviceEntry list of specified project")
+    try:
+        pid = db.session.query(Project).filter_by(name=proj_name).one()
+    except NoResultFound as e:
+        logger.error(e)
+        return jsonify({
+            'success': False,
+            'msg': f'Cannot find project<{proj_name}>.',
+        }), 404
+    device_entry = db.session.query(DeviceEntry).filter_by(project=pid).all()
+    result = [x.to_dict() for x in device_entry]
+    return jsonify({
+        'success': True,
+        'msg': f'Returned {len(result)} items.',
+        'data': result
+    }), 200
+
+
+@crud_route.route('/device_entry', methods=["POST"])
+@jwt_required()
+def post_device_entry():
+    pass
 
 
 @crud_route.route('/project', methods=["GET"])
 @jwt_required()
-def read_project():
+def get_project():
     logger.info("Get project list")
-    project_list = Project.query.all()
-    return jsonify([x.to_dict() for x in project_list])
+    project_all = Project.query.all()
+    result = [x.to_dict() for x in project_all]
+    return jsonify({
+        'success': True,
+        'msg': f'Returned {len(result)} items.',
+        'data': result
+    }), 200
 
 
 @crud_route.route('/project', methods=["POST"])
 @jwt_required()
-def create_project():
+def post_project():
     logger.info("Register new project")
     try:
         data = request.get_json()
@@ -108,28 +165,41 @@ def create_project():
         )
         db.session.add(project)
         db.session.commit()
-        return jsonify(project.to_dict()), 200
+        return jsonify({
+            'success': True,
+            'msg': f'Posted project<{data.get("name")}> to db.',
+            'data': project.to_dict()
+        }), 200
     except Exception as e:
         logger.error(e)
-        return jsonify({'message': 'failed to register device'}), 200
+        return jsonify({
+            'success': False,
+            'msg': 'failed to register device'
+        }), 500
 
 
 @crud_route.route('/target', methods=["GET"])
 @jwt_required()
-def read_target():
+def get_target():
     logger.info("Get target list")
-    target_list = Target.query.all()
-    return jsonify([x.to_dict() for x in target_list])
+    target_all = Target.query.all()
+    result = [x.to_dict() for x in target_all]
+    return jsonify({
+        'success': True,
+        'msg': f'Returned {len(result)} items.',
+        'data': result
+    }), 200
 
 
 @crud_route.route('/target', methods=["POST"])
 @jwt_required()
-def create_target():
+def post_target():
     logger.info("Register new target")
     try:
         data = request.get_json()
+        pid = db.session.query(Project).filter_by(name=data.get("project")).one().id
         target = Target(
-            project=db.session.query(Project).filter_by(name=data.get("project")).one().id,
+            project=pid,
             type=data.get('type'),
             detail=data.get('detail'),
             name=data.get('name'),
@@ -137,31 +207,48 @@ def create_target():
         )
         db.session.add(target)
         db.session.commit()
-        return jsonify(target.to_dict()), 200
+        return jsonify({
+            'success': True,
+            'msg': f'Posted target<{data.get("name")}> to db.',
+            'data': target.to_dict()
+        }), 200
+    except NoResultFound as e:
+        logger.error(e)
+        return jsonify({
+            'success': False,
+            'msg': f'Cannot find project<{data.get("project")}>.',
+        }), 404
     except Exception as e:
         logger.error(e)
-        return jsonify({'message': 'failed to register device'}), 200
+        return jsonify({
+            'success': False,
+            'msg': 'failed to register device'
+        }), 500
 
 
 @crud_route.route('/image', methods=['GET'])
 @jwt_required()
-def read_image():
+def get_image():
     logger.info('Get image list')
-    image_list = Image.query.all()
-    return jsonify([x.to_dict() for x in image_list])
+    image_all = Image.query.all()
+    result = [x.to_dict() for x in image_all]
+    return jsonify({
+        'success': True,
+        'msg': f'Returned {len(result)} items.',
+        'data': result
+    }), 200
 
 
 @crud_route.route('/image/tree', methods=['GET'])
 @jwt_required()
-def read_tree():
+def get_tree():
     logger.info('Get hierachical structure of image.')
     if not db.session.query(Project).first():
-        ret = {
-            'type': 'company',
-            'name': 'illo',
-            'children': []
-        }
-        return jsonify(ret)
+        return jsonify({
+            'success': True,
+            'msg': 'There is no project.',
+            'data': {}
+        }), 200
     with db.engine.connect() as conn:
         res = conn.execute(
             """select json_object(
@@ -187,7 +274,6 @@ from project p
     group by t.id
 ) t on t.project = p.id
 group by p.id;""")
-        import json
         rows = [dict(row)['json'] for row in res]
         logger.info(type(rows))
         logger.info(type(rows[0]))
@@ -196,9 +282,14 @@ group by p.id;""")
             'name': 'illo',
             'children': [json.loads(row) for row in rows]
         }
-        return jsonify(ret)
+        return jsonify({
+            'success': True,
+            'msg': 'Returned structured tree.',
+            'data': ret
+        }), 200
 
 
+@deprecated
 @crud_route.route('/image/test', methods=['GET'])
 def create_test():
     from datetime import datetime, timedelta

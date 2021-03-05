@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify, current_app
 
-from model.db_base import db
-from model.company_model import Company
-from model.user_model import User
-from model.device_model import Device
-from model.project_model import Project
-from model.target_model import Target
-from model.image_model import Image
+from models.db_base import db
+from models.company_model import Company
+from models.user_model import User
+from models.device_model import Device
+from models.project_model import Project
+from models.target_model import Target
+from models.image_model import Image
 
 from .taskmanager import celery_app
 from util.logger import logger

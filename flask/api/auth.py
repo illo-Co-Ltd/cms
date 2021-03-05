@@ -3,9 +3,9 @@ from flask import Blueprint, request, jsonify, session, current_app, make_respon
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, current_user
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
-from model.db_base import db
-from model.user_model import User
-from model.company_model import Company
+from models.db_base import db
+from models.user_model import User
+from models.company_model import Company
 
 from app import jwt
 from util.logger import logger

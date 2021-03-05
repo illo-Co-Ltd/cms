@@ -2,7 +2,7 @@ from .db_base import db, env
 
 
 class DeviceEntry(db.Model):
-    __tablename__ = 'device'
+    __tablename__ = 'device_entry'
 
     id = db.Column(db.Integer, primary_key=True)
     device = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), nullable=False, index=True)

@@ -9,7 +9,11 @@ from flaskconfig import *
 from util.logger import logger
 
 # instantiate the app
+from flask_restplus import Api, Resource, fields
+
 app = Flask(__name__)
+api = Api(app, version='1.0', title='illo API', description='API for DB access and device control')
+
 try:
     app.config.from_object(configmap[app.config['ENV']]())
 except KeyError:
@@ -18,13 +22,13 @@ except KeyError:
 
 # initialize db
 with app.app_context():
-    from model import db_base
+    from models import db_base
 
     db_base.db.init_app(app)
     db_base.db.create_all()
 
     if app.env == 'development':
-        from model import Company, Device, User
+        from models import Company, Device, User
         import datetime
 
         db = db_base.db
@@ -51,10 +55,10 @@ jwt = JWTManager(app)
 
 
 def add_blueprints():
-    from route.auth import auth_route
-    from route.check import check_route
-    from route.crud import crud_route
-    from route.camera import camera_route
+    from api.auth import auth_route
+    from api.check import check_route
+    from api.crud import crud_route
+    from api.camera import camera_route
     from tasks.task_callback import task_callback_route
 
     app.register_blueprint(check_route, url_prefix='/')

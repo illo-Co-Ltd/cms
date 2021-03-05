@@ -7,10 +7,10 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
 from tasks import cam_task
-from model.db_base import db
-from model.target_model import Target
-from model.project_model import Project
-from model.device_model import Device
+from models.db_base import db
+from models.target_model import Target
+from models.project_model import Project
+from models.device_model import Device
 from util.logger import logger
 
 camera_route = Blueprint('camera_route', __name__)
