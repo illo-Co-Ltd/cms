@@ -14,8 +14,8 @@ class DeviceEntry(db.Model):
                                backref='device_id_device_entry_device')
     r_project = db.relationship('Project', primaryjoin='DeviceEntry.project == Project.id',
                                 backref='project_id_device_entry_project')
-    r_created_by = db.relationship('User', primaryjoin='Device.created_by == User.id',
-                                   backref='user_id_device_create_by')
+    r_created_by = db.relationship('User', primaryjoin='DeviceEntry.created_by == User.id',
+                                   backref='user_id_device_entry_create_by')
 
     def __repr__(self):
         return f'<DeviceEntry device[{self.device}] | proj[{self.project}]>'

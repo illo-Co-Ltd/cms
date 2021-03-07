@@ -11,10 +11,10 @@ from models.model import *
 
 from util.logger import logger
 
-crud_route = Blueprint('crud_route', __name__)
+db_route = Blueprint('crud_route', __name__)
 
 
-@crud_route.route('/company', methods=["GET"])
+@db_route.route('/company', methods=["GET"])
 @jwt_required()
 def get_company():
     logger.info("Get company list")
@@ -27,7 +27,7 @@ def get_company():
     }), 200
 
 
-@crud_route.route('/company', methods=["POST"])
+@db_route.route('/company', methods=["POST"])
 @jwt_required()
 def post_company():
     logger.info("Register new company")
@@ -61,7 +61,7 @@ def post_company():
         }), 500
 
 
-@crud_route.route('/device', methods=["GET"])
+@db_route.route('/device', methods=["GET"])
 @jwt_required()
 def get_device():
     logger.info("Get device list")
@@ -74,7 +74,7 @@ def get_device():
     }), 200
 
 
-@crud_route.route('/device', methods=["POST"])
+@db_route.route('/device', methods=["POST"])
 @jwt_required()
 def post_device():
     logger.info("Register new device")
@@ -112,7 +112,7 @@ def post_device():
         }), 500
 
 
-@crud_route.route('/device_entry/<proj_name>', methods=["GET"])
+@db_route.route('/device_entry/<proj_name>', methods=["GET"])
 @jwt_required()
 def get_device_entry(proj_name):
     logger.info("Get DeviceEntry list of specified project")
@@ -133,13 +133,13 @@ def get_device_entry(proj_name):
     }), 200
 
 
-@crud_route.route('/device_entry', methods=["POST"])
+@db_route.route('/device_entry', methods=["POST"])
 @jwt_required()
 def post_device_entry():
     pass
 
 
-@crud_route.route('/project', methods=["GET"])
+@db_route.route('/project', methods=["GET"])
 @jwt_required()
 def get_project():
     logger.info("Get project list")
@@ -152,7 +152,7 @@ def get_project():
     }), 200
 
 
-@crud_route.route('/project', methods=["POST"])
+@db_route.route('/project', methods=["POST"])
 @jwt_required()
 def post_project():
     logger.info("Register new project")
@@ -178,7 +178,7 @@ def post_project():
         }), 500
 
 
-@crud_route.route('/target', methods=["GET"])
+@db_route.route('/target', methods=["GET"])
 @jwt_required()
 def get_target():
     logger.info("Get target list")
@@ -191,7 +191,7 @@ def get_target():
     }), 200
 
 
-@crud_route.route('/target', methods=["POST"])
+@db_route.route('/target', methods=["POST"])
 @jwt_required()
 def post_target():
     logger.info("Register new target")
@@ -226,7 +226,7 @@ def post_target():
         }), 500
 
 
-@crud_route.route('/image', methods=['GET'])
+@db_route.route('/image', methods=['GET'])
 @jwt_required()
 def get_image():
     logger.info('Get image list')
@@ -239,7 +239,7 @@ def get_image():
     }), 200
 
 
-@crud_route.route('/image/tree', methods=['GET'])
+@db_route.route('/image/tree', methods=['GET'])
 @jwt_required()
 def get_tree():
     logger.info('Get hierachical structure of image.')
@@ -290,7 +290,7 @@ group by p.id;""")
 
 
 @deprecated
-@crud_route.route('/image/test', methods=['GET'])
+@db_route.route('/image/test', methods=['GET'])
 def create_test():
     from datetime import datetime, timedelta
     comp = db.session.query(Company).first() or Company(

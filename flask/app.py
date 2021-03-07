@@ -9,10 +9,10 @@ from flaskconfig import *
 from util.logger import logger
 
 # instantiate the app
-from flask_restplus import Api, Resource, fields
+# from flask_restplus import Api, Resource, fields
 
 app = Flask(__name__)
-api = Api(app, version='1.0', title='illo API', description='API for DB access and device control')
+# api = Api(app, version='1.0', title='illo API', description='API for DB access and device control')
 
 try:
     app.config.from_object(configmap[app.config['ENV']]())
@@ -57,13 +57,13 @@ jwt = JWTManager(app)
 def add_blueprints():
     from api.auth import auth_route
     from api.check import check_route
-    from api.crud import crud_route
+    from api.db import db_route
     from api.camera import camera_route
     from tasks.task_callback import task_callback_route
 
     app.register_blueprint(check_route, url_prefix='/')
     app.register_blueprint(auth_route, url_prefix='/auth')
-    app.register_blueprint(crud_route, url_prefix='/api')
+    app.register_blueprint(db_route, url_prefix='/api')
     app.register_blueprint(camera_route, url_prefix='/api/camera')
     app.register_blueprint(task_callback_route, url_prefix='/task_callback')
 
