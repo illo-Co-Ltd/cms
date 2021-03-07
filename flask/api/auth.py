@@ -124,8 +124,8 @@ def login():
             'access_token': access_token,
             'refresh_token': refresh_token
         })
-        set_access_cookies(resp, access_token)
-        set_refresh_cookies(resp, refresh_token)
+        #set_access_cookies(resp, access_token)
+        #set_refresh_cookies(resp, refresh_token)
         return resp, 200
     else:
         logger.error("User Does Not Exist")
