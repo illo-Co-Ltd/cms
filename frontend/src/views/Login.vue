@@ -9,17 +9,20 @@
           </div>
           <form role="form">
               <base-input alternative
+                          v-model="userid"
                           class="mb-3"
                           placeholder="ID"
                           addon-left-icon="ni ni-circle-08">
               </base-input>
               <base-input alternative
+                          v-model="password"
                           type="password"
                           placeholder="Password"
                           addon-left-icon="ni ni-lock-circle-open">
               </base-input>
               <div class="text-center">
-                  <base-button block type="success" class="my-4">Log In</base-button>
+                  <base-button @click="logIn()"
+                               block type="success" class="my-4">Log In</base-button>
               </div>
           </form>
         </template>   
@@ -41,10 +44,43 @@
 </template>
 <script>
 import BaseButton from '../components/BaseButton.vue'
+import axios from 'axios';
 
 export default {
   components: {
     BaseButton,
+  },
+  data() {
+    return{
+      userid: '',
+      password: '',
+    }
+  },
+  methods: {
+    logIn() {
+      const userid = this.userid
+      const password = this.password
+
+      if(!userid || !password) return false;
+
+      axios.post('server/auth/login',
+          {userid, password},
+          {withCredentials: true}
+      ).then((response) => {
+        if(response.status == 200) {
+          console.log(response);
+          this.$store.state.auth.login = true
+          this.$store.state.auth.userid = userid
+          axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`
+          this.$router.push('/')
+        } else {
+          console.log(response.data.message)
+        }
+      }).catch((e) => {
+        console.log("err:",e)
+      })
+
+    }
   }
 }
 </script>
