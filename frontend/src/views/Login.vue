@@ -44,7 +44,6 @@
 </template>
 <script>
 import BaseButton from '../components/BaseButton.vue'
-import axios from 'axios';
 
 export default {
   components: {
@@ -60,26 +59,8 @@ export default {
     logIn() {
       const userid = this.userid
       const password = this.password
-
       if(!userid || !password) return false;
-
-      axios.post('server/auth/login',
-          {userid, password},
-          {withCredentials: true}
-      ).then((response) => {
-        if(response.status == 200) {
-          console.log(response);
-          this.$store.state.auth.login = true
-          this.$store.state.auth.userid = userid
-          axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.access_token}`
-          this.$router.push('/')
-        } else {
-          console.log(response.data.message)
-        }
-      }).catch((e) => {
-        console.log("err:",e)
-      })
-
+      this.$store.dispatch("login", {userid, password})
     }
   }
 }

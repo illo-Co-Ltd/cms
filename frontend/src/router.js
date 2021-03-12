@@ -6,7 +6,7 @@ import ManageLayout from '@/layout/ManageLayout'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   linkExactActiveClass: 'active',
   routes: [
     {
@@ -17,19 +17,28 @@ export default new Router({
         {
           path: '/dashboard',
           name: 'dashboard',
-          
+          beforeEnter: function(to, from, next) {
+            if(sessionStorage.getItem("access_token") != null)
+              return next();
+            next('/login')
+          }
         },
       ],
     },
     {
       path: '/',
-      redirect: 'login',
+      redirect: 'auth',
       component: MyAuthLayout,
       children: [
         {
           path: '/login',
           name: 'login',
-          component: () => import('./views/Login.vue')
+          component: () => import('./views/Login.vue'),
+          beforeEnter: function(to, from, next) {
+            if(sessionStorage.getItem("access_token") != null)
+              return next('/dashboard')
+            next()              
+          }
         },
         {
           path: '/register',
@@ -52,3 +61,13 @@ export default new Router({
     }
   ]
 })
+
+// router.beforeEach((to, from, next) => {
+//   if(sessionStorage.getItem("access_token") != null) {
+//     return next();
+//   }
+  
+//   return next('/login')
+// })
+
+export default router

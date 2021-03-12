@@ -31,5 +31,8 @@ Vue.use(ArgonDashboard)
 new Vue({
   store,
   router,
+  beforeCreate() {
+    this.$store.dispatch("getMemberInfo")
+  },
   render: h => h(App)
 }).$mount('#app')
