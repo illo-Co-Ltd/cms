@@ -5,9 +5,7 @@ const state = {
   isLogin: false,
 }
 const mutations = {
-  loginSuccess() {
-    
-  }
+  
 }
 const actions = {
   // login request
@@ -19,14 +17,13 @@ const actions = {
           // login success
           let access_token = res.data.access_token
           sessionStorage.setItem("access_token", access_token)
-        } else {
+        } else if(res.status == 401) {
           alert(res.data.message)
         }
-        dispatch()
-      })
-      .catch(() => {
-        console.log("?")
         router.push('/dashboard')
+      })
+      .catch((e) => {
+        console.log("err:",e)
       })
   },
   logout() {

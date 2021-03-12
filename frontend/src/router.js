@@ -27,7 +27,7 @@ const router = new Router({
     },
     {
       path: '/',
-      redirect: 'auth',
+      redirect: 'login',
       component: MyAuthLayout,
       children: [
         {
@@ -64,9 +64,11 @@ const router = new Router({
 
 // router.beforeEach((to, from, next) => {
 //   if(sessionStorage.getItem("access_token") != null) {
+//     console.log("11")
 //     return next();
 //   }
-  
+
+//   console.log("22")
 //   return next('/login')
 // })
 
