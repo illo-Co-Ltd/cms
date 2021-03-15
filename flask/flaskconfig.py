@@ -17,6 +17,9 @@ class DevelopmentConfig(Config):
     FLASK_APP = 'app.py'
     FLASK_RUN_PORT = 5000
 
+    # router
+    SWAGGER_UI_DOC_EXPANSION = 'list'
+
     # ORM
     SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:1010@db:3306/cms'
     SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -1,12 +1,12 @@
 from flask import Blueprint, request, jsonify, current_app
 
-from models.db_base import db
-from models.company_model import Company
-from models.user_model import User
-from models.device_model import Device
-from models.project_model import Project
-from models.target_model import Target
-from models.image_model import Image
+from model.db_base import db
+from model.company_model import Company
+from model.user_model import User
+from model.device_model import Device
+from model.project_model import Project
+from model.cell_model import Cell
+from model.image_model import Image
 
 from .taskmanager import celery_app
 from util.logger import logger
@@ -23,7 +23,7 @@ def on_capture_success(task_id):
         res.forget()
         logger.info(f'data: {data}')
         image = Image(
-            target=data.get('target'),
+            cell=data.get('cell'),
             path=data.get('path'),
             device=data.get('device'),
             created=data.get('created'),
@@ -43,9 +43,11 @@ def on_capture_success(task_id):
         logger.error(e)
         return jsonify('Failed to register image record'), 200
 
+
 @task_callback_route.route('/on_capture_failure', methods=['GET'])
 def on_capture_failure():
     logger.warning('Task failed')
+
 
 @task_callback_route.route('/', methods=["GET"])
 def list_company():

@@ -7,10 +7,10 @@ from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 
 from tasks import cam_task
-from models.db_base import db
-from models.target_model import Target
-from models.project_model import Project
-from models.device_model import Device
+from model.db_base import db
+from model.cell_model import Cell
+from model.project_model import Project
+from model.device_model import Device
 from util.logger import logger
 
 camera_route = Blueprint('camera_route', __name__)
@@ -26,7 +26,7 @@ def capture():
     try:
         data = request.get_json()
         project = data.get('project')
-        target = data.get('target')
+        cell = data.get('cell')
         device = data.get('device')
         label = data.get('label')
         debug = data.get('debug')
@@ -34,17 +34,17 @@ def capture():
         # skip integrity check if debugging
         if not debug:
             pid = db.session.query(Project).filter_by(name=project).one()
-            tid = db.session.query(Target) \
+            tid = db.session.query(Cell) \
                 .filter_by(project=pid.id) \
-                .filter_by(name=target).one()
+                .filter_by(name=cell).one()
             did = db.session.query(Device).filter_by(serial=device).one()
             task_id = cam_task.capture_send(header=f'{pid.shorthand}_{tid.name}',
-                                            data={'target': tid.id,
+                                            data={'cell': tid.id,
                                                   'device': did.id,
                                                   'label': label})
         else:
-            task_id = cam_task.capture_send(header=f'{project}_{target}',
-                                            data={'target': None,
+            task_id = cam_task.capture_send(header=f'{project}_{cell}',
+                                            data={'cell': None,
                                                   'device': None,
                                                   'label': None})
         return jsonify(task_id)
@@ -64,7 +64,7 @@ def start_timelapse():
     try:
         data = request.get_json()
         project = data.get('project')
-        target = data.get('target')
+        cell = data.get('cell')
         device = data.get('device')
         label = data.get('label')
         run_every = data.get('run_every')
@@ -78,23 +78,23 @@ def start_timelapse():
                 'run_every': run_every,
                 'expire_at': None,
                 'data': {
-                    'target': None,
+                    'cell': None,
                     'device': None,
                     'label': None
                 }
             }
         else:
             pid = db.session.query(Project).filter_by(name=project).one()
-            tid = db.session.query(Target) \
+            tid = db.session.query(Cell) \
                 .filter_by(project=pid.id) \
-                .filter_by(name=target).one()
+                .filter_by(name=cell).one()
             did = db.session.query(Device).filter_by(serial=device).one()
             kwargs = {
                 'header': pid.shorthand,
                 'run_every': run_every,
                 'expire_at': expire_at,
                 'data': {
-                    'target': tid.id,
+                    'cell': tid.id,
                     'device': did.id,
                     'label': label
                 }

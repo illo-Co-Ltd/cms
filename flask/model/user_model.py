@@ -23,7 +23,8 @@ class User(db.Model):
     is_admin = db.Column(db.Integer)
     is_deleted = db.Column(db.Integer)
 
-    r_company = db.relationship('Company', primaryjoin='User.company == Company.id', backref='user_company_company_id')
+    r_company = db.relationship('Company', primaryjoin='User.company == Company.id', backref='user_company_company_id',
+                                uselist=False)
 
     def __repr__(self):
         return f'<User {self.username}>'
