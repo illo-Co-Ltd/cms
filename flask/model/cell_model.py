@@ -18,7 +18,7 @@ class Cell(db.Model):
                                 backref='cell_project_project_id')
 
     def __repr__(self):
-        return f'<Cell {self.type} | {self.detail} | {self.name}>'
+        return f'<Cell {self.project} | {self.type} | {self.detail} | {self.name}>'
 
     def to_dict(self):
         return dict(

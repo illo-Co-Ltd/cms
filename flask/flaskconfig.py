@@ -16,6 +16,7 @@ class DevelopmentConfig(Config):
     DEBUG = True
     FLASK_APP = 'app.py'
     FLASK_RUN_PORT = 5000
+    BASE_URL = 'localhost:8080'
 
     # router
     SWAGGER_UI_DOC_EXPANSION = 'list'

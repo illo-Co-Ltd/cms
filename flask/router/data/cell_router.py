@@ -25,6 +25,7 @@ class Cell(Resource):
                 'detail': request.args.get('detail'),
                 'name': request.args.get('name'),
             })
+            logger.info(result)
             return result
         except Exception:
             api.abort(404)

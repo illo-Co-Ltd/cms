@@ -1,3 +1,4 @@
+from flask import jsonify
 from sqlalchemy.orm.exc import NoResultFound
 from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, \
     jwt_required, current_user, unset_jwt_cookies, get_jwt, get_jwt_identity, verify_jwt_in_request
@@ -48,29 +49,6 @@ def delete_user(data):
 
 def login_user(data):
     logger.info("User Login")
-    '''
-    try:
-        verify_jwt_in_request()
-        get_jwt_identity()
-    '''
-    logger.info(f'current_user:<{current_user}>')
-    # flask에 로그인된 유저가 있을 때
-    '''
-    if current_user is not None:
-        try:
-            verify_jwt_in_request()
-        except:
-            pass
-        access_token = create_access_token(identity=current_user)
-        resp = {
-            'login': True,
-            'msg': f'Already logged in as {current_user}. Refreshing token.',
-            'access_token': access_token,
-        }
-        set_access_cookies(resp, access_token)
-        return resp, 200
-        '''
-
     user_data = User.query.filter_by(userid=data.get('userid')).first()
 
     if user_data is not None:
@@ -82,14 +60,14 @@ def login_user(data):
         refresh_token = create_refresh_token(identity=user_data)
         logger.info("Access token created")
         logger.debug(f'access_token: {access_token}')
-        resp = {
+        resp = jsonify({
             'login': True,
             'msg': 'New login',
             'access_token': access_token,
             'refresh_token': refresh_token
-        }
-        # set_access_cookies(resp, access_token)
-        # set_refresh_cookies(resp, refresh_token)
+        })
+        set_access_cookies(resp, access_token)
+        set_refresh_cookies(resp, refresh_token)
         return resp, 200
     else:
         logger.error("User Does Not Exist")

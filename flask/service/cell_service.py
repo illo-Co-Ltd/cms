@@ -1,12 +1,14 @@
 from model.db_base import db
 from model.model_import import Project, Cell
 
-from util import logger
+from util.logger import logger
 
 
 def read_cell(data):
     logger.info('Get cell list')
-    query = db.session.query(Cell).filter_by(**data).all()
+    logger.info(f'Filter: {data}')
+    condition = {k: v for k, v in data.items() if v is not None}
+    query = db.session.query(Cell).filter_by(**condition).all()
     return query
 
 
