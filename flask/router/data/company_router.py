@@ -12,15 +12,14 @@ _company = CompanyDTO.company
 
 
 @api.route('/')
-class Cell(Resource):
-    @api.doc('query cell with filters')
+class Company(Resource):
+    @api.doc('query company with filters')
     @jwt_required()
     def get(self):
         result = read_company({
-            'project': request.args.get('project'),
-            'type': request.args.get('type'),
-            'detail': request.args.get('detail'),
             'name': request.args.get('name'),
+            'subscription': request.args.get('subscription'),
+            'expiration_date': request.args.get('expiration_date'),
         })
         return ({
             'message': f'Returned {len(result)} items.',
@@ -31,10 +30,9 @@ class Cell(Resource):
     def post(self):
         data = request.get_json()
         try:
-            create_cell(data)
-            return {'message': f'Posted cell<{data.get("name")}> to db.'}, 200
-        except NoResultFound as e:
-            api.abort(404, message=f'Cannot find project<{data.get("project")}>.')
-        except Exception as e:
-            logger.error(e)
-            api.abort(500, message='failed to register device')
+            create_company(data)
+            return {'message': f'Posted company<{data.get("name")}> to db.'}, 200
+        except ValueError:
+            api.abort(400, message='Wrong date format for expiration_date.')
+        except Exception:
+            api.abort(500, message='failed to register company')

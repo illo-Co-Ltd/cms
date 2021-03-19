@@ -1,17 +1,17 @@
-from flask import request, Blueprint
+from flask import request
 from flask_restplus import Resource
+from flask_jwt_extended import jwt_required, current_user
 
 from .util.dto import UserDTO
 from .util.jwt import unset_jwt
 from service.auth_service import *
 
 api = UserDTO.api
-bp = Blueprint('auth', __name__, url_prefix='/auth')
 _user = UserDTO.user
 
 
-@api.route('')
-class UserAuth(Resource):
+@api.route('/user')
+class User(Resource):
     @api.doc('Get current user')
     @api.marshal_with(_user, mask='userid,username,company')
     @jwt_required()
@@ -33,17 +33,22 @@ class UserAuth(Resource):
             api.abort(500, reason=e)
 
 
-@bp.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    return login_user(data)
+@api.route('/login')
+class Login(Resource):
+    @api.doc('Login')
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    def post(self):
+        data = request.get_json()
+        return login_user(data)
 
 
-@bp.route('/logout', methods=['POST'])
-def logout():
-    resp = {
-        'msg': 'Logout successful.'
-    }
-    return unset_jwt(resp)
-
-
+@api.route('/logout')
+class Logout(Resource):
+    @api.doc('Logout')
+    @api.response(200, 'OK')
+    def get(self):
+        resp = {
+            'msg': 'Logout successful.'
+        }
+        return unset_jwt(resp)

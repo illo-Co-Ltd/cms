@@ -2,6 +2,7 @@ from flask_bcrypt import generate_password_hash, check_password_hash
 from .db_base import db, env
 
 
+# noinspection PyAttributeOutsideInit
 class User(db.Model):
     __tablename__ = 'user'
 
@@ -10,12 +11,12 @@ class User(db.Model):
         userid = db.Column(db.String(16, 'utf8mb4_unicode_ci'), unique=True)
         password = db.Column(db.String(60, 'utf8mb4_unicode_ci'))
         username = db.Column(db.String(16, 'utf8mb4_unicode_ci'))
-        company = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), index=True)
+        company_id = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), index=True)
     else:
         userid = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
         password = db.Column(db.String(60, 'utf8mb4_unicode_ci'), nullable=False)
         username = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
-        company = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), nullable=False, index=True)
+        company_id = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), nullable=False, index=True)
     created = db.Column(db.DateTime)
     created_by = db.Column(db.Integer)
     last_edited = db.Column(db.DateTime)
@@ -23,8 +24,8 @@ class User(db.Model):
     is_admin = db.Column(db.Integer)
     is_deleted = db.Column(db.Integer)
 
-    r_company = db.relationship('Company', primaryjoin='User.company == Company.id', backref='user_company_company_id',
-                                uselist=False)
+    company = db.relationship('Company', primaryjoin='User.company_id == Company.id', backref='user_company_company_id',
+                              uselist=False)
 
     def __repr__(self):
         return f'<User {self.username}>'

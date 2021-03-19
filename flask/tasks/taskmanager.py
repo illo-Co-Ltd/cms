@@ -1,8 +1,7 @@
-import os
 from celery import Celery
 
 from . import celeryconfig
-from util import logger
+from util.logger import logger
 
 celery_app = Celery('cam_worker')
 celery_app.config_from_object(celeryconfig)

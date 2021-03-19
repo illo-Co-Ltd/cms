@@ -1,11 +1,6 @@
 from flask import Blueprint, request, jsonify, current_app
 
 from model.db_base import db
-from model.company_model import Company
-from model.user_model import User
-from model.device_model import Device
-from model.project_model import Project
-from model.cell_model import Cell
 from model.image_model import Image
 
 from .taskmanager import celery_app
@@ -47,15 +42,3 @@ def on_capture_success(task_id):
 @task_callback_route.route('/on_capture_failure', methods=['GET'])
 def on_capture_failure():
     logger.warning('Task failed')
-
-
-@task_callback_route.route('/', methods=["GET"])
-def list_company():
-    logger.info("Get company list")
-    return 200
-
-
-@task_callback_route.route('/company', methods=["POST"])
-def register_company():
-    logger.info("Register new company")
-    return 200

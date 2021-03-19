@@ -6,11 +6,11 @@ class Image(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     if env == 'development':
-        cell = db.Column(db.ForeignKey('cell.id', onupdate='CASCADE'), index=True)
+        cell_id = db.Column(db.ForeignKey('cell.id', onupdate='CASCADE'), index=True)
         path = db.Column(db.String(260, 'utf8mb4_unicode_ci'), unique=True)
-        device = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), index=True)
+        device_id = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), index=True)
         created = db.Column(db.DateTime)
-        created_by = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
+        created_by_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
         label = db.Column(db.String(20, 'utf8mb4_unicode_ci'))
         offset_x = db.Column(db.Integer)
         offset_y = db.Column(db.Integer)
@@ -19,11 +19,11 @@ class Image(db.Model):
         pos_y = db.Column(db.Integer)
         pos_z = db.Column(db.Integer)
     else:
-        cell = db.Column(db.ForeignKey('cell.id', onupdate='CASCADE'), nullable=False, index=True)
+        cell_id = db.Column(db.ForeignKey('cell.id', onupdate='CASCADE'), nullable=False, index=True)
         path = db.Column(db.String(260, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-        device = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), nullable=False, index=True)
+        device_id = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), nullable=False, index=True)
         created = db.Column(db.DateTime, nullable=False)
-        created_by = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
+        created_by_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
         label = db.Column(db.String(20, 'utf8mb4_unicode_ci'))
         offset_x = db.Column(db.Integer, nullable=False)
         offset_y = db.Column(db.Integer, nullable=False)
@@ -32,12 +32,12 @@ class Image(db.Model):
         pos_y = db.Column(db.Integer, nullable=False)
         pos_z = db.Column(db.Integer, nullable=False)
 
-    r_created_by = db.relationship('User', primaryjoin='Image.created_by == User.id', backref='image_create_by_user_id')
-    r_device = db.relationship('Device', primaryjoin='Image.device == Device.id', backref='image_device_device_id')
-    r_cell = db.relationship('Cell', primaryjoin='Image.cell == Cell.id', backref='image_cell_cell_id')
+    created_by = db.relationship('User', primaryjoin='Image.created_by_id == User.id', backref='images')
+    device = db.relationship('Device', primaryjoin='Image.device_id == Device.id', backref='images')
+    cell = db.relationship('Cell', primaryjoin='Image.cell_id == Cell.id', backref='images')
 
     def __repr__(self):
-        return f'<Image {self.project} | {self.cell} | {self.path}>'
+        return f'<Image {self.project} | {self.cell_id} | {self.path}>'
 
     def to_dict(self):
         return dict(

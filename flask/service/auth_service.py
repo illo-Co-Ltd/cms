@@ -1,7 +1,6 @@
-from flask import jsonify
+from flask import after_this_request
 from sqlalchemy.orm.exc import NoResultFound
-from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, \
-    jwt_required, current_user, unset_jwt_cookies, get_jwt, get_jwt_identity, verify_jwt_in_request
+from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies
 import traceback
 
 from model.db_base import db
@@ -47,6 +46,14 @@ def delete_user(data):
     pass
 
 
+def _set_cookies(access_token, refresh_token):
+    @after_this_request
+    def _internal(response):
+        set_access_cookies(response, access_token)
+        set_refresh_cookies(response, refresh_token)
+        return response
+
+
 def login_user(data):
     logger.info("User Login")
     user_data = User.query.filter_by(userid=data.get('userid')).first()
@@ -60,19 +67,14 @@ def login_user(data):
         refresh_token = create_refresh_token(identity=user_data)
         logger.info("Access token created")
         logger.debug(f'access_token: {access_token}')
-        resp = jsonify({
+        resp = {
             'login': True,
             'msg': 'New login',
             'access_token': access_token,
             'refresh_token': refresh_token
-        })
-        set_access_cookies(resp, access_token)
-        set_refresh_cookies(resp, refresh_token)
+        }
+        _set_cookies(access_token, refresh_token)
         return resp, 200
     else:
         logger.error("User Does Not Exist")
         return {'message': 'User Does Not Exist', "authenticated": False}, 401
-
-
-def logout_user(data):
-    pass

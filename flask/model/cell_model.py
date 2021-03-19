@@ -5,7 +5,7 @@ class Cell(db.Model):
     __tablename__ = 'cell'
 
     id = db.Column(db.Integer, primary_key=True)
-    project = db.Column(db.ForeignKey('project.id', onupdate='CASCADE'), index=True)
+    project_id = db.Column(db.ForeignKey('project.id', onupdate='CASCADE'), index=True)
     type = db.Column(db.String(16, 'utf8mb4_unicode_ci'))
     detail = db.Column(db.String(16, 'utf8mb4_unicode_ci'))
     if env == 'development':
@@ -14,8 +14,8 @@ class Cell(db.Model):
         name = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
     description = db.Column(db.String(200, 'utf8mb4_unicode_ci'))
 
-    r_project = db.relationship('Project', primaryjoin='Cell.project == Project.id',
-                                backref='cell_project_project_id')
+    project = db.relationship('Project', primaryjoin='Cell.project_id == Project.id',
+                              backref='cells')
 
     def __repr__(self):
         return f'<Cell {self.project} | {self.type} | {self.detail} | {self.name}>'

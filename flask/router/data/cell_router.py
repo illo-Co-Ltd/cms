@@ -27,8 +27,8 @@ class Cell(Resource):
             })
             logger.info(result)
             return result
-        except Exception:
-            api.abort(404)
+        except Exception as e:
+            api.abort(404, reason=e)
 
     @api.doc('query cell with filters')
     @api.response(201, 'Created')
@@ -38,9 +38,8 @@ class Cell(Resource):
     def post(self):
         data = request.get_json()
         try:
-            return create_cell(data), 201
-        except NoResultFound as e:
+            return create_cell(data)
+        except NoResultFound:
             api.abort(400, message=f'Cannot find project<{data.get("project")}>.')
-        except Exception as e:
-            logger.error(e)
-            api.abort(500, message='Failed to register device')
+        except Exception:
+            api.abort(500, message='Failed to register cell')

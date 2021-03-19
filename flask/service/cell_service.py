@@ -17,7 +17,7 @@ def create_cell(data):
     try:
         pid = db.session.query(Project).filter_by(name=data.get('project')).one().id
         cell = Cell(
-            project=pid,
+            project_id=pid,
             type=data.get('type'),
             detail=data.get('detail'),
             name=data.get('name'),
@@ -25,7 +25,7 @@ def create_cell(data):
         )
         db.session.add(cell)
         db.session.commit()
-        return {'message': f'Posted cell<{data.get("name")}> to db.'}
+        return {'message': f'Posted cell<{data.get("name")}> to db.'}, 201
     except Exception as e:
         logger.error(e)
         raise e
