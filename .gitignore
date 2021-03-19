@@ -1,6 +1,5 @@
 .idea/
 **/.env*
-./data/
 data/
 **/__pycache__
 media/volume

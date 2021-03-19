@@ -6,7 +6,7 @@ class Image(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     if env == 'development':
-        target = db.Column(db.ForeignKey('target.id', onupdate='CASCADE'), index=True)
+        cell = db.Column(db.ForeignKey('cell.id', onupdate='CASCADE'), index=True)
         path = db.Column(db.String(260, 'utf8mb4_unicode_ci'), unique=True)
         device = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), index=True)
         created = db.Column(db.DateTime)
@@ -19,7 +19,7 @@ class Image(db.Model):
         pos_y = db.Column(db.Integer)
         pos_z = db.Column(db.Integer)
     else:
-        target = db.Column(db.ForeignKey('target.id', onupdate='CASCADE'), nullable=False, index=True)
+        cell = db.Column(db.ForeignKey('cell.id', onupdate='CASCADE'), nullable=False, index=True)
         path = db.Column(db.String(260, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
         device = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), nullable=False, index=True)
         created = db.Column(db.DateTime, nullable=False)
@@ -34,15 +34,15 @@ class Image(db.Model):
 
     r_created_by = db.relationship('User', primaryjoin='Image.created_by == User.id', backref='image_create_by_user_id')
     r_device = db.relationship('Device', primaryjoin='Image.device == Device.id', backref='image_device_device_id')
-    r_target = db.relationship('Target', primaryjoin='Image.target == Target.id', backref='image_target_target_id')
+    r_cell = db.relationship('Cell', primaryjoin='Image.cell == Cell.id', backref='image_cell_cell_id')
 
     def __repr__(self):
-        return f'<Image {self.project} | {self.target} | {self.path}>'
+        return f'<Image {self.project} | {self.cell} | {self.path}>'
 
     def to_dict(self):
         return dict(
             id=self.id,
-            target=self.target,
+            cell=self.cell,
             path=self.path,
             device=self.device,
             created=self.created,

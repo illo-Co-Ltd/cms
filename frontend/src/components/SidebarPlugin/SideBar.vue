@@ -6,7 +6,7 @@
       <div>
         <div class="c-p"
              @click="onClickCP">Create Project + </div>
-        <project-tree></project-tree>
+        <project-tree :node="project"></project-tree>
       </div>
     </div>
     <!-- modal content -->
@@ -16,19 +16,34 @@
 </template>
 
 <script>
+import axios from 'axios';
 import AddDevice from '../modals/AddDevice.vue';
 import CreateProject from '../modals/CreateProject.vue';
 import ProjectTree from './ProjectTree.vue';
 
 export default {
   components: { ProjectTree, CreateProject, AddDevice },
-
+  data() {
+    return {
+      projects: {},
+    }
+  },
   methods:{
     onClickCP() {
       this.$store.state.modals.project = !this.$store.state.modals.project
     },
+    fetch() {
+      axios.get('/server/api/image/tree')
+      .then((res) => {
+        console.log(res);
+      }).catch((e) => {
+        console.log("err:",e)
+      })
+    },
   },
-
+  mounted() {
+    this.fetch();
+  }
 }
 </script>
 
