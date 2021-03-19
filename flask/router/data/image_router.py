@@ -4,8 +4,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
 from ..util.dto import ImageDTO
-from service.image_service import *
-from util.logger import logger
+from service.image_service import create_image, read_image
 
 api = ImageDTO.api
 _image = ImageDTO.image
@@ -13,7 +12,7 @@ _image = ImageDTO.image
 
 @api.route('')
 class Image(Resource):
-    @api.doc('query image with filters')
+    @api.doc('Query image with filters')
     @api.response(404, 'No result found for query.')
     @api.marshal_list_with(_image, envelope='data')
     @jwt_required()
@@ -33,12 +32,11 @@ class Image(Resource):
                 'pos_y': request.args.get('pos_y'),
                 'pos_z': request.args.get('pos_z'),
             })
-            logger.info(result)
             return result
         except Exception:
             api.abort(404)
 
-    @api.doc('query image with filters')
+    @api.doc('Create new image')
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
     @api.expect(_image, validate=True)

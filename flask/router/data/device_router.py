@@ -4,8 +4,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
 from ..util.dto import DeviceDTO
-from service.device_service import *
-from util.logger import logger
+from service.device_service import create_device, read_device
 
 api = DeviceDTO.api
 _device = DeviceDTO.device
@@ -13,7 +12,7 @@ _device = DeviceDTO.device
 
 @api.route('')
 class Device(Resource):
-    @api.doc('query device with filters')
+    @api.doc('Query device with filters')
     @api.response(404, 'No result found for query.')
     @api.marshal_list_with(_device, envelope='data')
     @jwt_required()
@@ -26,12 +25,11 @@ class Device(Resource):
                 'owner': request.args.get('owner'),
                 'ip': request.args.get('ip'),
             })
-            logger.info(result)
             return result
         except Exception:
             api.abort(404)
 
-    @api.doc('query device with filters')
+    @api.doc('Create new device')
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
     @api.expect(_device, validate=True)

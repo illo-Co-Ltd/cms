@@ -4,8 +4,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
 from ..util.dto import ProjectDTO
-from service.project_service import *
-from util.logger import logger
+from service.project_service import create_project, read_project
 
 api = ProjectDTO.api
 _project = ProjectDTO.project
@@ -13,7 +12,7 @@ _project = ProjectDTO.project
 
 @api.route('')
 class Project(Resource):
-    @api.doc('query project with filters')
+    @api.doc('Query project with filters')
     @api.response(404, 'No result found for query.')
     @api.marshal_list_with(_project, envelope='data')
     @jwt_required()
@@ -24,12 +23,11 @@ class Project(Resource):
                 'shorthand': request.args.get('shorthand'),
                 'description': request.args.get('description'),
             })
-            logger.info(result)
             return result
         except Exception:
             api.abort(404)
 
-    @api.doc('query project with filters')
+    @api.doc('Create new project')
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
     @api.expect(_project, validate=True)

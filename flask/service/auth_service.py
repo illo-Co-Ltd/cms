@@ -13,7 +13,7 @@ def create_user(data):
     logger.info("User registration")
     try:
         comp_name = data.get('company')
-        data.update({'company': Company.query.filter_by(name=comp_name).one().id})
+        data.update({'company': Company.query.filter_by(name=comp_name).one()})
         if comp_name is None:
             return {'message': 'Company name is empty.'}, 400
 

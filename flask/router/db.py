@@ -1,9 +1,8 @@
-import os
 import datetime
 import json
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, current_user
-from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from sqlalchemy.orm.exc import NoResultFound
 from deprecated import deprecated
 
 from model.db_base import db

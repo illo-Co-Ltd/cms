@@ -4,8 +4,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
 from ..util.dto import CellDTO
-from service.cell_service import *
-from util.logger import logger
+from service.cell_service import create_cell, read_cell
 
 api = CellDTO.api
 _cell = CellDTO.cell
@@ -13,7 +12,7 @@ _cell = CellDTO.cell
 
 @api.route('')
 class Cell(Resource):
-    @api.doc('query cell with filters')
+    @api.doc('Query cell with filters')
     @api.response(404, 'No result found for query.')
     @api.marshal_list_with(_cell, envelope='data')
     @jwt_required()
@@ -25,12 +24,11 @@ class Cell(Resource):
                 'detail': request.args.get('detail'),
                 'name': request.args.get('name'),
             })
-            logger.info(result)
             return result
         except Exception as e:
             api.abort(404, reason=e)
 
-    @api.doc('query cell with filters')
+    @api.doc('Create new cell')
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
     @api.expect(_cell, validate=True)

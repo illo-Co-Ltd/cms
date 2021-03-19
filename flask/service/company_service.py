@@ -9,7 +9,7 @@ def read_company(data):
     logger.info(f'Filter: {data}')
     condition = {k: v for k, v in data.items() if v is not None}
     query = db.session.query(Company).filter_by(**condition).all()
-    return query
+    return query, 200
 
 
 def create_company(data):
@@ -22,7 +22,7 @@ def create_company(data):
         )
         db.session.add(company)
         db.session.commit()
-        return {'message': f'Posted company<{data.get("name")}> to db.'}
+        return {'message': f'Posted company<{data.get("name")}> to db.'}, 201
     except Exception as e:
         logger.error(e)
         raise e

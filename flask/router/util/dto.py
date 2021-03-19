@@ -9,7 +9,7 @@ class CompanyDTO:
 
 
 class UserDTO:
-    api = Namespace('user', description='User operations')
+    api = Namespace('user', description='User, Authentication operations')
     user = api.model('user', {
         'userid': fields.String(required=True, description='Unique alphabetical user id'),
         'password': fields.String(required=True, description='User password'),

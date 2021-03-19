@@ -12,7 +12,7 @@ _user = UserDTO.user
 
 @api.route('/user')
 class User(Resource):
-    @api.doc('Get current user')
+    @api.doc('Get current user info')
     @api.marshal_with(_user, mask='userid,username,company')
     @jwt_required()
     def get(self):
