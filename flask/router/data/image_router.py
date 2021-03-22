@@ -3,14 +3,14 @@ from flask_restplus import Resource
 from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
-from ..util.dto import ImageDTO
-from service.image_service import create_image, read_image
+from router.data.data_dto import ImageDTO
+from service.data.image_service import create_image, read_image
 
 api = ImageDTO.api
 _image = ImageDTO.image
 
 
-@api.route('')
+@api.route('/image')
 class Image(Resource):
     @api.doc('Query image with filters')
     @api.response(404, 'No result found for query.')

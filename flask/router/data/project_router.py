@@ -3,14 +3,14 @@ from flask_restplus import Resource
 from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
-from ..util.dto import ProjectDTO
-from service.project_service import create_project, read_project
+from router.data.data_dto import ProjectDTO
+from service.data.project_service import create_project, read_project
 
 api = ProjectDTO.api
 _project = ProjectDTO.project
 
 
-@api.route('')
+@api.route('/project')
 class Project(Resource):
     @api.doc('Query project with filters')
     @api.response(404, 'No result found for query.')

@@ -3,14 +3,14 @@ from flask_restplus import Resource
 from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
-from ..util.dto import CellDTO
-from service.cell_service import create_cell, read_cell
+from router.data.data_dto import CellDTO
+from service.data.cell_service import create_cell, read_cell
 
 api = CellDTO.api
 _cell = CellDTO.cell
 
 
-@api.route('')
+@api.route('/cell')
 class Cell(Resource):
     @api.doc('Query cell with filters')
     @api.response(404, 'No result found for query.')

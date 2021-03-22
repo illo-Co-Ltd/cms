@@ -2,14 +2,14 @@ from flask import request
 from flask_restplus import Resource
 from flask_jwt_extended import jwt_required
 
-from ..util.dto import CompanyDTO
-from service.company_service import create_company, read_company
+from router.data.data_dto import CompanyDTO
+from service.data.company_service import create_company, read_company
 
 api = CompanyDTO.api
 _company = CompanyDTO.company
 
 
-@api.route('')
+@api.route('/company')
 class Company(Resource):
     @api.doc('Query company with filters')
     @api.response(200, 'OK')

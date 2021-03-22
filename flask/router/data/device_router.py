@@ -3,14 +3,14 @@ from flask_restplus import Resource
 from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
-from ..util.dto import DeviceDTO
-from service.device_service import create_device, read_device
+from router.data.data_dto import DeviceDTO
+from service.data.device_service import create_device, read_device
 
 api = DeviceDTO.api
 _device = DeviceDTO.device
 
 
-@api.route('')
+@api.route('/device')
 class Device(Resource):
     @api.doc('Query device with filters')
     @api.response(404, 'No result found for query.')
