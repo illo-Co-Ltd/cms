@@ -1,40 +1,39 @@
 from flask import request
-from flask_restplus import Resource, Namespace
+from flask_restplus import Resource
 from flask_jwt_extended import jwt_required
-from sqlalchemy.orm.exc import NoResultFound
 
-from ..util.dto import CompanyDTO
-from service.company_service import *
-from util.logger import logger
+from router.data.data_dto import CompanyDTO
+from service.data.company_service import create_company, read_company
 
 api = CompanyDTO.api
 _company = CompanyDTO.company
 
 
-@api.route('/')
-class Cell(Resource):
-    @api.doc('query cell with filters')
+@api.route('/company')
+class Company(Resource):
+    @api.doc('Query company with filters')
+    @api.response(200, 'OK')
+    @api.response(404, 'No result found for query')
+    @api.marshal_list_with(_company, envelope='data')
     @jwt_required()
     def get(self):
         result = read_company({
-            'project': request.args.get('project'),
-            'type': request.args.get('type'),
-            'detail': request.args.get('detail'),
             'name': request.args.get('name'),
+            'subscription': request.args.get('subscription'),
+            'expiration_date': request.args.get('expiration_date'),
         })
-        return ({
-            'message': f'Returned {len(result)} items.',
-            'data': result
-        }), 200
+        return result
 
+    @api.doc('Create new company')
+    @api.response(201, 'Created')
+    @api.response(400, 'Bad Request')
+    @api.expect(_company, validate=True)
     @jwt_required()
     def post(self):
         data = request.get_json()
         try:
-            create_cell(data)
-            return {'message': f'Posted cell<{data.get("name")}> to db.'}, 200
-        except NoResultFound as e:
-            api.abort(404, message=f'Cannot find project<{data.get("project")}>.')
-        except Exception as e:
-            logger.error(e)
-            api.abort(500, message='failed to register device')
+            return create_company(data)
+        except ValueError:
+            api.abort(400, message='Wrong date format for expiration_date.')
+        except Exception:
+            api.abort(500, message='failed to register company')

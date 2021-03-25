@@ -34,4 +34,13 @@ class Celery(Resource):
     def get(self):
         logger.info("This is celery check url.")
         task_id = cam_task.add(1, 2, 1)
-        return jsonify(task_id)
+        return task_id
+
+
+@api.route('/test')
+@api.response(200, 'OK')
+class Test(Resource):
+    @api.doc('test func')
+    def get(self):
+        from model.model_import import Cell
+        return Cell.query.one().to_dict()

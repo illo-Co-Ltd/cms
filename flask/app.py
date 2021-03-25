@@ -39,7 +39,9 @@ with app.app_context():
             device = Device(
                 model='Prototype1',
                 serial='testserial1234',
-                company=Company.query.filter_by(name='illo').first().id)
+                company=Company.query.filter_by(name='illo').first(),
+                ip='123.123.123.123'
+            )
             db.session.add(device)
             db.session.commit()
 
@@ -53,9 +55,7 @@ if __name__ == '__main__':
     logger.info('Loaded ENV:' + str(list(os.environ)))
     with app.app_context():
         from router import api
-        from router.auth import bp as auth_bp
         api.init_app(app)
-        app.register_blueprint(auth_bp)
     app.run(host='0.0.0.0',
             port=os.getenv('FLASK_RUN_PORT'),
             debug=os.getenv('FLASK_DEBUG'))

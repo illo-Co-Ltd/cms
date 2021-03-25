@@ -8,27 +8,28 @@ class Device(db.Model):
     if env == 'development':
         model = db.Column(db.String(16, 'utf8mb4_unicode_ci'))
         serial = db.Column(db.String(20, 'utf8mb4_unicode_ci'))
-        company = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), index=True)
-        owner = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
+        company_id = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), index=True)
+        owner_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
         ip = db.Column(db.String(15, 'utf8mb4_unicode_ci'), server_default=db.FetchedValue())
     else:
         model = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
         serial = db.Column(db.String(20, 'utf8mb4_unicode_ci'), nullable=False, unique=True)
-        company = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), nullable=False, index=True)
-        owner = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), nullable=False, index=True)
-        ip = db.Column(db.String(15, 'utf8mb4_unicode_ci'), nullable=False, unique=True, server_default=db.FetchedValue())
+        company_id = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), nullable=False, index=True)
+        owner_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), nullable=False, index=True)
+        ip = db.Column(db.String(15, 'utf8mb4_unicode_ci'), nullable=False, unique=True,
+                       server_default=db.FetchedValue())
     created = db.Column(db.DateTime)
-    created_by = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
+    created_by_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
     last_edited = db.Column(db.DateTime)
-    edited_by = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
+    edited_by_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
     is_deleted = db.Column(db.Integer)
 
-    r_company = db.relationship('Company', primaryjoin='Device.company == Company.id',
-                                backref='company_id_device_company')
-    r_created_by = db.relationship('User', primaryjoin='Device.created_by == User.id',
-                                   backref='user_id_device_create_by')
-    r_edited_by = db.relationship('User', primaryjoin='Device.edited_by == User.id', backref='device_edited_by_user_id')
-    r_owner = db.relationship('User', primaryjoin='Device.owner == User.id', backref='device_owner_user_id')
+    company = db.relationship('Company', primaryjoin='Device.company_id == Company.id',
+                              backref='devices')
+    created_by = db.relationship('User', primaryjoin='Device.created_by_id == User.id',
+                                 backref='created_devices')
+    edited_by = db.relationship('User', primaryjoin='Device.edited_by_id == User.id', backref='edited_devices')
+    owner = db.relationship('User', primaryjoin='Device.owner_id == User.id', backref='owned_devices')
 
     def __repr__(self):
         return f'<Device {self.model} | {self.serial}>'

@@ -1,26 +1,26 @@
 from flask_restplus import Api
 
-from .data.company_router import api as company_ns
-from .data.project_router import api as project_ns
-from .data.device_router import api as device_ns
-from .data.device_entry_router import api as device_entry_ns
-from .data.cell_router import api as cell_ns
-from .data.image_router import api as image_ns
-from .auth import api as auth_ns
-# from camera import api as camera_ns
-from .check import api as check_ns
+from .data.company_router import api as _
+from .data.cell_router import api as _
+from .data.device_router import api as _
+from .data.device_entry_router import api as _
+from .data.image_router import api as _
+from .data.project_router import api as _
+from .data.user_router import api as _
+from .data.company_router import api as _
 
-api = Api(version='1.0', title='illo API', description='API for DB access and device control')
+from router.data.data_dto import api_data
+from router.auth.auth_router import api as api_auth
+from router.control.control_dto import api_control
+from router.status.status_dto import api_status
 
-# Data accessing APIs
-api.add_namespace(company_ns, path='/data/company')
-api.add_namespace(project_ns, path='/data/project')
-api.add_namespace(device_ns, path='/data/device')
-api.add_namespace(device_entry_ns, path='/data/device_entry')
-api.add_namespace(cell_ns, path='/data/cell')
-api.add_namespace(image_ns, '/data/image')
+api = Api(version='1.0', title='Backend API', description='API for DB access and device control')
 
-# Other APIs
-api.add_namespace(auth_ns, path='/auth/user')
-# api.add_namespace(camera_ns)
-api.add_namespace(check_ns, path='/check')
+# Data accessing API
+api.add_namespace(api_data, path='/data')
+# Auth API
+api.add_namespace(api_auth, path='/auth')
+# Device control API
+api.add_namespace(api_control, path='/control')
+# Status check
+api.add_namespace(api_status, path='/status')
