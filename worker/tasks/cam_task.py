@@ -67,7 +67,7 @@ def worker_shutdown_handler(**kwargs):
 
 
 @app.task(name='cam_task.capture_task', base=CaptureTask)
-def capture_task(header: str, data: dict) -> (bool, object):
+def capture_task(header: str, data: dict) -> dict:
     try:
         # vcam = camera.VideoCamera()
         if not vcam:
@@ -103,7 +103,7 @@ def capture_task(header: str, data: dict) -> (bool, object):
 
 
 @app.task(name='cam_task.start_timelapse_task')
-def start_timelapse_task(header: str, run_every: float, expire_at: str, data: dict) -> (bool, str):
+def start_timelapse_task(header: str, run_every: float, expire_at: str, data: dict) -> str:
     try:
         interval = celery.schedules.schedule(run_every=run_every)  # seconds
         entry = RedBeatSchedulerEntry(
@@ -121,7 +121,7 @@ def start_timelapse_task(header: str, run_every: float, expire_at: str, data: di
 
 
 @app.task(name='cam_task.stop_timelapse_task')
-def stop_timelapse_task(key):
+def stop_timelapse_task(key: str) -> bool:
     try:
         entry = RedBeatSchedulerEntry.from_key(key, app=app)
         entry.delete()
