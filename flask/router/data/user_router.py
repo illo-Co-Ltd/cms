@@ -1,9 +1,11 @@
+import traceback
 from flask import request
 from flask_restplus import Resource
 from flask_jwt_extended import jwt_required, current_user
 
 from router.data.data_dto import UserDTO
-from service.auth_service import *
+from service.data.user_service import create_user, read_user
+from util.logger import logger
 
 api = UserDTO.api
 _user = UserDTO.user
@@ -15,8 +17,18 @@ class User(Resource):
     @api.marshal_with(_user, mask='userid,username,company')
     @jwt_required()
     def get(self):
-        resp = current_user
-        return resp
+        try:
+            resp = read_user({
+                'userid': request.args.get('userid'),
+                'username': request.args.get('username'),
+                'company': request.args.get('company')
+            })
+            logger.info(request.args)
+            return resp
+        except Exception:
+            logger.error('Cannot read user')
+            logger.debug(traceback.format_exc())
+            api.abort(404)
 
     @api.doc('Register new user')
     @api.response(201, 'Created')
