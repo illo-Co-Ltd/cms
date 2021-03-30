@@ -1,25 +1,20 @@
 import cv2
 
 
-def average(src, ksize):
-    return cv2.blur(src, ksize=(ksize, ksize))
+def global_he(src):
+    pass
 
 
-def median(src, ksize):
-    return cv2.medianBlur(src, ksize=ksize)
+def clahe(src, clipLimit, tileGridSize):
+    instance = cv2.createCLAHE(clipLimit=clipLimit, tileGridSize=tileGridSize)
+    dst = instance.apply(src)
+    del instance
+    return dst
 
-
-def gaussian(src, ksize):
-    return cv2.GaussianBlur(src=src, ksize=(ksize, ksize))
-
-
-def apply(src, method, ksize):
-    if method == 'average':
-        return average(src, ksize)
-    elif method == 'median':
-        return median(src, ksize)
-    elif method == 'gaussian':
-        return gaussian(src, ksize)
+def apply(src, method, *args, **kwargs):
+    if method == 'global':
+        return global_he(src, *args, **kwargs)
+    elif method == 'clahe':
+        return clahe(src, *args, **kwargs)
     else:
         raise KeyError('Wrong function name')
-

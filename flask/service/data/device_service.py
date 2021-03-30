@@ -19,8 +19,8 @@ def create_device(data):
     logger.info('Register new device')
     now = datetime.utcnow()
     try:
-        company = db.session.query(Company).filter_by(name=data.get('company')).one()
-        owner = db.session.query(User).filter_by(name=data.get('owner')).one()
+        company = db.session.query(Company).filter_by(username=data.get('company')).one()
+        owner = db.session.query(User).filter_by(username=data.get('owner')).one()
         device = Device(
             model=data.get('model'),
             serial=data.get('serial'),
