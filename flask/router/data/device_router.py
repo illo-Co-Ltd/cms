@@ -3,7 +3,7 @@ from flask_restplus import Resource
 from flask_jwt_extended import jwt_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 
-from router.data.data_dto import DeviceDTO
+from router.dto.data_dto import DeviceDTO
 from service.data.device_service import create_device, read_device
 
 api = DeviceDTO.api

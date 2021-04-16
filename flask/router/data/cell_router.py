@@ -3,7 +3,7 @@ from flask_restplus import Resource
 from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
-from router.data.data_dto import CellDTO
+from router.dto.data_dto import CellDTO
 from service.data.cell_service import create_cell, read_cell
 
 api = CellDTO.api

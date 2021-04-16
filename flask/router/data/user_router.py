@@ -3,7 +3,7 @@ from flask import request
 from flask_restplus import Resource
 from flask_jwt_extended import jwt_required, current_user
 
-from router.data.data_dto import UserDTO
+from router.dto.data_dto import UserDTO
 from service.data.user_service import create_user, read_user
 from util.logger import logger
 
