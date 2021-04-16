@@ -1,5 +1,3 @@
-import os
-
 from flask import Flask, Blueprint
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
@@ -23,38 +21,45 @@ with app.app_context():
     db_base.db.init_app(app)
     db_base.db.create_all()
 
-    if app.env == 'development':
-        from model import Company, Device, User
-        import datetime
-
-        db = db_base.db
-        if Company.query.first() is None:
-            company = Company(
-                name='illo',
-                subscription=1,
-                expiration_date=datetime.datetime.now() + datetime.timedelta(days=365))
-            db.session.add(company)
-            db.session.commit()
-        if Device.query.first() is None:
-            device = Device(
-                model='Prototype1',
-                serial='testserial1234',
-                company=Company.query.filter_by(name='illo').first(),
-                ip='123.123.123.123'
-            )
-            db.session.add(device)
-            db.session.commit()
-
 # enable CORS
 CORS(app, resources={r'*': {'origins': '*'}}, supports_credentials=True)
 
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
+# test entry for development
+if app.env == 'development':
+    from model.model_import import User
+    from service.data.company_service import create_company
+    from service.data.user_service import create_user
+    from service.data.device_service import create_device
+
+    with app.app_context():
+        create_company({
+            'name': 'illo',
+            'subscription': True,
+            'expiration_date': datetime.datetime.now() + datetime.timedelta(days=365)
+        })
+        create_user({
+            'userid': 'root',
+            'password': 'root',
+            'username': 'root',
+            'company': 'illo',
+        })
+        create_device({
+            'model': 'testmodel',
+            'serial': 'testserial',
+            'company': 'illo',
+            'owner': 'root',
+            'ip': '123.123.123.123',
+            'is_deleted': False
+        }, User.query.filter_by(userid='root').one())
+
 if __name__ == '__main__':
     logger.info('Loaded ENV:' + str(list(os.environ)))
     with app.app_context():
         from router import api
+
         api.init_app(app)
     app.run(host='0.0.0.0',
             port=os.getenv('FLASK_RUN_PORT'),

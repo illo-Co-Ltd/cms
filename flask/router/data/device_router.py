@@ -1,6 +1,6 @@
 from flask import request
 from flask_restplus import Resource
-from flask_jwt_extended import jwt_required
+from flask_jwt_extended import jwt_required, current_user
 from sqlalchemy.orm.exc import NoResultFound
 
 from router.data.data_dto import DeviceDTO
@@ -37,7 +37,7 @@ class Device(Resource):
     def post(self):
         data = request.get_json()
         try:
-            return create_device(data)
+            return create_device(data, current_user)
         except NoResultFound:
             api.abort(400, message=f'Cannot find <{data.get("company")}> or <{data.get("owner")}>.')
         except Exception:

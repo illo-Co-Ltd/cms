@@ -35,10 +35,11 @@ class User(Resource):
     @api.response(400, 'Bad Request')
     @api.response(409, 'Resource already exists')
     @api.expect(_user, validate=True)
+    @jwt_required()
     def post(self):
         data = request.get_json()
         try:
-            resp = create_user(data)
+            resp = create_user(data, current_user)
             return resp
         except Exception as e:
             api.abort(500, reason=e)

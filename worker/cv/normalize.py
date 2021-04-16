@@ -2,7 +2,7 @@ import cv2
 
 
 def global_he(src):
-    pass
+    return cv2.equalizeHist(src)
 
 
 def clahe(src, clipLimit, tileGridSize):
@@ -10,6 +10,7 @@ def clahe(src, clipLimit, tileGridSize):
     dst = instance.apply(src)
     del instance
     return dst
+
 
 def apply(src, method, *args, **kwargs):
     if method == 'global':
