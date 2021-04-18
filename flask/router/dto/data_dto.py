@@ -60,7 +60,7 @@ class CellDTO:
     })
 
 
-class ImageDTO:
+class ImageMetadataDTO:
     api = api_data
     image = api.model('image', {
         'cell': fields.String(attribute='cell.name', required=True, description='Target cell'),

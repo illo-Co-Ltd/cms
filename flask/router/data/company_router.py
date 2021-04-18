@@ -2,7 +2,7 @@ from flask import request
 from flask_restplus import Resource
 from flask_jwt_extended import jwt_required
 
-from router.data.data_dto import CompanyDTO
+from router.dto.data_dto import CompanyDTO
 from service.data.company_service import create_company, read_company
 
 api = CompanyDTO.api

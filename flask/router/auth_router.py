@@ -2,8 +2,8 @@ from flask import request
 from flask_restplus import Namespace, Resource
 from flask_jwt_extended import jwt_required, current_user
 
-from router.auth.jwt import unset_jwt
-from router.data.data_dto import UserDTO
+from util.jwt import unset_jwt
+from router.dto.data_dto import UserDTO
 from service.auth_service import *
 
 api = Namespace('auth', description='Authentication API')

@@ -6,8 +6,8 @@ def grayscale(src):
     return res
 
 
-def apply(src, method):
-    if method == 'gray':
+def apply(src, cmap):
+    if cmap == 'gray':
         return grayscale(src)
     else:
         raise KeyError('Wrong function name')

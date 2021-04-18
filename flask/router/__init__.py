@@ -9,10 +9,10 @@ from .data.project_router import api as _
 from .data.user_router import api as _
 from .data.company_router import api as _
 
-from router.data.data_dto import api_data
-from router.auth.auth_router import api as api_auth
-from router.control.control_dto import api_control
-from router.status.status_dto import api_status
+from router.dto.data_dto import api_data
+from router.auth_router import api as api_auth
+from router.dto.control_dto import api_control
+from router.dto.status_dto import api_status
 
 api = Api(version='1.0', title='Backend API', description='API for DB access and device control')
 

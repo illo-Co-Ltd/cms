@@ -1,24 +1,51 @@
-from flask import request
+from flask import request, send_file
 from flask_restplus import Resource
 from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
-from router.data.data_dto import ImageDTO
-from service.data.image_service import create_image, read_image
+from router.dto.data_dto import ImageMetadataDTO
+from service.data.image_service import create_image, read_image_path
 
-api = ImageDTO.api
-_image = ImageDTO.image
+api = ImageMetadataDTO.api
+_image_metadata = ImageMetadataDTO.image
+
+
+@api.route('/image/<path>')
+@api.doc(params={'path': 'Image path'})
+class Image(Resource):
+    @api.doc('Query image binary with path')
+    @api.response(404, 'No result found for query.')
+    @api.produces(['image/jpg', 'image/png'])
+    @jwt_required()
+    def get(self, path):
+        try:
+            return send_file('/data/' + path, mimetype='image/jpg')
+        except Exception:
+            api.abort(404)
+
+    @api.doc('Create new image')
+    @api.response(201, 'Created')
+    @api.response(400, 'Bad Request')
+    @jwt_required()
+    def post(self):
+        data = request.get_json()
+        try:
+            return create_image(data)
+        except NoResultFound:
+            api.abort(400, message=f'Cannot find result for keys.')
+        except Exception:
+            api.abort(500, message='Failed to register image')
 
 
 @api.route('/image')
-class Image(Resource):
-    @api.doc('Query image with filters')
+class ImageMetadata(Resource):
+    @api.doc('Query image path with filters')
     @api.response(404, 'No result found for query.')
-    @api.marshal_list_with(_image, envelope='data')
+    @api.marshal_list_with(_image_metadata, envelope='data')
     @jwt_required()
     def get(self):
         try:
-            result = read_image({
+            return read_image_path({
                 'cell': request.args.get('cell'),
                 'path': request.args.get('path'),
                 'device': request.args.get('device'),
@@ -32,14 +59,13 @@ class Image(Resource):
                 'pos_y': request.args.get('pos_y'),
                 'pos_z': request.args.get('pos_z'),
             })
-            return result
         except Exception:
             api.abort(404)
 
-    @api.doc('Create new image')
+    @api.doc('Create new image record')
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
-    @api.expect(_image, validate=True)
+    @api.expect(_image_metadata, validate=True)
     @jwt_required()
     def post(self):
         data = request.get_json()

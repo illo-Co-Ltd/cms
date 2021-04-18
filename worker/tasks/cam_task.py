@@ -31,7 +31,8 @@ class CaptureTask(celery.Task):
     def on_success(self, retval, task_id, args, kwargs):
         self.OperationalError()
         logger.info(f'Task {task_id} suceeded. Sending callback to backend...')
-        requests.get(f'{FLASK_BACKEND}/task_callback/on_capture_success/{task_id}')
+        resp = requests.get(f'{FLASK_BACKEND}/task_callback/on_capture_success/{task_id}')
+        logger.info(f'<{resp.status_code}> {resp.text}')
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         logger.warning(f'Task {task_id} failed with exception[{exc}]')
