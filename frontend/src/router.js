@@ -17,6 +17,7 @@ const router = new Router({
         {
           path: '/dashboard',
           name: 'dashboard',
+          component: () => import('./views/Dashboard.vue'),
           beforeEnter: function(to, from, next) {
             if(sessionStorage.getItem("access_token") != null)
               return next();

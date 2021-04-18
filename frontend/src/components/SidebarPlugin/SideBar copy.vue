@@ -12,7 +12,6 @@
     <!-- modal content -->
     <create-project @update="refreshTree"></create-project>
     <add-device></add-device>
-    <regist-device @update="refreshTree"></regist-device>
   </div>
 </template>
 
@@ -21,10 +20,9 @@ import axios from 'axios'
 import AddDevice from '../modals/AddDevice.vue';
 import CreateProject from '../modals/CreateProject.vue';
 import ProjectTree from './ProjectTree.vue';
-import RegistDevice from '../modals/RegistDevice.vue';
 
 export default {
-  components: { ProjectTree, CreateProject, AddDevice, RegistDevice },
+  components: { ProjectTree, CreateProject, AddDevice },
   data() {
     return {
       projectList: {},

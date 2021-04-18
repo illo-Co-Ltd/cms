@@ -1,6 +1,9 @@
 const state = {
   header: 0,
-  sidebar_w: 250,
+  sidebarWidth: 250,
+  thumbnailbarWidth: 250,
+  thumbnailbarShow: false,
+  optional: 300,
 }
   
 export default {
