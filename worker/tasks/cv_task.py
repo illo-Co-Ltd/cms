@@ -36,7 +36,11 @@ def cv_color(path, **kwargs) -> np.ndarray:
 def cv_blur(path, **kwargs) -> np.ndarray:
     try:
         src = np.array(Image.open('/data/' + path))
-        return blur.apply(src, **kwargs)
+        output_path = '/data/cv/'+path
+        if not os.path.exists('/data/cv'):
+            os.mkdir('/data/cv')
+        Image.fromarray(blur.apply(src, **kwargs)).save(output_path)
+        return output_path
     except Exception as e:
         logger.error(traceback.format_exc())
         raise TaskError(e)
@@ -46,7 +50,11 @@ def cv_blur(path, **kwargs) -> np.ndarray:
 def cv_normalize(path, **kwargs) -> np.ndarray:
     try:
         src = np.array(Image.open('/data/' + path))
-        return normalize.apply(src, **kwargs)
+        output_path = '/data/cv/'+path
+        if not os.path.exists('/data/cv'):
+            os.mkdir('/data/cv')
+        Image.fromarray(normalize.apply(src, **kwargs)).save(output_path)
+        return output_path
     except Exception as e:
         logger.error(traceback.format_exc())
         raise TaskError(e)
@@ -56,7 +64,11 @@ def cv_normalize(path, **kwargs) -> np.ndarray:
 def cv_threshold(path, **kwargs) -> np.ndarray:
     try:
         src = np.array(Image.open('/data/' + path))
-        return threshold.apply(src, **kwargs)
+        output_path = '/data/cv/'+path
+        if not os.path.exists('/data/cv'):
+            os.mkdir('/data/cv')
+        Image.fromarray(threshold.apply(src, **kwargs)).save(output_path)
+        return output_path
     except Exception as e:
         logger.error(traceback.format_exc())
         raise TaskError(e)
