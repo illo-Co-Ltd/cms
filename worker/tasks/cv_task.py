@@ -1,6 +1,5 @@
 import traceback
 
-import celery
 from celery.utils.log import get_task_logger
 from celery.exceptions import TaskError
 import numpy as np
@@ -14,8 +13,8 @@ logger = get_task_logger(__name__)
 @app.task(name='cv_task.cv_color')
 def cv_color(src: np.ndarray, **kwargs) -> np.ndarray:
     try:
-
-
+        src = cv2
+        color.apply(src, )
     except Exception as e:
         logger.error(traceback.format_exc())
         raise TaskError(e)
