@@ -30,6 +30,8 @@ def capture():
         device = data.get('device')
         label = data.get('label')
         debug = data.get('debug')
+        # TODO
+        # 내부로직 control_service로 이동하기
 
         # skip integrity check if debugging
         if not debug:
@@ -38,12 +40,12 @@ def capture():
                 .filter_by(project=pid.id) \
                 .filter_by(name=cell).one()
             did = db.session.query(Device).filter_by(serial=device).one()
-            task_id = cam_task.capture_send(header=f'{pid.shorthand}_{tid.name}',
+            task_id = cam_task.send_capture(header=f'{pid.shorthand}_{tid.name}',
                                             data={'cell': tid.id,
                                                   'device': did.id,
                                                   'label': label})
         else:
-            task_id = cam_task.capture_send(header=f'{project}_{cell}',
+            task_id = cam_task.send_capture(header=f'{project}_{cell}',
                                             data={'cell': None,
                                                   'device': None,
                                                   'label': None})
@@ -100,7 +102,7 @@ def start_timelapse():
                 }
             }
         logger.info(kwargs)
-        status, key = cam_task.start_timelapse_send(**kwargs)
+        status, key = cam_task.send_start_timelapse(**kwargs)
         if status:
             return jsonify({
                 'message': f'Timelapse task for device {kwargs.get("data").get("device")} queued',
@@ -122,7 +124,7 @@ def start_timelapse():
 def stop_timelapse():
     data = request.get_json()
     key = data.get('key')
-    if cam_task.stop_timelapse_send(key):
+    if cam_task.send_stop_timelapse(key):
         return jsonify({'message': f'Timelapse task for key {key} deleted'}), 200
     else:
         return jsonify({'message': f'Cannot delete Timelapse task for key {key}'}), 200

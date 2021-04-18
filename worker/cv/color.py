@@ -7,6 +7,7 @@ def grayscale(src):
 
 
 def apply(src, cmap):
+    print(cmap)
     if cmap == 'gray':
         return grayscale(src)
     else:

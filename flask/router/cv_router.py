@@ -1,68 +1,52 @@
-import traceback
-
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, make_response, send_file
 from flask_jwt_extended import jwt_required
 
-from util.logger import logger
+from service.cv_service import *
 
-cv_route = Blueprint('cv_route', __name__, url_prefix='/cv')
+cv_route = Blueprint('cv_route', __name__)
 
+
+# TODO
+# parameter 검사로직 구현
 
 @cv_route.route('/color', methods=['POST'])
 @jwt_required()
-def color():
-    logger.info('Capture with camera')
-    try:
-        data = request.get_json()
-        path = data.get('path')
-        params = data.get('params')
-    except Exception as e:
-        logger.error(e)
-        traceback.print_stack()
-        traceback.print_exc()
-        return jsonify({'message': 'Failed to color'}), 200
+def r_color():
+    data = request.get_json()
+    path = data.get('path')
+    params = data.get('params')
+
+    return jsonify(s_color(path, params)), 201
 
 
 @cv_route.route('/blur', methods=['POST'])
 @jwt_required()
-def blur():
-    logger.info('Capture with camera')
-    try:
-        data = request.get_json()
-        path = data.get('path')
-        params = data.get('params')
-    except Exception as e:
-        logger.error(e)
-        traceback.print_stack()
-        traceback.print_exc()
-        return jsonify({'message': 'Failed to blur'}), 200
+def r_blur():
+    data = request.get_json()
+    path = data.get('path')
+    params = data.get('params')
+    return jsonify(s_blur(path, params)), 201
 
 
 @cv_route.route('/normalize', methods=['POST'])
 @jwt_required()
-def normalize():
-    logger.info('Capture with camera')
-    try:
-        data = request.get_json()
-        path = data.get('path')
-        params = data.get('params')
-    except Exception as e:
-        logger.error(e)
-        traceback.print_stack()
-        traceback.print_exc()
-        return jsonify({'message': 'Failed to normalize'}), 200
+def r_normalize():
+    data = request.get_json()
+    path = data.get('path')
+    params = data.get('params')
+    return jsonify(s_normalize(path, params)), 201
 
 
 @cv_route.route('/threshold', methods=['POST'])
 @jwt_required()
-def threshold():
-    logger.info('Capture with camera')
-    try:
-        data = request.get_json()
-        path = data.get('path')
-        params = data.get('params')
-    except Exception as e:
-        logger.error(e)
-        traceback.print_stack()
-        traceback.print_exc()
-        return jsonify({'message': 'Failed to threshold'}), 200
+def r_threshold():
+    data = request.get_json()
+    path = data.get('path')
+    params = data.get('params')
+    return jsonify(s_threshold(path, params)), 201
+
+
+@cv_route.route('/result/<task_id>', methods=['GET'])
+@jwt_required()
+def r_result(task_id):
+    return send_file(s_result(task_id).get(), mimetype='image/jpg')
