@@ -6,7 +6,7 @@ def global_he(src):
 
 
 def clahe(src, clipLimit, tileGridSize):
-    instance = cv2.createCLAHE(clipLimit=clipLimit, tileGridSize=tileGridSize)
+    instance = cv2.createCLAHE(clipLimit=clipLimit, tileGridSize=(tileGridSize, tileGridSize))
     dst = instance.apply(src)
     del instance
     return dst
