@@ -10,7 +10,7 @@ def median(src, ksize):
 
 
 def gaussian(src, ksize):
-    return cv2.GaussianBlur(src=src, ksize=(ksize, ksize))
+    return cv2.GaussianBlur(src=src, ksize=(ksize, ksize), sigmaX=0)
 
 
 def apply(src, method, ksize):
