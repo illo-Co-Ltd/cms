@@ -16,16 +16,16 @@
             <div class="text-center text-muted mb-4">
               <small>Input project's information</small>
             </div>
-            <base-input v-model="project.name"
+            <base-input v-model="name"
                         placeholder="Name">
             </base-input>
-            <base-input v-model="project.shorthand"
+            <base-input v-model="shorthand"
                         placeholder="Short hand">
             </base-input>
-            <base-input v-model="project.description"
+            <base-input v-model="description"
                         placeholder="Description">
             </base-input>
-            <base-button type="primary" @click="createProject">Create</base-button>
+            <base-button type="primary" @click="createProjectMSG">Create</base-button>
             <base-button type="link" @click="$store.state.modals.project=false">close</base-button>
           </div>
         </template>
@@ -35,27 +35,24 @@
 </template>
 
 <script>
-import axios from 'axios';
-
 export default {
   data() {
     return{
-      project: {
-        name: '',
-        shorthand: '',
-        description: '',
-      }
+      name: '',
+      shorthand: '',
+      description: '',
+      
     };
   },
   methods: {
-    createProject() {
-      axios.post('server/api/project', this.project)
-      .then((response) => {
-        console.log(response);
-      }).catch((e) => {
-        console.log("err:",e)
-      })
-      this.$store.state.modals.project = false;
+    createProjectMSG() {
+      const name = this.name
+      const shorthand = this.shorthand
+      const description = this.description
+
+      this.$store.dispatch("createProject", {name, shorthand, description})
+      this.$store.state.modals.project=false
+      this.$emit('update')
     }
   }
 }

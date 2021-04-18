@@ -83,17 +83,7 @@ export default {
         return false;
       }
 
-      axios.post('server/auth/register', {userid, password, username, company})
-      .then((response) => {
-        if(!response.data.reason){
-          console.log("success");
-          this.$router.push('/login')
-        } else {
-          console.log("fail:" + response)
-        }
-      }).catch((e) => {
-        console.log("err:",e)
-      })
+      this.$store.dispatch("register", {userid, password, username, company})
 
     }
   }
