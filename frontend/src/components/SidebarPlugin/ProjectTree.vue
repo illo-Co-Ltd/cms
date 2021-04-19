@@ -9,7 +9,7 @@
           <button class="btn pt-button-style">-</button>
         </a>
       </div>
-      <!-- <device-tree></device-tree> -->
+      <device-tree></device-tree>
     </div>
   </div>
 </template>

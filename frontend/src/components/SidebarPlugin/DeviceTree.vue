@@ -1,7 +1,7 @@
 <template>
   <div class="dt-container">
     <div class="dt-item-box"
-         v-for="(item, i) in this.entry" :key="i">{{item.project}}</div>
+         v-for="(item, i) in this.entry" :key="i">{{item}}</div>
   </div>
 </template>
 

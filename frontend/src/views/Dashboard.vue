@@ -215,11 +215,13 @@ export default {
       })
     },
     normalizeApply() {
+      alert(this.normalize.clipLimit + "|" +typeof(this.normalize.clipLimit))
+      const clipLimit = parseFloat(this.normalize.clipLimit)
       axios.post('server/cv/normalize', {
                                       "path":"sample01.png",
                                       "params":{
                                         "method":this.normalize.selected,
-                                        "clipLimit":this.normalize.clipLimit,
+                                        "clipLimit": clipLimit,
                                         "tileGridSize":this.normalize.tileGridSize
                                       }
                                     })
