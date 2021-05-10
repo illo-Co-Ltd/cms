@@ -128,7 +128,7 @@ class Timelapse(Resource):
             logger.error(e)
             return jsonify({'message': 'Failed to start timelapse'}), 200
 
-    @api.doc('Delete timelapse task', params={'key':'key of a task'})
+    @api.doc('Delete timelapse task', params={'key': 'key of a task'})
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
     @jwt_required()
@@ -177,6 +177,24 @@ class Position(Resource):
                 'result': {"x": x, "y": y, "z": z}
             }), 200
         else:
+            pid = db.session.query(Project).filter_by(name=project).one()
+            tid = db.session.query(Cell) \
+                .filter_by(project=pid.id) \
+                .filter_by(name=cell).one()
+            did = db.session.query(Device).filter_by(serial=device).one()
+            kwargs = {
+                'header': pid.shorthand,
+                'run_every': run_every,
+                'expire_at': expire_at,
+                'data': {
+                    'cell': tid.id,
+                    'device': did.id,
+                    'label': label
+                }
+            }
+        logger.info(kwargs)
+        status, key = cam_task.send_start_timelapse(**kwargs)
+        if status:
             return jsonify({
                 'message': 'Something went wrong'
             }), resp.status_code

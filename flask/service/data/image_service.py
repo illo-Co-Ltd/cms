@@ -6,7 +6,7 @@ from model.model_import import Image, Cell, Device
 from util.logger import logger
 
 
-def read_image(data):
+def read_image_path(data):
     logger.info('Get image list')
     logger.info(f'Filter: {data}')
     condition = {k: v for k, v in data.items() if v is not None}

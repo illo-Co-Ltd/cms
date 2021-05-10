@@ -1,11 +1,11 @@
 import cv2
 
 TYPEMAP = {
-    'binary': cv2.THRESH_BINARY,
-    'binary_inv': cv2.THRESH_BINARY_INV,
-    'trunc': cv2.THRESH_TRUNC,
-    'tozero': cv2.THRESH_TOZERO,
-    'tozero_inv': cv2.THRESH_TOZERO_INV,
+    'THRESH_BINARY': cv2.THRESH_BINARY,
+    'THRESH_BINARY_INV': cv2.THRESH_BINARY_INV,
+    'THRESH_TRUNC': cv2.THRESH_TRUNC,
+    'THRESH_TOZERO': cv2.THRESH_TOZERO,
+    'THRESH_TOZERO_INV': cv2.THRESH_TOZERO_INV,
 }
 
 

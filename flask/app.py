@@ -58,9 +58,13 @@ if app.env == 'development':
 if __name__ == '__main__':
     logger.info('Loaded ENV:' + str(list(os.environ)))
     with app.app_context():
+        from router import control_router, cv_router
+        from tasks.task_callback import task_callback_route
         from router import api
-
         api.init_app(app)
+        app.register_blueprint(control_router.camera_route, url_prefix='/camera')
+        app.register_blueprint(task_callback_route, url_prefix='/task_callback')
+        app.register_blueprint(cv_router.cv_route, url_prefix='/cv')
     app.run(host='0.0.0.0',
             port=os.getenv('FLASK_RUN_PORT'),
             debug=os.getenv('FLASK_DEBUG'))
