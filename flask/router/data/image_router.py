@@ -7,7 +7,7 @@ from router.dto.data_dto import ImageDTO
 from service.data.image_service import create_image, read_image
 
 api = ImageDTO.api
-_image = ImageDTO.image
+_image = ImageDTO.model
 
 
 @api.route('/image')
