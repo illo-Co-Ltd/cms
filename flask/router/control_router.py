@@ -94,6 +94,7 @@ class Focus(Resource):
     @api.doc('Update camera focus')
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
+    @api.expect(FocusDTO.model)
     @jwt_required()
     def put(self):
         try:
