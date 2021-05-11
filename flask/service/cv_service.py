@@ -1,8 +1,5 @@
 import traceback
 
-from PIL import Image
-import numpy as np
-
 from tasks import cv_task
 from util.logger import logger
 

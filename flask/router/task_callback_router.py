@@ -3,7 +3,7 @@ from flask import Blueprint, request, jsonify, current_app
 from model.db_base import db
 from model.image_model import Image
 
-from .taskmanager import celery_app
+from tasks.taskmanager import celery_app
 from util.logger import logger
 
 task_callback_route = Blueprint('task_callback_route', __name__)
