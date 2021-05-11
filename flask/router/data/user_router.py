@@ -8,7 +8,7 @@ from service.data.user_service import create_user, read_user
 from util.logger import logger
 
 api = UserDTO.api
-_user = UserDTO.user
+_user = UserDTO.model
 
 
 @api.route('/user')

@@ -6,7 +6,7 @@ from router.dto.data_dto import CompanyDTO
 from service.data.company_service import create_company, read_company
 
 api = CompanyDTO.api
-_company = CompanyDTO.company
+_company = CompanyDTO.model
 
 
 @api.route('/company')
