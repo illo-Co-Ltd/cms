@@ -7,7 +7,7 @@ from router.dto.data_dto import DeviceEntryDTO
 from service.data.device_entry_service import create_device_entry, read_device_entry
 
 api = DeviceEntryDTO.api
-_device_entry = DeviceEntryDTO.device_entry
+_device_entry = DeviceEntryDTO.model
 
 
 @api.route('/device_entry')

@@ -7,7 +7,7 @@ from router.dto.data_dto import CellDTO
 from service.data.cell_service import create_cell, read_cell
 
 api = CellDTO.api
-_cell = CellDTO.cell
+_cell = CellDTO.model
 
 
 @api.route('/cell')

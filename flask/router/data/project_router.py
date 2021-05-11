@@ -7,7 +7,7 @@ from router.dto.data_dto import ProjectDTO
 from service.data.project_service import create_project, read_project
 
 api = ProjectDTO.api
-_project = ProjectDTO.project
+_project = ProjectDTO.model
 
 
 @api.route('/project')
