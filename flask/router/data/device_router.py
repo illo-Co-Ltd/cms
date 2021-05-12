@@ -37,7 +37,7 @@ class Device(Resource):
     def post(self):
         data = request.get_json()
         try:
-            return create_device(data, current_user)
+            return create_device(data)
         except NoResultFound:
             api.abort(400, message=f'Cannot find <{data.get("company")}> or <{data.get("owner")}>.')
         except Exception:

@@ -15,7 +15,7 @@ def read_device(data):
     return query
 
 
-def create_device(data):
+def create_device(data, user):
     logger.info('Register new device')
     now = datetime.utcnow()
     try:
@@ -33,9 +33,9 @@ def create_device(data):
             owner=owner,
             ip=data.get('ip'),
             created=now,
-            created_by=data.get('created_by', get_jwt_identity()),
+            created_by=data.get('created_by', get_jwt_identity()) if user is None else user.id,
             last_edited=now,
-            edited_by=data.get('created_by', get_jwt_identity()),
+            edited_by=data.get('created_by', get_jwt_identity()) if user is None else user.id,
             is_deleted=False
         )
         db.session.add(device)
