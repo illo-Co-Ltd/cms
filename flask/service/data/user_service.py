@@ -1,6 +1,7 @@
 from datetime import datetime
 import traceback
 from sqlalchemy.orm.exc import NoResultFound
+from flask_jwt_extended import get_jwt_identity
 
 from model.db_base import db
 from model.model_import import User, Company
@@ -31,9 +32,9 @@ def create_user(data, current_user=None):
         data.update({
             'company': Company.query.filter_by(name=comp_name).one(),
             'created': now,
-            'created_by': current_user,
+            'created_by': get_jwt_identity(),
             'last_edited': now,
-            'edited_by': current_user,
+            'edited_by': get_jwt_identity(),
             'is_admin': False,
             'is_deleted': False
         })
@@ -48,10 +49,8 @@ def create_user(data, current_user=None):
     except NoResultFound as e:
         return {'message': 'Company name is empty.'}, 400
     except Exception as e:
-        errmsg = 'User registration failed for unknown reason'
-        logger.error(errmsg)
-        logger.debug(traceback.format_exc())
-        raise Exception(errmsg)
+        logger.error(traceback.format_exc())
+        raise e
 
 
 def update_user(data):

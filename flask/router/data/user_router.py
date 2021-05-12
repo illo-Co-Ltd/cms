@@ -42,4 +42,4 @@ class User(Resource):
             resp = create_user(data, current_user)
             return resp
         except Exception as e:
-            api.abort(500, reason=e)
+            api.abort(reason=e)
