@@ -8,6 +8,8 @@
         <fade-transition :duration="100" origin="center top" mode="out-in">
           <router-view></router-view>
         </fade-transition>
+
+        
       </div>
     </div>
   </div>

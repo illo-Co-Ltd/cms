@@ -7,7 +7,7 @@ from router.dto.data_dto import ImageMetadataDTO
 from service.data.image_service import create_image, read_image_path
 
 api = ImageMetadataDTO.api
-_image_metadata = ImageMetadataDTO.image
+_image_metadata = ImageMetadataDTO.model
 
 
 @api.route('/image/<path>')
