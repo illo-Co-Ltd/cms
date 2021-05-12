@@ -1,7 +1,7 @@
 import traceback
 from flask import request
 from flask_restplus import Resource
-from flask_jwt_extended import jwt_required, current_user
+from flask_jwt_extended import jwt_required
 
 from router.dto.data_dto import UserDTO
 from service.data.user_service import create_user, read_user
@@ -39,7 +39,7 @@ class User(Resource):
     def post(self):
         data = request.get_json()
         try:
-            resp = create_user(data, current_user)
+            resp = create_user(data)
             return resp
         except Exception as e:
-            api.abort(500, reason=e)
+            api.abort(reason=e)

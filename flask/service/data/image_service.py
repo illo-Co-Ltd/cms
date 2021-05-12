@@ -1,4 +1,4 @@
-from flask_jwt_extended import current_user
+from flask_jwt_extended import get_jwt_identity
 
 from model.db_base import db
 from model.model_import import Image, Cell, Device
@@ -24,7 +24,7 @@ def create_image(data):
             path=data.get('path'),
             device=device,
             created=data.get('created'),
-            created_by=current_user,
+            created_by=get_jwt_identity(),
             label=data.get('label'),
             offset_x=data.get('offset_x'),
             offset_y=data.get('offset_y'),

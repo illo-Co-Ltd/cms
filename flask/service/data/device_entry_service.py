@@ -1,5 +1,5 @@
 from datetime import datetime
-from flask_jwt_extended import current_user
+from flask_jwt_extended import get_jwt_identity
 
 from model.db_base import db
 from model.model_import import DeviceEntry, Project, Device
@@ -25,7 +25,7 @@ def create_device_entry(data):
             device=device,
             project=project,
             created=now,
-            created_by=current_user,
+            created_by=get_jwt_identity(),
         )
         db.session.add(device_entry)
         db.session.commit()
