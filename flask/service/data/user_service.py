@@ -16,7 +16,7 @@ def read_user(data):
     return query
 
 
-def create_user(data, current_user=None):
+def create_user(data):
     logger.info("User registration")
     now = datetime.utcnow()
     try:

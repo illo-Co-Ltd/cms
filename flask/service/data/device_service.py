@@ -1,4 +1,5 @@
 from datetime import datetime
+from flask_jwt_extended import get_jwt_identity
 
 from model.db_base import db
 from model.model_import import Device, Company, User
@@ -14,7 +15,7 @@ def read_device(data):
     return query
 
 
-def create_device(data, current_user=None):
+def create_device(data):
     logger.info('Register new device')
     now = datetime.utcnow()
     try:
@@ -32,9 +33,9 @@ def create_device(data, current_user=None):
             owner=owner,
             ip=data.get('ip'),
             created=now,
-            created_by=data.get('created_by', current_user),
+            created_by=data.get('created_by', get_jwt_identity()),
             last_edited=now,
-            edited_by=data.get('created_by', current_user),
+            edited_by=data.get('created_by', get_jwt_identity()),
             is_deleted=False
         )
         db.session.add(device)
