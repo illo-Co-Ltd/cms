@@ -26,7 +26,7 @@ class Cell(Resource):
             })
             return result
         except Exception as e:
-            api.abort(404, reason=e)
+            api.abort(404, reason=str(type(e)))
 
     @api.doc('Create new cell')
     @api.response(201, 'Created')
@@ -37,7 +37,7 @@ class Cell(Resource):
         data = request.get_json()
         try:
             return create_cell(data)
-        except NoResultFound:
-            api.abort(400, message=f'Cannot find project<{data.get("project")}>.')
-        except Exception:
-            api.abort(500, message='Failed to register cell')
+        except NoResultFound as e:
+            api.abort(400, message=f'Cannot find project<{data.get("project")}>.', reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message='Failed to register cell', reason=str(type(e)))

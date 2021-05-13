@@ -1,10 +1,10 @@
 from flask import request
 from flask_restplus import Resource
-from flask_jwt_extended import jwt_required, current_user
+from flask_jwt_extended import jwt_required
 
 from util.jwt import unset_jwt
 from router.dto.auth_dto import *
-from service.auth_service import *
+from service.auth.auth_service import *
 
 api = api_auth
 
@@ -17,7 +17,7 @@ class Login(Resource):
     @api.expect(LoginDTO.model, validate=True)
     def post(self):
         data = request.get_json()
-        return login_user(data)
+        return login_user(**data)
 
 
 @api.route('/logout')

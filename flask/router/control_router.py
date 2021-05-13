@@ -18,9 +18,9 @@ class Capture(Resource):
     @jwt_required()
     def post(self):
         try:
-            return capture()
+            return capture(**(request.get_json()))
         except Exception as e:
-            api.abort(400, message='Failed to capture', reason=e)
+            api.abort(400, message='Failed to capture', reason=str(type(e)))
 
 
 @api.route('/timelapse')
@@ -34,7 +34,7 @@ class Timelapse(Resource):
         try:
             return timelapse_start()
         except Exception as e:
-            api.abort(400, message='Failed to start timelapse', reason=e)
+            api.abort(400, message='Failed to start timelapse', reason=str(type(e)))
 
     @api.doc('Delete timelapse task', params={'key': 'key of a task'})
     @api.response(200, 'OK')
@@ -59,7 +59,7 @@ class Range(Resource):
         try:
             return get_position_range()
         except Exception as e:
-            api.abort(400, message='Bad request', reason=e)
+            api.abort(400, message='Bad request', reason=str(type(e)))
 
 
 @api.route('/pos')
@@ -73,7 +73,7 @@ class Position(Resource):
         try:
             return offset_position()
         except Exception as e:
-            api.abort(e.status_code, reason=e)
+            api.abort(e.status_code, reason=str(type(e)))
 
     @api.doc('Update camera position')
     @api.response(200, 'OK')
@@ -85,7 +85,7 @@ class Position(Resource):
         try:
             return set_position()
         except Exception as e:
-            api.abort(e.status_code, reason=e)
+            api.abort(e.status_code, reason=str(type(e)))
 
 
 # /focus?value=n
@@ -100,4 +100,4 @@ class Focus(Resource):
         try:
             return set_focus()
         except Exception as e:
-            api.abort(e.status_code, reason=e)
+            api.abort(e.status_code, reason=str(type(e)))

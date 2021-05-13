@@ -16,16 +16,9 @@ DEVICE_ID = os.environ.get('DEVICE_ID')
 DEVICE_PW = os.environ.get('DEVICE_PW')
 
 
-def capture():
+def capture(project, cell, device, label, debug, ):
     logger.info('Capture with camera')
     try:
-        data = request.get_json()
-        project = data.get('project')
-        cell = data.get('cell')
-        device = data.get('device')
-        label = data.get('label')
-        debug = data.get('debug')
-
         # skip integrity check if debugging
         if not debug:
             pid = db.session.query(Project).filter_by(name=project).one()

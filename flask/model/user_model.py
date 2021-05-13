@@ -18,9 +18,7 @@ class User(db.Model):
         username = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
         company_id = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), nullable=False, index=True)
     created = db.Column(db.DateTime)
-    created_by = db.Column(db.Integer)
     last_edited = db.Column(db.DateTime)
-    edited_by = db.Column(db.Integer)
     is_admin = db.Column(db.Integer)
     is_deleted = db.Column(db.Integer)
 
