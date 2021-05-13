@@ -40,8 +40,7 @@ def capture(project, cell, device, label, debug, ):
     # 각 DB exception 에 따라 예외처리 세분화
     except Exception as e:
         logger.error(e)
-        traceback.print_stack()
-        traceback.print_exc()
+        logger.debug(traceback.format_exc())
         raise e
 
 
@@ -98,8 +97,7 @@ def timelapse_start():
         # TODO
         # 각 DB exception 에 따라 예외처리 세분화
         logger.error(e)
-        traceback.print_stack()
-        traceback.print_exc()
+        logger.debug(traceback.format_exc())
         raise e
 
 
@@ -130,8 +128,7 @@ def set_position():
             raise CGIException(resp)
     except Exception as e:
         logger.error(e)
-        traceback.print_stack()
-        traceback.print_exc()
+        logger.debug(traceback.format_exc())
         raise e
 
 
@@ -158,8 +155,7 @@ def offset_position():
             raise CGIException(resp)
     except Exception as e:
         logger.error(e)
-        traceback.print_stack()
-        traceback.print_exc()
+        logger.debug(traceback.format_exc())
         raise e
 
 
@@ -167,21 +163,43 @@ def set_focus():
     logger.info('Update camera focus')
     try:
         data = request.get_json()
-        newfocus = data.get('value')
-        logger.info(f'newfocus: {newfocus}')
+        focus = data.get('value')
+        logger.info(f'focus: {focus}')
         resp = requests.get(
-            f'http://{DEVICE_IP}/isp/appispmu.cgi?i_c1_dirfcs={newfocus}&btOK=move',
+            f'http://{DEVICE_IP}/isp/appispmu.cgi?i_c1_dirfcs={focus}&btOK=move',
             auth=HTTPDigestAuth(DEVICE_ID, DEVICE_PW)
         )
         if resp.status_code == 200:
             return {
                        'message': 'Successfully updated camera focus.',
-                       'result': newfocus
+                       'result': focus
                    }, 200
         else:
             raise CGIException(resp)
     except Exception as e:
         logger.error(e)
-        traceback.print_stack()
-        traceback.print_exc()
+        logger.debug(traceback.format_exc())
+        raise e
+
+
+def set_led():
+    logger.info('Update led brightness')
+    try:
+        data = request.get_json()
+        value = data.get('value')
+        logger.info(f'value: {value}')
+        resp = requests.get(
+            f'http://{DEVICE_IP}/isp/appispmu.cgi?i_c1_dirled={value}&btOK=run',
+            auth=HTTPDigestAuth(DEVICE_ID, DEVICE_PW)
+        )
+        if resp.status_code == 200:
+            return {
+                       'message': 'Successfully updated led brightness.',
+                       'result': value
+                   }, 200
+        else:
+            raise CGIException(resp)
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
         raise e

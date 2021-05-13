@@ -11,7 +11,6 @@ api = api_control
 
 @api.route('/capture')
 class Capture(Resource):
-    @api.doc('Capture')
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
     @api.expect(CaptureDTO.model, validate=True)
@@ -25,7 +24,6 @@ class Capture(Resource):
 
 @api.route('/timelapse')
 class Timelapse(Resource):
-    @api.doc('Create timelapse task')
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
     @api.expect(TimelapseDTO.model, validate=True)
@@ -36,7 +34,6 @@ class Timelapse(Resource):
         except Exception as e:
             api.abort(400, message='Failed to start timelapse', reason=str(type(e)))
 
-    @api.doc('Delete timelapse task', params={'key': 'key of a task'})
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
     @jwt_required()
@@ -51,7 +48,6 @@ class Timelapse(Resource):
 
 @api.route('/range')
 class Range(Resource):
-    @api.doc('Get camera min/max range of position')
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
     @jwt_required()
@@ -64,7 +60,6 @@ class Range(Resource):
 
 @api.route('/pos')
 class Position(Resource):
-    @api.doc('Offset camera position')
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
     @api.expect(PositionDTO.model)
@@ -75,7 +70,6 @@ class Position(Resource):
         except Exception as e:
             api.abort(e.status_code, reason=str(type(e)))
 
-    @api.doc('Update camera position')
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
     @api.expect(PositionDTO.model)
@@ -91,7 +85,6 @@ class Position(Resource):
 # /focus?value=n
 @api.route('/focus')
 class Focus(Resource):
-    @api.doc('Update camera focus')
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
     @api.expect(FocusDTO.model)
@@ -99,5 +92,18 @@ class Focus(Resource):
     def put(self):
         try:
             return set_focus()
+        except Exception as e:
+            api.abort(e.status_code, reason=str(type(e)))
+
+
+@api.route('/led')
+class Led(Resource):
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.expect(LedDTO.model)
+    @jwt_required()
+    def put(self):
+        try:
+            return set_led()
         except Exception as e:
             api.abort(e.status_code, reason=str(type(e)))

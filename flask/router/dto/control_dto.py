@@ -26,6 +26,7 @@ class TimelapseDTO:
         'debug': fields.Boolean(required=False, description='Flag for skipping integrity check'),
     })
 
+
 class RangeDTO:
     api = api_control
     model = api.model('posrange', {
@@ -50,5 +51,12 @@ class PositionDTO:
 class FocusDTO:
     api = api_control
     model = api.model('focus', {
-        'value': fields.String(required=True, description='Focus value'),
+        'value': fields.Integer(required=True, description='Focus value', min=0, max=255),
+    })
+
+
+class LedDTO:
+    api = api_control
+    model = api.model('led', {
+        'value': fields.Integer(required=True, description='Focus value', min=0, max=255),
     })
