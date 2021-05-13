@@ -41,3 +41,37 @@ class Cell(Resource):
             api.abort(400, message=f'Cannot find project<{data.get("project")}>.', reason=str(type(e)))
         except Exception as e:
             api.abort(500, message='Failed to register cell', reason=str(type(e)))
+
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.doc(params={
+        'name': 'Key to find cell(required)',
+        'project': 'New project',
+        'type': 'New type',
+        'detail': 'New detail',
+        'description': 'New description',
+    })
+    @jwt_required()
+    def put(self):
+        data = request.get_json()
+        try:
+            return update_cell(**data)
+        except NoResultFound as e:
+            api.abort(400, message=f'Cannot find cell<{data.get("name")}>.', reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message='Something went wrong.')
+
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.doc(params={
+        'name': 'Key to find cell(required)',
+    })
+    @jwt_required()
+    def delete(self):
+        data = request.get_json()
+        try:
+            return delete_cell(**data)
+        except NoResultFound as e:
+            api.abort(400, message=f'Cannot find cell<{data.get("name")}>.', reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message='Something went wrong.', reason=str(type(e)))
