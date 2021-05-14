@@ -1,3 +1,5 @@
+from sqlalchemy import UniqueConstraint
+
 from .db_base import db, env
 
 
@@ -16,6 +18,7 @@ class DeviceEntry(db.Model):
                               backref='device_entries')
     created_by = db.relationship('User', primaryjoin='DeviceEntry.created_by_id == User.id',
                                  backref='device_entries')
+    UniqueConstraint('device_id', 'project_id')
 
     def __repr__(self):
         return f'<DeviceEntry [{self.device}] | [{self.project}]>'
