@@ -8,7 +8,7 @@ import numpy as np
 import cv2
 
 from app import app
-from cv import blur, color, detection, normalize, segmentation, threshold
+from cv import blur, color, detection, normalize, segmentation, threshold, equalize_background
 
 logger = get_task_logger(__name__)
 
@@ -82,3 +82,16 @@ def cv_detection(src: np.ndarray, **kwargs) -> np.ndarray:
 @app.task(name='cv_task.cv_segmentation')
 def cv_segmentation(src: np.ndarray, **kwargs) -> np.ndarray:
     pass
+
+@app.task(name='cv_task.equalize_background')
+def equalize_background(path, **kwargs) -> np.ndarray:
+    try:
+        src = cv2.imread('/data/' + path)
+        output_path = '/data/cv/'+path
+        if not os.path.exists('/data/cv'):
+            os.mkdir('/data/cv')
+        cv2.imwrite(output_path, equalize_background.apply(src, **kwargs))
+        return output_path
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        raise TaskError(e)

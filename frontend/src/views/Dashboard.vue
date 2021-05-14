@@ -6,7 +6,7 @@
     </div>
     <div class="d-o bg-white d-o-shadow"
           v-bind:style="{top:this.$store.state.dimens.header+'px',
-                        width:this.$store.state.dimens.optional+'px'}">
+                         width:this.$store.state.dimens.optional+'px'}">
       <div class="d-o-margin">
         <h4>color</h4>
         <base-input>
@@ -215,11 +215,13 @@ export default {
       })
     },
     normalizeApply() {
+      alert(this.normalize.clipLimit + "|" +typeof(this.normalize.clipLimit))
+      const clipLimit = parseFloat(this.normalize.clipLimit)
       axios.post('server/cv/normalize', {
                                       "path":"sample01.png",
                                       "params":{
                                         "method":this.normalize.selected,
-                                        "clipLimit":this.normalize.clipLimit,
+                                        "clipLimit": clipLimit,
                                         "tileGridSize":this.normalize.tileGridSize
                                       }
                                     })
@@ -259,8 +261,10 @@ export default {
   margin-right: 300px;
 }
 .d-o{
-  position: absolute;
+  position: fixed;
   right: 0;
+  bottom: 0;
+  overflow: auto;
   background-color: rgb(255, 255, 255);
 }
 .d-o-shadow{
