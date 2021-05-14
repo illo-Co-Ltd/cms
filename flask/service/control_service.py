@@ -7,7 +7,7 @@ from requests.auth import HTTPDigestAuth
 
 from model.db_base import db
 from model import Project, Cell, Device
-from tasks import cam_task
+from worker import cam_task
 from util.logger import logger
 from util.exc import CGIException
 

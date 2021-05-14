@@ -1,4 +1,5 @@
 import os
+import traceback
 from datetime import datetime, timezone, timedelta
 
 from flask import after_this_request, current_app
@@ -37,9 +38,8 @@ def refresh_expiring_jwts(response):
 
 def login_user(userid, password):
     logger.info("User Login")
-    user_data = User.query.filter_by(userid=userid).first()
-
-    if user_data is not None:
+    try:
+        user_data = User.query.filter_by(userid=userid).one()
         if not user_data.check_password(password):
             logger.error("Authentication error: Wrong userid or password")
             return {'message': 'Authentication error: Wrong userid or password', "authenticated": False}, 401
@@ -52,10 +52,11 @@ def login_user(userid, password):
             'login': True,
             'msg': 'New login',
             'access_token': access_token,
-            #'refresh_token': refresh_token
+            # 'refresh_token': refresh_token
         }
         _set_cookies(access_token, refresh_token)
         return resp, 200
-    else:
-        logger.error("User Does Not Exist")
-        return {'message': 'User Does Not Exist', "authenticated": False}, 401
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e

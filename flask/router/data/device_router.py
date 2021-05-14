@@ -7,40 +7,37 @@ from router.dto.data_dto import DeviceDTO
 from service.data.device_service import *
 
 api = DeviceDTO.api
-_device = DeviceDTO.model
+DeviceDTO.model
 
-parser = reqparse.RequestParser()
+parser_get = reqparse.RequestParser()
+parser_get.add_argument('model', type=str, location='args')
+parser_get.add_argument('serial', type=str, location='args')
+parser_get.add_argument('company', type=str, location='args')
+parser_get.add_argument('owner', type=str, location='args')
+parser_get.add_argument('ip', type=str, location='args')
 
+parser_delete = reqparse.RequestParser()
+parser_delete.add_argument('serial', type=str, location='args', required=True)
 
-# parser.add_argument('model', type=)
 
 @api.route('/device')
 class Device(Resource):
-    @api.doc('Query device with filters')
     @api.response(404, 'No result found for query.')
-    @api.marshal_list_with(_device, envelope='data')
-    @api.expect(parser, validate=True)
+    @api.marshal_list_with(DeviceDTO.model, envelope='data')
+    @api.expect(parser_get, validate=True)
     @jwt_required()
     def get(self):
-        logger.info(get_jwt()["exp"])
         try:
-            result = read_device(
-                model=request.args.get('model'),
-                serial=request.args.get('serial'),
-                company=request.args.get('company'),
-                owner=request.args.get('owner'),
-                ip=request.args.get('ip')
-            )
+            result = read_device(**parser_get.parse_args())
             return result
         except NoResultFound as e:
             api.abort(404, message=f'Cannot find device.', reason=str(type(e)))
         except Exception as e:
             api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
-    @api.doc('Create new device')
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
-    @api.expect(_device, validate=True)
+    @api.expect(DeviceDTO.model, validate=True)
     @jwt_required()
     def post(self):
         data = request.get_json()
@@ -54,35 +51,26 @@ class Device(Resource):
 
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
-    @api.doc(params={
-        'serial': 'Key to find device (required)',
-        'model': 'New model name',
-        'newserial': 'New serial number',
-        'company': 'New company name',
-        'owner': 'New owner id',
-        'ip': 'New shorthand',
-    })
+    @api.expect(DeviceDTO.model_update, validate=False)
     @jwt_required()
     def put(self):
         data = request.get_json()
         try:
             return update_device(**data)
         except NoResultFound as e:
-            api.abort(400, message=f'Cannot find device<{data.get("name")}>.', reason=str(type(e)))
+            api.abort(400, message=f'Cannot find device<{data.get("serial")}>.', reason=str(type(e)))
         except Exception as e:
             api.abort(500, message='Something went wrong.')
 
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
-    @api.doc(params={
-        'serial': 'Key to find device (required)',
-    })
+    @api.expect(parser_delete)
     @jwt_required()
     def delete(self):
-        data = request.get_json()
         try:
-            return delete_device(**data)
+            args = parser_delete.parse_args()
+            return delete_device(**args)
         except NoResultFound as e:
-            api.abort(400, message=f'Cannot find device<{data.get("name")}>.', reason=str(type(e)))
+            api.abort(400, message=f'Cannot find device<{args.get("serial")}>.', reason=str(type(e)))
         except Exception as e:
             api.abort(500, message='Something went wrong.', reason=str(type(e)))

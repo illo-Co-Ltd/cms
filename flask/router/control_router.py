@@ -1,10 +1,11 @@
 from flask_restplus import Resource
 from flask_jwt_extended import jwt_required
+from werkzeug.exceptions import HTTPException
 
 from service.control_service import *
 
 from router.dto.control_dto import *
-from tasks import cam_task
+from worker import cam_task
 
 api = api_control
 
@@ -18,8 +19,10 @@ class Capture(Resource):
     def post(self):
         try:
             return capture(**(request.get_json()))
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
-            api.abort(400, message='Failed to capture', reason=str(type(e)))
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
 
 @api.route('/timelapse')
@@ -31,19 +34,26 @@ class Timelapse(Resource):
     def post(self):
         try:
             return timelapse_start()
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
-            api.abort(400, message='Failed to start timelapse', reason=str(type(e)))
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
     @jwt_required()
     def delete(self):
-        data = request.get_json()
-        key = data.get('key')
-        if cam_task.stop_timelapse_send(key):
-            return {'message': f'Timelapse task for key {key} deleted'}, 200
-        else:
-            api.abort(400, message=f'Cannot delete Timelapse task for key {key}')
+        try:
+            data = request.get_json()
+            key = data.get('key')
+            if cam_task.send_stop_timelapse(key):
+                return {'message': f'Timelapse task for key {key} deleted'}, 200
+            else:
+                raise Exception('cannot stop timelapse')
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
 
 @api.route('/range')
@@ -54,8 +64,10 @@ class Range(Resource):
     def get(self):
         try:
             return get_position_range()
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
-            api.abort(400, message='Bad request', reason=str(type(e)))
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
 
 @api.route('/pos')
@@ -67,8 +79,10 @@ class Position(Resource):
     def put(self):
         try:
             return offset_position()
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
-            api.abort(e.status_code, reason=str(type(e)))
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
@@ -78,8 +92,10 @@ class Position(Resource):
     def post(self):
         try:
             return set_position()
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
-            api.abort(e.status_code, reason=str(type(e)))
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
 
 # /focus?value=n
@@ -92,8 +108,10 @@ class Focus(Resource):
     def put(self):
         try:
             return set_focus()
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
-            api.abort(e.status_code, reason=str(type(e)))
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
 
 @api.route('/led')
@@ -105,5 +123,7 @@ class Led(Resource):
     def put(self):
         try:
             return set_led()
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
-            api.abort(e.status_code, reason=str(type(e)))
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))

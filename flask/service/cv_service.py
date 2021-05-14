@@ -1,6 +1,6 @@
 import traceback
 
-from tasks import cv_task
+from worker import cv_task
 from util.logger import logger
 
 

@@ -39,12 +39,20 @@ class DeviceDTO:
         'owner': fields.String(attribute='owner.userid', required=True, description='Userid of owner'),
         'ip': fields.String(required=True, description='IP address to access'),
     })
+    model_update = api.model('device_update', {
+        'serial': fields.String(required=True, description='Unique key to identify device'),
+        'model': fields.String(required=False, description='Device model name'),
+        'newserial': fields.String(required=False, description='New serial number'),
+        'company': fields.String(attribute='company.name', required=False, description='Company belongs to'),
+        'owner': fields.String(attribute='owner.userid', required=False, description='Userid of owner'),
+        'ip': fields.String(required=False, description='IP address to access'),
+    })
 
 
 class DeviceEntryDTO:
     api = api_data
     model = api.model('device_entry', {
-        'serial': fields.String(required=True, description='Device serial number'),
+        'serial': fields.String(attribute='device.serial', required=True, description='Device serial number'),
         'project': fields.String(required=True, description='Parent project'),
     })
 
