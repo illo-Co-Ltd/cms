@@ -38,27 +38,27 @@ class CaptureTask(celery.Task):
         logger.warning(f'Task {task_id} failed with exception[{exc}]')
 
 
-# @worker_process_init.connect
-# def worker_init_handler(**kwargs):
-#     global vcam
-#     frame = None
-#     for i in range(CAM_MAX_RETRY):
-#         logger.debug(f'Initializing VideoCamera, try #{i + 1}', )
-#         time.sleep(random() * CAM_RETRY_INTERVAL)
-#         try:
-#             vcam = camera.VideoCamera()
-#             frame = vcam.get_frame()
-#         except ValueError:
-#             continue
-#         except ConnectionError as e:
-#             logger.error(traceback.format_exc())
-#             raise e
-#         if frame is not None:
-#             logger.info(f'VideoCamera initialized (shape):{frame.shape}')
-#             return
-#     # TODO 초기화가 불가능하면 해당 worker pool을 종료하도록 구현
-#     logger.warning(f'Cannot initialize VideoCamera after {CAM_MAX_RETRY} tries')
-#     raise Exception
+@worker_process_init.connect
+def worker_init_handler(**kwargs):
+    global vcam
+    frame = None
+    for i in range(CAM_MAX_RETRY):
+        logger.debug(f'Initializing VideoCamera, try #{i + 1}', )
+        time.sleep(random() * CAM_RETRY_INTERVAL)
+        try:
+            vcam = camera.VideoCamera()
+            frame = vcam.get_frame()
+        except ValueError:
+            continue
+        except ConnectionError as e:
+            logger.error(traceback.format_exc())
+            raise e
+        if frame is not None:
+            logger.info(f'VideoCamera initialized (shape):{frame.shape}')
+            return
+    # TODO 초기화가 불가능하면 해당 worker pool을 종료하도록 구현
+    logger.warning(f'Cannot initialize VideoCamera after {CAM_MAX_RETRY} tries')
+    raise Exception
 
 
 @worker_process_shutdown.connect
