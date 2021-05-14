@@ -48,6 +48,7 @@ def create_device(**kwargs):
         db.session.commit()
         return {'message': f'Posted device<{kwargs.get("serial")}> to db.'}, 201
     except Exception as e:
+        db.session.rollback()
         logger.error(e)
         logger.debug(traceback.format_exc())
         raise e
@@ -73,6 +74,7 @@ def update_device(**kwargs):
         db.session.commit()
         return {'message': f'Updated device<{query.serial}> from db.'}, 200
     except Exception as e:
+        db.session.rollback()
         logger.error(e)
         logger.debug(traceback.format_exc())
         raise e
@@ -86,6 +88,7 @@ def delete_device(**kwargs):
         db.session.commit()
         return {'message': f'Deleted device<{query.serial}> from db.'}, 200
     except Exception as e:
+        db.session.rollback()
         logger.error(e)
         logger.debug(traceback.format_exc())
         raise e

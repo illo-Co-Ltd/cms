@@ -1,3 +1,5 @@
+import traceback
+
 from model.db_base import db
 from model.model_import import Project, Cell
 
@@ -7,9 +9,14 @@ from util.logger import logger
 def read_cell(data):
     logger.info('Get cell list')
     logger.info(f'Filter: {data}')
-    condition = {k: v for k, v in data.items() if v is not None}
-    query = db.session.query(Cell).filter_by(**condition).all()
-    return query
+    try:
+        condition = {k: v for k, v in data.items() if v is not None}
+        query = db.session.query(Cell).filter_by(**condition).all()
+        return query
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
 
 
 def create_cell(data):
@@ -27,5 +34,7 @@ def create_cell(data):
         db.session.commit()
         return {'message': f'Posted cell<{data.get("name")}> to db.'}, 201
     except Exception as e:
+        db.session.rollback()
         logger.error(e)
+        logger.debug(traceback.format_exc())
         raise e

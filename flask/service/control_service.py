@@ -96,6 +96,7 @@ def timelapse_start():
     except Exception as e:
         # TODO
         # 각 DB exception 에 따라 예외처리 세분화
+        db.session.rollback()
         logger.error(e)
         logger.debug(traceback.format_exc())
         raise e

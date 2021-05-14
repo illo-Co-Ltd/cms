@@ -10,9 +10,9 @@ from util.logger import logger
 
 
 def read_user(**kwargs):
+    logger.info('Get user list')
+    logger.info(f'Filter: {kwargs}')
     try:
-        logger.info('Get user list')
-        logger.info(f'Filter: {kwargs}')
         condition = {k: v for k, v in kwargs.items() if v is not None}
         query = db.session.query(User).filter_by(**condition).all()
         return query
@@ -49,10 +49,10 @@ def create_user(**kwargs):
 
         logger.info('User registration successful')
         return {'message': 'User registration successful'}, 201
-    except NoResultFound as e:
-        return {'message': 'Company doesn\'t exist.'}, 400
     except Exception as e:
-        logger.error(traceback.format_exc())
+        db.session.rollback()
+        logger.error(e)
+        logger.debug(traceback.format_exc())
         raise e
 
 
@@ -75,6 +75,7 @@ def update_user(**kwargs):
         db.session.commit()
         return {'message': f'Updated user<{query.userid}> from db.'}, 200
     except Exception as e:
+        db.session.rollback()
         logger.error(e)
         logger.debug(traceback.format_exc())
         raise e
@@ -92,8 +93,8 @@ def delete_user(**kwargs):
             # TODO
             # Permission 구현
             raise NotEnoughPermission(required=None, obtained=None)
-
     except Exception as e:
+        db.session.rollback()
         logger.error(e)
         logger.debug(traceback.format_exc())
         raise e

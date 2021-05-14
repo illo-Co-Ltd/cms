@@ -15,7 +15,7 @@ def read_project(**kwargs):
         return query
     except Exception as e:
         logger.error(e)
-        #logger.debug(traceback.format_exc())
+        logger.debug(traceback.format_exc())
         raise e
 
 
@@ -42,10 +42,11 @@ def update_project(**kwargs):
         if kwargs.get('shorthand'):
             query.shorthand = kwargs.get('shorthand')
         if kwargs.get('description'):
-            query.description= kwargs.get('description')
+            query.description = kwargs.get('description')
         db.session.commit()
         return {'message': f'Updated project<{query.name}> from db.'}, 200
     except Exception as e:
+        db.session.rollback()
         logger.error(e)
         logger.debug(traceback.format_exc())
         raise e
@@ -60,6 +61,7 @@ def delete_project(**kwargs):
         db.session.commit()
         return {'message': f'Deleted project<{query.name}> from db.'}, 200
     except Exception as e:
+        db.session.rollback()
         logger.error(e)
         logger.debug(traceback.format_exc())
         raise e

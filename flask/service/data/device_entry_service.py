@@ -21,7 +21,6 @@ def read_device_entry(**kwargs):
         query = db.session.query(DeviceEntry).filter_by(**kwargs).all()
         return query
     except Exception as e:
-        db.session.rollback()
         logger.error(e)
         logger.debug(traceback.format_exc())
         raise e
