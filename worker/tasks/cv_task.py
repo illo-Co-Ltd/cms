@@ -8,7 +8,7 @@ import numpy as np
 import cv2
 
 from app import app
-from cv import blur, color, detection, normalize, segmentation, threshold
+from cv import blur, color, detection, normalize, segmentation, threshold, remove_bg
 
 logger = get_task_logger(__name__)
 
@@ -82,3 +82,29 @@ def cv_detection(src: np.ndarray, **kwargs) -> np.ndarray:
 @app.task(name='cv_task.cv_segmentation')
 def cv_segmentation(src: np.ndarray, **kwargs) -> np.ndarray:
     pass
+
+#remove background of grayscale image
+def cv_remove_bg1(path) -> np.ndarray:
+    try:
+        src = cv2.imread('/data/' + path, cv2.IMREAD_GRAYSCALE)
+        output_path = '/data/cv/'+path
+        if not os.path.exists('/data/cv'):
+            os.mkdir('/data/cv')
+        cv2.imwrite(output_path, remove_bg.remove_bg1(src))
+        return output_path
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        raise TaskError(e)
+
+#remove background of 3channel image
+def cv_remove_bg1(path) -> np.ndarray:
+    try:
+        src = cv2.imread('/data/' + path)
+        output_path = '/data/cv/'+path
+        if not os.path.exists('/data/cv'):
+            os.mkdir('/data/cv')
+        cv2.imwrite(output_path, remove_bg.remove_bg3(src))
+        return output_path
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        raise TaskError(e)

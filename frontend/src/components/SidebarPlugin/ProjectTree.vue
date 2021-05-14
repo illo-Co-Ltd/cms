@@ -2,14 +2,16 @@
   <div>
     <div v-for="(item, i) in this.project.data" :key="i">
       <div class="pt-item-box">
-        <i class="ni ni-bold-right pt-icon-box"></i>
+        <i class="ni ni-bold-right pt-icon-box" @click="expandChildren(i)"></i>
         <a class="pt-text-box">{{item.name}}</a>
         <a class="pt-button-box">
           <button class="btn pt-button-style" @click="registDevice(i)">+</button>
           <button class="btn pt-button-style">-</button>
         </a>
       </div>
-      <device-tree></device-tree>
+      <div v-if="expanded">
+        <device-tree></device-tree>
+      </div>
     </div>
   </div>
 </template>
@@ -22,11 +24,30 @@ export default {
   props: {
     project: Object
   },
+  data() {
+    return{
+      visible: Array,
+      expanded: false,
+    }
+  },
   methods: {
     registDevice(i){
       this.$store.state.modals.selectedDevice = this.project.data[i].name
       this.$store.state.modals.rDevice = !this.$store.state.modals.rDevice
-    }
+    },
+    expandChildren(i) {
+      if(!this.visible[i]) this.visible[i]=true
+      else this.visible[i]=false
+      this.expanded=!this.expanded
+      console.log(i+","+this.visible[i])
+    },
+    isVisible(i) {
+      if(this.visible[i]) return true;
+      else return false;
+    },
+  },
+  computed: {
+    
   }
 }
 </script>

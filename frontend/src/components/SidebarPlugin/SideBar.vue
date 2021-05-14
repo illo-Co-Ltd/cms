@@ -54,6 +54,7 @@ export default {
 .sb{
   position: fixed;
   bottom: 0;
+  overflow: auto;
 }
 .c-p{
   cursor: pointer;
