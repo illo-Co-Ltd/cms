@@ -1,6 +1,7 @@
 from flask import request
 from flask_restplus import Resource, reqparse
 from flask_jwt_extended import jwt_required
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import HTTPException
 
@@ -42,8 +43,9 @@ class DeviceEntry(Resource):
         try:
             return create_device_entry(**data)
         except NoResultFound as e:
-            api.abort(400, message=f'Cannot find <{data.get("serial") or data.get("project")}>.',
-                      reason=str(type(e)))
+            api.abort(400, message=f'Cannot find device or project>.', reason=str(type(e)))
+        except IntegrityError as e:
+            api.abort(400, message=f'Duplicate entry>.', reason=str(type(e)))
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:

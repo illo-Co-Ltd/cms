@@ -5,6 +5,11 @@ from .db_base import db, env
 
 class DeviceEntry(db.Model):
     __tablename__ = 'device_entry'
+    __table_args__ = (
+        # 'autoload':True,
+        UniqueConstraint('device_id', 'project_id'),{}
+        # 'mysql_collate': 'utf8mb4_unicode_ci'
+    )
 
     id = db.Column(db.Integer, primary_key=True)
     device_id = db.Column(db.ForeignKey('device.id', onupdate='CASCADE'), nullable=False, index=True)
@@ -18,7 +23,6 @@ class DeviceEntry(db.Model):
                               backref='device_entries')
     created_by = db.relationship('User', primaryjoin='DeviceEntry.created_by_id == User.id',
                                  backref='device_entries')
-    UniqueConstraint('device_id', 'project_id')
 
     def __repr__(self):
         return f'<DeviceEntry [{self.device}] | [{self.project}]>'
