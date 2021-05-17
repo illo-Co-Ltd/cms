@@ -39,7 +39,16 @@ class DeviceDTO:
         'owner': fields.String(attribute='owner.userid', required=True, description='Userid of owner'),
         'ip': fields.String(required=True, description='IP address to access'),
     })
-    model_update = api.model('device_update', {
+    model_post = api.model('device', {
+        'model': fields.String(required=True, description='Device model name'),
+        'serial': fields.String(required=True, description='Device serial number'),
+        'company': fields.String(attribute='company.name', required=True, description='Company belongs to'),
+        'owner': fields.String(attribute='owner.userid', required=True, description='Userid of owner'),
+        'ip': fields.String(required=True, description='IP address to access'),
+        'cgi_id': fields.String(required=True, description='CGI auth ID'),
+        'cgi_pw': fields.String(required=True, description='CGI auth PW'),
+    })
+    model_put = api.model('device_update', {
         'serial': fields.String(required=True, description='Unique key to identify device'),
         'model': fields.String(required=False, description='Device model name'),
         'newserial': fields.String(required=False, description='New serial number'),
