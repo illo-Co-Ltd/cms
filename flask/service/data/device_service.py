@@ -38,12 +38,15 @@ def create_device(**kwargs):
             company=company,
             owner=owner,
             ip=kwargs.get('ip'),
+            cgi_id=kwargs.get('cgi_id'),
+            cgi_pw=kwargs.get('cgi_pw'),
             created=now,
             created_by=kwargs.get('created_by', current_user),
             last_edited=now,
             edited_by=kwargs.get('edited_by', current_user),
             is_deleted=False
         )
+        device.hash_cgi_pw()
         db.session.add(device)
         db.session.commit()
         return {'message': f'Posted device<{kwargs.get("serial")}> to db.'}, 201

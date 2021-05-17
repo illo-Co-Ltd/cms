@@ -21,7 +21,7 @@ def read_image_path(data):
         raise e
 
 
-def create_image(data):
+def create_image_metadata(data):
     logger.info('Register new image')
     try:
         cell = db.session.query(Cell).filter_by(name=data.get('cell')).one()

@@ -1,6 +1,7 @@
 from flask import request
 from flask_restplus import Resource, reqparse, inputs
 from flask_jwt_extended import jwt_required, get_jwt
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
 from router.dto.data_dto import DeviceDTO
@@ -15,6 +16,8 @@ parser_get.add_argument('serial', type=str, location='args')
 parser_get.add_argument('company', type=str, location='args')
 parser_get.add_argument('owner', type=str, location='args')
 parser_get.add_argument('ip', type=str, location='args')
+parser_get.add_argument('cgi_id', type=str, location='args')
+parser_get.add_argument('cgi_pw', type=str, location='args')
 
 parser_delete = reqparse.RequestParser()
 parser_delete.add_argument('serial', type=str, location='args', required=True)
@@ -43,6 +46,10 @@ class Device(Resource):
         data = request.get_json()
         try:
             return create_device(**data)
+        except IntegrityError as e:
+            api.abort(400, message=f'Need cgi_id field', reason=str(type(e)))
+        except ValueError as e:
+            api.abort(400, message=f'Need cgi_pw field', reason=str(type(e)))
         except NoResultFound as e:
             api.abort(400, message=f'Cannot find <{data.get("company")}> or <{data.get("owner")}>.',
                       reason=str(type(e)))

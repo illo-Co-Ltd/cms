@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
@@ -52,7 +54,9 @@ if app.env == 'development':
             serial='testserial',
             company='illo',
             owner='root',
-            ip='123.123.123.123',
+            ip=os.getenv('DEV_IP'),
+            cgi_id=os.getenv('DEV_CGI_ID'),
+            cgi_pw=os.getenv('DEV_CGI_PW'),
             is_deleted=False,
             created_by=root_user,
             edited_by=root_user,

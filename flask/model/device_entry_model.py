@@ -6,8 +6,10 @@ from .db_base import db, env
 class DeviceEntry(db.Model):
     __tablename__ = 'device_entry'
     __table_args__ = (
+        # TODO
+        # table 옵션 찾아보기
         # 'autoload':True,
-        UniqueConstraint('device_id', 'project_id'),{}
+        UniqueConstraint('device_id', 'project_id'), {}
         # 'mysql_collate': 'utf8mb4_unicode_ci'
     )
 

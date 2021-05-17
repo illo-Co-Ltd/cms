@@ -12,8 +12,27 @@ from util.logger import logger
 from util.exc import CGIException
 
 DEVICE_IP = os.environ.get('DEVICE_IP')
-DEVICE_ID = os.environ.get('DEVICE_ID')
-DEVICE_PW = os.environ.get('DEVICE_PW')
+
+
+def fetch_jpeg(serial):
+    logger.info('Fetch jpeg image from camera')
+    try:
+        ip = db.session.query(Device).filter_by(serial=serial).one().ip
+        # TODO
+        # DB에서 CGI auth정보 가져오도록 변경
+        resp = requests.get(
+            f'http://{ip}/jpg/',
+            auth=HTTPDigestAuth(DEVICE_ID, DEVICE_PW)
+        )
+        if resp.status_code == 200:
+            return resp.content
+        else:
+            logger.error(resp.text)
+            raise CGIException(resp)
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
 
 
 def capture(project, cell, device, label, debug, ):
@@ -21,14 +40,14 @@ def capture(project, cell, device, label, debug, ):
     try:
         # skip integrity check if debugging
         if not debug:
-            pid = db.session.query(Project).filter_by(name=project).one()
-            tid = db.session.query(Cell) \
-                .filter_by(project=pid.id) \
+            project = db.session.query(Project).filter_by(name=project).one()
+            cell = db.session.query(Cell) \
+                .filter_by(project=project.id) \
                 .filter_by(name=cell).one()
-            did = db.session.query(Device).filter_by(serial=device).one()
-            task_id = cam_task.capture_send(header=f'{pid.shorthand}_{tid.name}',
-                                            data={'cell': tid.id,
-                                                  'device': did.id,
+            device = db.session.query(Device).filter_by(serial=device).one()
+            task_id = cam_task.capture_send(header=f'{project.shorthand}_{cell.name}',
+                                            data={'cell': cell.id,
+                                                  'device': device.id,
                                                   'label': label})
         else:
             task_id = cam_task.capture_send(header=f'{project}_{cell}',
@@ -107,13 +126,10 @@ def get_position_range():
     pass
 
 
-def set_position():
+def set_position(serial, x, y, z):
     logger.info('Update absolute camera position')
     try:
-        data = request.get_json()
-        x = data.get('x')
-        y = data.get('y')
-        z = data.get('z')
+
         logger.info('newpos: ', {"x": x, "y": y, "z": z})
         resp = requests.get(
             f'http://{DEVICE_IP}/isp/appispmu.cgi?btOK=submit&i_mt_dirx={x}&i_mt_diry={y}&i_mt_dirz={z}',

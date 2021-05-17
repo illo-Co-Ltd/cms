@@ -1,5 +1,7 @@
+from flask import make_response
 from flask_restplus import Resource
 from flask_jwt_extended import jwt_required
+from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import HTTPException
 
 from service.control_service import *
@@ -8,6 +10,26 @@ from router.dto.control_dto import *
 from worker import cam_task
 
 api = api_control
+
+
+@api.route('/jpeg/<serial>')
+class Jpeg(Resource):
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.produces(['image/jpeg'])
+    @jwt_required()
+    def get(self, serial):
+        try:
+            img = fetch_jpeg(serial)
+            resp = make_response(img)
+            resp.headers.set('Content-Type', 'image/jpeg')
+            return resp
+        except NoResultFound as e:
+            api.abort(404, message=f'Cannot find device.', reason=str(type(e)))
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
 
 @api.route('/capture')
@@ -91,6 +113,10 @@ class Position(Resource):
     # /pos?x=n&y=n&z=n
     def post(self):
         try:
+            data = request.get_json()
+            x = data.get('x')
+            y = data.get('y')
+            z = data.get('z')
             return set_position()
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))

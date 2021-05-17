@@ -30,6 +30,7 @@ class TimelapseDTO:
 class RangeDTO:
     api = api_control
     model = api.model('posrange', {
+        'serial': fields.String(required=True, description='Target device'),
         'x_min': fields.Integer(required=True, description='x lower limit'),
         'x_max': fields.Integer(required=True, description='x upper limit'),
         'y_min': fields.Integer(required=True, description='y lower limit'),
@@ -42,6 +43,7 @@ class RangeDTO:
 class PositionDTO:
     api = api_control
     model = api.model('position', {
+        'serial': fields.String(required=True, description='Target device'),
         'x': fields.Integer(required=True, description='x position of camera'),
         'y': fields.Integer(required=True, description='y position of camera'),
         'z': fields.Integer(required=False, description='z position of camera'),
