@@ -55,7 +55,8 @@ class Timelapse(Resource):
     @jwt_required()
     def post(self):
         try:
-            return timelapse_start()
+            data = request.get_json()
+            return timelapse_start(**data)
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
@@ -100,7 +101,8 @@ class Position(Resource):
     @jwt_required()
     def put(self):
         try:
-            return offset_position()
+            data = request.get_json()
+            return offset_position(**data)
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
@@ -110,21 +112,16 @@ class Position(Resource):
     @api.response(400, 'Bad Request')
     @api.expect(PositionDTO.model)
     @jwt_required()
-    # /pos?x=n&y=n&z=n
     def post(self):
         try:
             data = request.get_json()
-            x = data.get('x')
-            y = data.get('y')
-            z = data.get('z')
-            return set_position()
+            return set_position(**data)
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
             api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
 
-# /focus?value=n
 @api.route('/focus')
 class Focus(Resource):
     @api.response(200, 'OK')
@@ -133,7 +130,8 @@ class Focus(Resource):
     @jwt_required()
     def put(self):
         try:
-            return set_focus()
+            data = request.get_json()
+            return set_focus(**data)
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
@@ -148,7 +146,8 @@ class Led(Resource):
     @jwt_required()
     def put(self):
         try:
-            return set_led()
+            data = request.get_json()
+            return set_led(**data)
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:

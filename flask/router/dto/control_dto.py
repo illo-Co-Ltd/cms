@@ -6,9 +6,9 @@ api_control = Namespace('control', description='Device control API')
 class CaptureDTO:
     api = api_control
     model = api.model('capture', {
+        'serial': fields.String(required=True, description='Target device'),
         'project': fields.String(required=True, description='Project name'),
         'cell': fields.String(required=True, description='Cell name'),
-        'device': fields.String(required=True, description='Device serial'),
         'label': fields.String(required=False, description='Label for extra data'),
         'debug': fields.Boolean(required=False, description='Flag for skipping integrity check'),
     })
@@ -17,9 +17,9 @@ class CaptureDTO:
 class TimelapseDTO:
     api = api_control
     model = api.model('timelapse', {
+        'serial': fields.String(required=True, description='Target device'),
         'project': fields.String(required=True, description='Project name'),
         'cell': fields.String(required=True, description='Cell name'),
-        'device': fields.String(required=True, description='Device serial'),
         'label': fields.String(required=False, description='Label for extra data'),
         'run_every': fields.Float(required=True, description='Timelapse interval.(float seconds)'),
         'expire_at': fields.DateTime(required=True, description='Expiration time'),
@@ -53,6 +53,7 @@ class PositionDTO:
 class FocusDTO:
     api = api_control
     model = api.model('focus', {
+        'serial': fields.String(required=True, description='Target device'),
         'value': fields.Integer(required=True, description='Focus value', min=0, max=255),
     })
 
@@ -60,5 +61,6 @@ class FocusDTO:
 class LedDTO:
     api = api_control
     model = api.model('led', {
+        'serial': fields.String(required=True, description='Target device'),
         'value': fields.Integer(required=True, description='Focus value', min=0, max=255),
     })
