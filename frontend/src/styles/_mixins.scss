@@ -1,0 +1,121 @@
+@mixin border-radius($radius) {
+  -webkit-border-radius: $radius;
+     -moz-border-radius: $radius;
+      -ms-border-radius: $radius;
+          border-radius: $radius;
+}
+
+
+
+
+@mixin length($width, $height){
+ @if $width != null{
+    width : $width;
+ }
+  @if $height != null{
+    height : $height;
+ }
+}
+
+
+@mixin overtext(){
+ white-space: nowrap;
+ overflow: hidden;
+ text-overflow: ellipsis;
+}
+
+
+@mixin overtextlines($lines){
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+}
+
+
+@mixin button-effect1($color){
+  background: $color;
+  &:hover{
+    background: mix($color, #000, 90%);
+  }
+  &:active{
+    background: mix($color, #000, 75%);
+  }
+}
+
+
+
+
+
+//글자 드래그
+@mixin drag-provention(){
+  -o-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: -moz-none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  user-select:none;
+}
+
+
+@mixin scroll-hide(){
+
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera*/
+  }
+}
+
+
+//check box
+@mixin checkbox($size){
+  position: relative;
+  input[type="checkbox"] { /* 실제 체크박스는 화면에서 숨김 */
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip:rect(0,0,0,0);
+    border: 0;
+  }
+  input[type="checkbox"] + label {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+  }
+  input[type="checkbox"] + label:before {
+    content: ' ';
+    display: inline-block;
+    width: $size; /* 체크박스의 너비를 지정 */
+    height: $size; /* 체크박스의 높이를 지정 */
+    line-height: $size+5px; /* 세로정렬을 위해 높이값과 일치 */
+    margin: 0px 8px 0 0;
+    text-align: center;
+    vertical-align: middle;
+    background: #fafafa;
+    border: 1px solid #cacece;
+    border-radius : 3px;
+    box-shadow: 0px 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05);
+  }
+  input[type="checkbox"] + label:active:before,
+  input[type="checkbox"]:checked + label:active:before {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05), inset 0px 1px 3px rgba(0,0,0,0.1);
+  }
+
+  input[type="checkbox"]:checked + label:before { /* 체크박스를 체크했을때 */
+    content: '\2714'; /* 체크표시 유니코드 사용 */
+    color: #444;
+    text-shadow: 1px 1px #fff;
+    background: #f9f9f9;
+    border-color: #adb8c0;
+    box-shadow: 0px 1px 2px rgba(0,0,0,0.05), inset 0px -15px 10px -12px rgba(0,0,0,0.05), inset 15px 10px -12px rgba(255,255,255,0.1);
+  }
+
+}
