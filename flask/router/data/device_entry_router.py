@@ -10,9 +10,13 @@ from service.data.device_entry_service import *
 
 api = DeviceEntryDTO.api
 
-parser = reqparse.RequestParser()
-parser.add_argument('serial', type=str, location='args', required=False)
-parser.add_argument('project', type=str, location='args', required=False)
+parser_get = reqparse.RequestParser()
+parser_get.add_argument('serial', type=str, location='args', required=False)
+parser_get.add_argument('project', type=str, location='args', required=False)
+
+parser_post = reqparse.RequestParser()
+parser_post.add_argument('serial', type=str, location='args', required=True)
+parser_post.add_argument('project', type=str, location='args', required=True)
 
 
 @api.route('/device_entry')
@@ -20,11 +24,11 @@ class DeviceEntry(Resource):
     @api.doc('Query device_entry with filters')
     @api.response(404, 'No result found for query.')
     @api.marshal_list_with(DeviceEntryDTO.model, envelope='data')
-    @api.expect(parser)
+    @api.expect(parser_get)
     @jwt_required()
     def get(self):
         try:
-            result = read_device_entry(**parser.parse_args())
+            result = read_device_entry(**parser_get.parse_args())
             return result
         except NoResultFound as e:
             api.abort(404, message=f'Cannot find device entry.', reason=str(type(e)))
@@ -36,7 +40,7 @@ class DeviceEntry(Resource):
     @api.doc('Create new device_entry')
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
-    @api.expect(DeviceEntryDTO.model, validate=True)
+    @api.expect(parser_post, validate=True)
     @jwt_required()
     def post(self):
         data = request.get_json()
@@ -53,11 +57,11 @@ class DeviceEntry(Resource):
 
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
-    @api.expect(parser)
+    @api.expect(parser_get)
     @jwt_required()
     def delete(self):
         try:
-            args = parser.parse_args()
+            args = parser_get.parse_args()
             return delete_device_entry(**args)
         except NoResultFound as e:
             api.abort(400, message=f'Cannot find with <{args.get("serial") or args.get("project")}>.',

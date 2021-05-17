@@ -16,8 +16,15 @@ parser_get.add_argument('serial', type=str, location='args')
 parser_get.add_argument('company', type=str, location='args')
 parser_get.add_argument('owner', type=str, location='args')
 parser_get.add_argument('ip', type=str, location='args')
-parser_get.add_argument('cgi_id', type=str, location='args')
-parser_get.add_argument('cgi_pw', type=str, location='args')
+
+parser_post = reqparse.RequestParser()
+parser_post.add_argument('model', type=str, location='args', required=True)
+parser_post.add_argument('serial', type=str, location='args', required=True)
+parser_post.add_argument('company', type=str, location='args', required=True)
+parser_post.add_argument('owner', type=str, location='args', required=True)
+parser_post.add_argument('ip', type=str, location='args', required=True)
+parser_post.add_argument('cgi_id', type=str, location='args', required=True)
+parser_post.add_argument('cgi_pw', type=str, location='args', required=True)
 
 parser_delete = reqparse.RequestParser()
 parser_delete.add_argument('serial', type=str, location='args', required=True)
@@ -40,7 +47,7 @@ class Device(Resource):
 
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
-    @api.expect(DeviceDTO.model, validate=True)
+    @api.expect(parser_post, validate=True)
     @jwt_required()
     def post(self):
         data = request.get_json()
