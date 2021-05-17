@@ -5,7 +5,7 @@ broker_url = os.environ.get('BROKER')
 # Using the database to store task state and results.
 result_backend = os.environ.get('CELERY_BACKEND')
 # List of modules to import when the Celery worker starts.
-imports = ('worker.cam_task', 'worker.cv_task')
+imports = ('tasks.cam_task', 'tasks.cv_task')
 # task specific configuration
 task_annotations = {
     'cam_task': {'rate_limit': '10/s'},
