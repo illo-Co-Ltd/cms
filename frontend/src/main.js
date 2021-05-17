@@ -1,38 +1,9 @@
-/*!
-
-=========================================================
-* Vue Argon Dashboard - v1.1.1
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/vue-argon-dashboard
-* Copyright 2020 Creative Tim (https://www.creative-tim.com)
-* Licensed under MIT (https://github.com/creativetimofficial/vue-argon-dashboard/blob/master/LICENSE.md)
-
-* Coded by Creative Tim
-
-=========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-*/
-import Vue from 'vue'
-import Vuex from 'vuex'
+import { createApp } from 'vue'
 import App from './App.vue'
-import router from './router'
-import store from './store'
-import 'es6-promise/auto'
-import './registerServiceWorker'
-import ArgonDashboard from './plugins/argon-dashboard'
+import router from '@/routes/routes.js'
 
-Vue.config.productionTip = false
-Vue.use(Vuex)
-Vue.use(ArgonDashboard)
+import 'sweetalert2/dist/sweetalert2.min.css';
 
-new Vue({
-  store,
-  router,
-  beforeCreate() {
-    this.$store.dispatch("getMemberInfo")
-  },
-  render: h => h(App)
-}).$mount('#app')
+const app = createApp(App)
+app.use(router)
+app.mount('#app')

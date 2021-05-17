@@ -1,0 +1,65 @@
+
+$table-border-1px : 1px 0 0 0 #999,0 1px 0 0 #999, 1px 1px 0 0 #999, 1px 0 0 0 #999 inset, 0 1px 0 0 #999 inset;
+$table-border-2px : 2px 0 0 0 #999,0 2px 0 0 #999, 2px 2px 0 0 #999, 2px 0 0 0 #999 inset, 0 2px 0 0 #999 inset;
+//border(x)
+//box-shadow(0)
+
+
+
+
+
+
+$frame-border : 1px solid #cacaca;
+$frame-border-color : #cacaca;
+
+$app-background : #f9f9f9;
+$aside-background : #f9f9f9;
+$header-background : #f9f9f9;
+$main-background : #f9f9f9;
+$footer-background : #303030;
+
+
+
+
+
+
+
+//dom 접근할 수 있는 것
+//$refs
+
+
+
+
+//변수의 변화를 감지하는 watch
+        //watch(userName, () =>{
+        //    console.log('hi');
+        //});
+
+
+
+
+
+
+
+//이름 생성 규칙
+// 자바 스크립문, id, class 파일명 -> titleMenuString
+
+//css variables, mixins ->title-Menu-String
+
+
+
+//background: linear-gradient(217deg, rgba(255,0,0,.8), rgba(255,0,0,0) 70.71%),
+//            linear-gradient(127deg, rgba(0,255,0,.8), rgba(0,255,0,0) 70.71%),
+//            linear-gradient(336deg, rgba(0,0,255,.8), rgba(0,0,255,0) 70.71%);
+
+
+
+//css html 등 추가
+//let recaptchaScript = document.createElement('link')
+//recaptchaScript.setAttribute('rel', 'stylesheet')
+//recaptchaScript.setAttribute('href', 'https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css')
+//document.head.appendChild(recaptchaScript)
+
+//recaptchaScript = document.createElement('script')
+//recaptchaScript.setAttribute('src', 'https://codepen.io/shshaw/pen/QmZYMG.js')
+//document.head.appendChild(recaptchaScript)
