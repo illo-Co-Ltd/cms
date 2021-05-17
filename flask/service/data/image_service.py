@@ -1,3 +1,5 @@
+import traceback
+
 from flask_jwt_extended import get_jwt_identity
 
 from model.db_base import db
@@ -9,12 +11,17 @@ from util.logger import logger
 def read_image_path(data):
     logger.info('Get image list')
     logger.info(f'Filter: {data}')
-    condition = {k: v for k, v in data.items() if v is not None}
-    query = db.session.query(Image).filter_by(**condition).all()
-    return query
+    try:
+        condition = {k: v for k, v in data.items() if v is not None}
+        query = db.session.query(Image).filter_by(**condition).all()
+        return query
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
 
 
-def create_image(data):
+def create_image_metadata(data):
     logger.info('Register new image')
     try:
         cell = db.session.query(Cell).filter_by(name=data.get('cell')).one()
@@ -37,5 +44,7 @@ def create_image(data):
         db.session.commit()
         return {'message': f'Posted image<{data.get("name")}> to db.'}, 201
     except Exception as e:
+        db.session.rollback()
         logger.error(e)
+        logger.debug(traceback.format_exc())
         raise e

@@ -8,9 +8,14 @@ from util.logger import logger
 def read_company(data):
     logger.info('Get company list')
     logger.info(f'Filter: {data}')
-    condition = {k: v for k, v in data.items() if v is not None}
-    query = Company.query.filter_by(**condition).all()
-    return query, 200
+    try:
+        condition = {k: v for k, v in data.items() if v is not None}
+        query = Company.query.filter_by(**condition).all()
+        return query, 200
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
 
 
 def create_company(data):
@@ -30,7 +35,7 @@ def create_company(data):
         db.session.commit()
         return {'message': f'Posted company<{data.get("name")}> to db.'}, 201
     except Exception as e:
-        errmsg = 'Company registration failed for unknown reason'
-        logger.error(errmsg)
+        db.session.rollback()
+        logger.error(e)
         logger.debug(traceback.format_exc())
-        raise Exception(errmsg)
+        raise e

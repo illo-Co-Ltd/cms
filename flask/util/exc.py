@@ -10,3 +10,10 @@ class CGIException(Exception):
         @property
         def status_code(self):
             return self.response.status_code
+
+
+class NotEnoughPermission(Exception):
+    def __init__(self, required, obtained):
+        super(NotEnoughPermission, self).__init__()
+        self.required = required
+        self.obtained = obtained

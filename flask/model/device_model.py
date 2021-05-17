@@ -1,6 +1,9 @@
+from flask_bcrypt import generate_password_hash, check_password_hash
+
 from .db_base import db, env
 
 
+# noinspection PyAttributeOutsideInit
 class Device(db.Model):
     __tablename__ = 'device'
 
@@ -18,6 +21,8 @@ class Device(db.Model):
         owner_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), nullable=False, index=True)
         ip = db.Column(db.String(15, 'utf8mb4_unicode_ci'), nullable=False, unique=True,
                        server_default=db.FetchedValue())
+    cgi_id= db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
+    cgi_pw= db.Column(db.String(60, 'utf8mb4_unicode_ci'), nullable=False)
     created = db.Column(db.DateTime)
     created_by_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
     last_edited = db.Column(db.DateTime)
@@ -34,6 +39,12 @@ class Device(db.Model):
     def __repr__(self):
         return f'<Device {self.model} | {self.serial}>'
 
+    def hash_cgi_pw(self):
+        self.password = generate_password_hash(self.cgi_pw).decode('utf8')
+
+    def check_cgi_pw(self, password):
+        return check_password_hash(self.cgi_pw, password)
+
     def to_dict(self):
         return dict(
             id=self.id,
@@ -42,6 +53,8 @@ class Device(db.Model):
             company=self.company,
             owner=self.owner,
             ip=self.ip,
+            cgi_id=self.cgi_id,
+            cgi_pw=self.cgi_pw,
             created=self.created,
             created_by=self.created_by,
             last_edited=self.last_edited,
