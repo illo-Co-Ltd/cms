@@ -7,7 +7,7 @@ from werkzeug.exceptions import HTTPException
 from service.control_service import *
 
 from router.dto.control_dto import *
-from worker import cam_task
+from worker import camera
 
 api = api_control
 
@@ -69,7 +69,7 @@ class Timelapse(Resource):
         try:
             data = request.get_json()
             key = data.get('key')
-            if cam_task.send_stop_timelapse(key):
+            if camera.send_stop_timelapse(key):
                 return {'message': f'Timelapse task for key {key} deleted'}, 200
             else:
                 raise Exception('cannot stop timelapse')

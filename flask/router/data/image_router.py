@@ -4,24 +4,34 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
 from router.dto.data_dto import ImageMetadataDTO
-from service.data.image_service import create_image_metadata, read_image_path
+from service.data.image_service import create_image_metadata, read_image_metadata
 
 api = ImageMetadataDTO.api
 _image_metadata = ImageMetadataDTO.model
 
-parser = reqparse.RequestParser()
-parser.add_argument('path', type=str, location='args', required=True)
+parser_path = reqparse.RequestParser()
+parser_path.add_argument('path', type=str, location='args', required=True)
+
+# TODO
+# created 시간 쿼리 가능하게 수정
+parser_metadata = reqparse.RequestParser()
+parser_metadata.add_argument('cell', type=str, location='args', required=False)
+parser_metadata.add_argument('path', type=str, location='args', required=False)
+parser_metadata.add_argument('device', type=str, location='args', required=False)
+parser_metadata.add_argument('created', type=str, location='args', required=False)
+parser_metadata.add_argument('created_by', type=str, location='args', required=False)
+parser_metadata.add_argument('label', type=str, location='args', required=False)
 
 
 @api.route('/image')
 class Image(Resource):
     @api.response(404, 'No result found for query.')
     @api.produces(['image/jpg', 'image/png'])
-    @api.expect(parser)
+    @api.expect(parser_path)
     @jwt_required()
     def get(self):
         try:
-            path = parser.parse_args().get('path')
+            path = parser_path.parse_args().get('path')
             return send_file('/data/' + path, mimetype='image/jpg')
         except NoResultFound as e:
             api.abort(404, message=f'Cannot find image.', reason=str(type(e)))
@@ -34,7 +44,7 @@ class Image(Resource):
     def post(self):
         data = request.get_json()
         try:
-            return create_image_metadata(data)
+            return create_image(data)
         except NoResultFound:
             api.abort(400, message=f'Cannot find result for keys.')
         except Exception:
@@ -42,14 +52,14 @@ class Image(Resource):
 
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
-    @api.expect(parser)
+    @api.expect(parser_path)
     @jwt_required()
     def delete(self):
         try:
-            args = parser.parse_args()
-            return delete_device(**args)
+            args = parser_path.parse_args()
+            return delete_image(**args)
         except NoResultFound as e:
-            api.abort(400, message=f'Cannot find device<{args.get("serial")}>.', reason=str(type(e)))
+            api.abort(400, message=f'Cannot find image<{args.get("path")}>.', reason=str(type(e)))
         except Exception as e:
             api.abort(500, message='Something went wrong.', reason=str(type(e)))
 
@@ -61,19 +71,7 @@ class ImageMetadata(Resource):
     @jwt_required()
     def get(self):
         try:
-            return read_image_path({
-                'cell': request.args.get('cell'),
-                'path': request.args.get('path'),
-                'device': request.args.get('device'),
-                'created': request.args.get('created'),
-                'created_by': request.args.get('created_by'),
-                'label': request.args.get('label'),
-                'offset_x': request.args.get('offset_x'),
-                'offset_y': request.args.get('offset_y'),
-                'offset_z': request.args.get('offset_z'),
-                'pos_x': request.args.get('pos_x'),
-                'pos_y': request.args.get('pos_y'),
-                'pos_z': request.args.get('pos_z'),
+            return read_image_metadata({
             })
         except Exception:
             api.abort(404)
@@ -85,7 +83,7 @@ class ImageMetadata(Resource):
     def post(self):
         data = request.get_json()
         try:
-            return create_image_metadata(data)
+            return create_image_metadata(**data)
         except NoResultFound:
             api.abort(400, message=f'Cannot find result for keys.')
         except Exception:

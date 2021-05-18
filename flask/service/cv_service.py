@@ -1,13 +1,13 @@
 import traceback
 
-from worker import cv_task
+from worker import cv
 from util.logger import logger
 
 
 def s_color(path, params):
     logger.info('Change colormap of image')
     try:
-        task_id = cv_task.send_color(path, **params)
+        task_id = cv.send_color(path, **params)
         return task_id
     except Exception as e:
         logger.error(e)
@@ -18,7 +18,7 @@ def s_color(path, params):
 def s_blur(path, params):
     logger.info('Blur image')
     try:
-        task_id = cv_task.send_blur(path, **params)
+        task_id = cv.send_blur(path, **params)
         return task_id
     except Exception as e:
         logger.error(e)
@@ -29,7 +29,7 @@ def s_blur(path, params):
 def s_normalize(path, params):
     logger.info('Normalize image')
     try:
-        task_id = cv_task.send_normalize(path, **params)
+        task_id = cv.send_normalize(path, **params)
         return task_id
     except Exception as e:
         logger.error(e)
@@ -40,7 +40,7 @@ def s_normalize(path, params):
 def s_threshold(path, params):
     logger.info('Threshold image')
     try:
-        task_id = cv_task.send_threshold(path, **params)
+        task_id = cv.send_threshold(path, **params)
         return task_id
     except Exception as e:
         logger.error(e)
@@ -50,4 +50,4 @@ def s_threshold(path, params):
 
 def s_result(task_id):
     logger.info('Get processed result')
-    return cv_task.receive_result(task_id)
+    return cv.receive_result(task_id)
