@@ -6,7 +6,7 @@ from flask import send_file
 from flask_jwt_extended import current_user
 
 from model.db_base import db
-from model.model_import import Image, Cell, Device
+from model import Image, Cell, Device
 
 from util.logger import logger
 

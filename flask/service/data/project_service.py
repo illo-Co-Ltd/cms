@@ -29,8 +29,11 @@ def create_project(**kwargs):
             'ended': datetime.fromisoformat(kwargs.get('ended')),
             'created_by':db.session.query(User).filter_by(userid=kwargs.get('created_by')).one()
         })
-
         project = Project(**kwargs)
+        logger.info(project.created)
+        logger.info(type(project.started))
+        logger.info(project.started)
+        logger.info(project.ended)
         db.session.add(project)
         db.session.commit()
         return {'message': f'Posted project<{kwargs.get("name")}> to db.'}, 201

@@ -4,7 +4,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from flask_jwt_extended import get_jwt_identity, current_user
 
 from model.db_base import db
-from model.model_import import User, Company
+from model import User, Company
 from util.exc import NotEnoughPermission
 from util.logger import logger
 

@@ -60,6 +60,7 @@ services:
       - --collation-server=utf8mb4_unicode_ci
     volumes:
       - mysql-volume:/var/lib/mysql
+      - ./db/config:/etc/mysql/conf.d
 
   redis:
     container_name: cms-redis
