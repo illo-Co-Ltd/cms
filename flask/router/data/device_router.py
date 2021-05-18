@@ -8,7 +8,6 @@ from router.dto.data_dto import DeviceDTO
 from service.data.device_service import *
 
 api = DeviceDTO.api
-DeviceDTO.model
 
 parser_get = reqparse.RequestParser()
 parser_get.add_argument('model', type=str, location='args')

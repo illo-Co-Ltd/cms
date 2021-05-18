@@ -1,6 +1,8 @@
+import os
 import traceback
 from datetime import datetime
 
+from flask import send_file
 from flask_jwt_extended import current_user
 
 from model.db_base import db
@@ -8,8 +10,19 @@ from model.model_import import Image, Cell, Device
 
 from util.logger import logger
 
+def read_image(path):
+    try:
+        if os.path.isfile(path):
+            return send_file('/data/' + path, mimetype='image/jpg')
+        else:
+            raise FileNotFoundError
+    except Exception as e:
+        logger.error(e),
+        logger.debug(traceback.format_exc())
+        raise e
 
-def create_image(**kwargs):
+
+def create_image(path):
     pass
 
 
@@ -19,7 +32,7 @@ def delete_image(**kwargs):
     try:
         os.remove()
     except Exception as e:
-        logger.error(e)
+        logger.error(e),
         logger.debug(traceback.format_exc())
         raise e
 

@@ -1,7 +1,8 @@
 import traceback
+from datetime import datetime
 
+from model import User, Project
 from model.db_base import db
-from model.model_import import Project
 
 from util.logger import logger
 
@@ -22,6 +23,13 @@ def read_project(**kwargs):
 def create_project(**kwargs):
     logger.info('Register new project')
     try:
+        kwargs.update({
+            'created':datetime.fromisoformat(kwargs.get('created')),
+            'started': datetime.fromisoformat(kwargs.get('started')),
+            'ended': datetime.fromisoformat(kwargs.get('ended')),
+            'created_by':db.session.query(User).filter_by(userid=kwargs.get('created_by')).one()
+        })
+
         project = Project(**kwargs)
         db.session.add(project)
         db.session.commit()

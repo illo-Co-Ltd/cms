@@ -4,7 +4,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
 from router.dto.data_dto import ImageMetadataDTO
-from service.data.image_service import create_image_metadata, read_image_metadata
+from service.data.image_service import *
 
 api = ImageMetadataDTO.api
 _image_metadata = ImageMetadataDTO.model
@@ -31,8 +31,7 @@ class Image(Resource):
     @jwt_required()
     def get(self):
         try:
-            path = parser_path.parse_args().get('path')
-            return send_file('/data/' + path, mimetype='image/jpg')
+            return read_image(parser_path.parse_args().get('path'))
         except NoResultFound as e:
             api.abort(404, message=f'Cannot find image.', reason=str(type(e)))
         except Exception as e:

@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from flask_restplus import Namespace, fields
 
 api_data = Namespace('data', description='DB access API')
@@ -23,10 +25,23 @@ class UserDTO:
 
 class ProjectDTO:
     api = api_data
+    iso_example = datetime.now(timezone.utc).astimezone().isoformat()
     model = api.model('project', {
         'name': fields.String(required=True, description='[Key] Name of the project'),
         'shorthand': fields.String(required=True, description='Initial of project (Maximum 5 letters)'),
         'description': fields.String(required=True, description='description of the project'),
+        'created': fields.DateTime(required=True, description='Created datetime', example=iso_example),
+        'started': fields.DateTime(required=True, description='Started datetime', example=iso_example),
+        'ended': fields.DateTime(required=True, description='Ended datetime', example=iso_example),
+        'created_by': fields.String(attribute='create_by.userid', required=True, description='Userid who created'),
+    })
+    model_put = api.model('project_put', {
+        'name': fields.String(required=True, description='[Key] Name of the project'),
+        'shorthand': fields.String(required=False, description='Initial of project (Maximum 5 letters)'),
+        'description': fields.String(required=False, description='description of the project'),
+        'started': fields.DateTime(required=False, description='Started datetime', example=iso_example),
+        'ended': fields.DateTime(required=False, description='Ended datetime', example=iso_example),
+        'created_by': fields.String(attribute='create_by.userid', required=False, description='Userid who created'),
     })
 
 
@@ -39,7 +54,7 @@ class DeviceDTO:
         'owner': fields.String(attribute='owner.userid', required=True, description='Userid of owner'),
         'ip': fields.String(required=True, description='IP address to access'),
     })
-    model_post = api.model('device', {
+    model_post = api.model('device_post', {
         'serial': fields.String(required=True, description='[Key] Device serial number'),
         'model': fields.String(required=True, description='Device model name'),
         'company': fields.String(attribute='company.name', required=True, description='Company belongs to'),
@@ -48,7 +63,7 @@ class DeviceDTO:
         'cgi_id': fields.String(required=True, description='CGI auth ID'),
         'cgi_pw': fields.String(required=True, description='CGI auth PW'),
     })
-    model_put = api.model('device_update', {
+    model_put = api.model('device_put', {
         'serial': fields.String(required=True, description='[Key] Device serial number'),
         'model': fields.String(required=False, description='Device model name'),
         'newserial': fields.String(required=False, description='New serial number'),
