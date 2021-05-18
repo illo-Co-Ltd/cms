@@ -33,7 +33,7 @@ class ProjectDTO:
         'created': fields.DateTime(required=True, description='Created datetime', example=iso_example),
         'started': fields.DateTime(required=True, description='Started datetime', example=iso_example),
         'ended': fields.DateTime(required=True, description='Ended datetime', example=iso_example),
-        'created_by': fields.String(attribute='create_by.userid', required=True, description='Userid who created'),
+        'created_by': fields.String(attribute='created_by.userid', required=True, description='Userid who created'),
     })
     model_put = api.model('project_put', {
         'name': fields.String(required=True, description='[Key] Name of the project'),
@@ -41,7 +41,7 @@ class ProjectDTO:
         'description': fields.String(required=False, description='description of the project'),
         'started': fields.DateTime(required=False, description='Started datetime', example=iso_example),
         'ended': fields.DateTime(required=False, description='Ended datetime', example=iso_example),
-        'created_by': fields.String(attribute='create_by.userid', required=False, description='Userid who created'),
+        'created_by': fields.String(attribute='created_by.userid', required=False, description='Userid who created'),
     })
 
 
@@ -105,7 +105,7 @@ class ImageMetadataDTO:
         'cell': fields.String(attribute='cell.name', required=True, description='Target cell'),
         'device': fields.String(attribute='device.serial', required=True, description='Used device'),
         'created': fields.DateTime(required=True, description='Created datetime'),
-        'created_by': fields.String(attribute='create_by.userid', required=True, description='Userid who created'),
+        'created_by': fields.String(attribute='created_by.userid', required=True, description='Userid who created'),
         'label': fields.String(required=True, description='Image label'),
         'offset_x': fields.Integer(required=True, description='Calibrated x offset'),
         'offset_y': fields.Integer(required=True, description='Calibrated y offset'),
