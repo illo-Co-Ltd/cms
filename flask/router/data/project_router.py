@@ -67,6 +67,8 @@ class Project(Resource):
         data = request.get_json()
         try:
             return update_project(**data)
+        except DataError as e:
+            api.abort(400, message='Field is too long', reason=str(type(e)))
         except NoResultFound as e:
             api.abort(404, message=f'Cannot find project<{data.get("name")}>.', reason=str(type(e)))
         except Exception as e:
