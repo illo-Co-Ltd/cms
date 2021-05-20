@@ -27,13 +27,20 @@ class ProjectDTO:
     api = api_data
     iso_example = datetime.now(timezone.utc).astimezone().isoformat()
     model = api.model('project', {
+        'name': fields.String(description='[Key] Name of the project'),
+        'shorthand': fields.String(description='Initial of project (Maximum 5 letters)'),
+        'description': fields.String(description='description of the project'),
+        'created': fields.DateTime(description='Created datetime', example=iso_example),
+        'started': fields.DateTime(description='Started datetime', example=iso_example),
+        'ended': fields.DateTime(description='Ended datetime', example=iso_example),
+        'created_by': fields.String(attribute='created_by.userid', description='Userid who created'),
+    })
+    model_post = api.model('project_post', {
         'name': fields.String(required=True, description='[Key] Name of the project'),
         'shorthand': fields.String(required=True, description='Initial of project (Maximum 5 letters)'),
         'description': fields.String(required=True, description='description of the project'),
-        'created': fields.DateTime(required=True, description='Created datetime', example=iso_example),
         'started': fields.DateTime(required=True, description='Started datetime', example=iso_example),
-        'ended': fields.DateTime(required=True, description='Ended datetime', example=iso_example),
-        'created_by': fields.String(attribute='created_by.userid', required=True, description='Userid who created'),
+        'ended': fields.DateTime(required=False, description='Ended datetime', example=iso_example),
     })
     model_put = api.model('project_put', {
         'name': fields.String(required=True, description='[Key] Name of the project'),
@@ -41,7 +48,6 @@ class ProjectDTO:
         'description': fields.String(required=False, description='description of the project'),
         'started': fields.DateTime(required=False, description='Started datetime', example=iso_example),
         'ended': fields.DateTime(required=False, description='Ended datetime', example=iso_example),
-        'created_by': fields.String(attribute='created_by.userid', required=False, description='Userid who created'),
     })
 
 

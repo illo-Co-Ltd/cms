@@ -1,5 +1,7 @@
 import traceback
-from datetime import datetime
+from datetime import datetime, timezone
+
+from flask_jwt_extended import current_user
 
 from model import User, Project
 from model.db_base import db
@@ -24,10 +26,10 @@ def create_project(**kwargs):
     logger.info('Register new project')
     try:
         kwargs.update({
-            'created':datetime.fromisoformat(kwargs.get('created')),
+            'created': datetime.now(timezone.utc).astimezone(),
             'started': datetime.fromisoformat(kwargs.get('started')),
-            'ended': datetime.fromisoformat(kwargs.get('ended')),
-            'created_by':db.session.query(User).filter_by(userid=kwargs.get('created_by')).one()
+            'ended': datetime.fromisoformat(kwargs.get('ended')) if kwargs.get('ended') else None,
+            'created_by': current_user
         })
         project = Project(**kwargs)
         logger.info(project.created)
@@ -54,6 +56,10 @@ def update_project(**kwargs):
             query.shorthand = kwargs.get('shorthand')
         if kwargs.get('description'):
             query.description = kwargs.get('description')
+        if kwargs.get('started'):
+            query.started = datetime.fromisoformat(kwargs.get('started')) if kwargs.get('started') else None
+        if kwargs.get('ended'):
+            query.ended = datetime.fromisoformat(kwargs.get('ended')) if kwargs.get('ended') else None
         db.session.commit()
         return {'message': f'Updated project<{query.name}> from db.'}, 200
     except Exception as e:

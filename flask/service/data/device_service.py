@@ -65,7 +65,7 @@ def update_device(**kwargs):
         if kwargs.get('newserial'):
             query.serial = kwargs.get('newserial')
         if kwargs.get('model'):
-            query.model = kwargs.get('model')
+            query.model_post = kwargs.get('model')
         if kwargs.get('company'):
             query.company = db.session.query(Company).filter_by(name=kwargs.get('company')).one()
         if kwargs.get('ip'):

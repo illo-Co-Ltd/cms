@@ -39,3 +39,4 @@ celery-redbeat==2.0.0
 Deprecated~=1.2.11
 numpy~=1.19.2
 Pillow~=8.0.1
+SQLAlchemy-Utc~=0.12.0

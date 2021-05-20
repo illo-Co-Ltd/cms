@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import request
 from flask_restplus import Resource, reqparse
 from flask_jwt_extended import jwt_required
-from sqlalchemy.exc import IntegrityError, DataError
+from sqlalchemy.exc import IntegrityError, DataError, StatementError
 from sqlalchemy.orm.exc import NoResultFound
 
 from router.dto.data_dto import ProjectDTO
@@ -42,18 +42,20 @@ class Project(Resource):
 
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
-    @api.expect(ProjectDTO.model, validate=True)
+    @api.expect(ProjectDTO.model_post, validate=True)
     @jwt_required()
     def post(self):
         data = request.get_json()
         try:
             return create_project(**data)
+        except DataError as e:
+            api.abort(400, message='Field is too long', reason=str(type(e)))
         except ValueError as e:
             api.abort(400, message='Invalid datetime format(ISO8601)', reason=str(type(e)))
         except IntegrityError as e:
             api.abort(400, message='Duplicate entry', reason=str(type(e)))
-        except DataError as e:
-            api.abort(400, message='Field is too long', reason=str(type(e)))
+        except StatementError as e:
+            api.abort(400, message='Please specify timezone info in ISO8601 format', reason=str(type(e)))
         except NoResultFound as e:
             api.abort(400, message='Cannot create project<{data.get("name")}>.', reason=str(type(e)))
         except Exception as e:
@@ -69,6 +71,10 @@ class Project(Resource):
             return update_project(**data)
         except DataError as e:
             api.abort(400, message='Field is too long', reason=str(type(e)))
+        except StatementError as e:
+            api.abort(400, message='Please specify timezone info in ISO8601 format', reason=str(type(e)))
+        except ValueError as e:
+            api.abort(400, message='Invalid datetime format(ISO8601)', reason=str(type(e)))
         except NoResultFound as e:
             api.abort(404, message=f'Cannot find project<{data.get("name")}>.', reason=str(type(e)))
         except Exception as e:
@@ -80,8 +86,8 @@ class Project(Resource):
     @jwt_required()
     def delete(self):
         try:
-            args = parser_delete.parse_args()
-            return delete_project(**args)
+            data= parser_delete.parse_args()
+            return delete_project(**data)
         except NoResultFound:
             api.abort(400, message=f'Cannot find project<{data.get("name")}>.')
         except Exception:

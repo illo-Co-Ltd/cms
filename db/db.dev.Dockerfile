@@ -3,7 +3,6 @@ FROM mysql:8.0
 MAINTAINER ajh508@naver.com
 
 #COPY schema.sql /docker-entrypoint-initdb.d
-COPY set_timezone.sql /docker-entrypoint-initdb.d
 COPY create_users.sql /docker-entrypoint-initdb.d
 
 # ENV init
