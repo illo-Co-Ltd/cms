@@ -53,7 +53,7 @@ class Project(Resource):
         except ValueError as e:
             api.abort(400, message='Invalid datetime format(ISO8601)', reason=str(type(e)))
         except IntegrityError as e:
-            api.abort(400, message='Duplicate entry', reason=str(type(e)))
+            api.abort(400, message='Viloated DB data model', reason=str(type(e)))
         except StatementError as e:
             api.abort(400, message='Please specify timezone info in ISO8601 format', reason=str(type(e)))
         except NoResultFound as e:
@@ -71,10 +71,12 @@ class Project(Resource):
             return update_project(**data)
         except DataError as e:
             api.abort(400, message='Field is too long', reason=str(type(e)))
-        except StatementError as e:
-            api.abort(400, message='Please specify timezone info in ISO8601 format', reason=str(type(e)))
         except ValueError as e:
             api.abort(400, message='Invalid datetime format(ISO8601)', reason=str(type(e)))
+        except IntegrityError as e:
+            api.abort(400, message='Viloated DB data model', reason=str(type(e)))
+        except StatementError as e:
+            api.abort(400, message='Please specify timezone info in ISO8601 format', reason=str(type(e)))
         except NoResultFound as e:
             api.abort(404, message=f'Cannot find project<{data.get("name")}>.', reason=str(type(e)))
         except Exception as e:
