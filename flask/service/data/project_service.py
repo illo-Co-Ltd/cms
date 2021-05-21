@@ -50,15 +50,15 @@ def update_project(**kwargs):
     logger.info('Update existing project')
     try:
         query = db.session.query(Project).filter_by(name=kwargs.get('name')).one()
-        if kwargs.get('newname'):
+        if 'newname' in kwargs.keys():
             query.name = kwargs.get('newname')
-        if kwargs.get('shorthand'):
+        if 'shorthand' in kwargs.keys():
             query.shorthand = kwargs.get('shorthand')
-        if kwargs.get('description'):
+        if 'description' in kwargs.keys():
             query.description = kwargs.get('description')
-        if kwargs.get('started'):
+        if 'started' in kwargs.keys():
             query.started = datetime.fromisoformat(kwargs.get('started')) if kwargs.get('started') else None
-        if kwargs.get('ended'):
+        if 'ended' in kwargs.keys():
             query.ended = datetime.fromisoformat(kwargs.get('ended')) if kwargs.get('ended') else None
         db.session.commit()
         return {'message': f'Updated project<{query.name}> from db.'}, 200
