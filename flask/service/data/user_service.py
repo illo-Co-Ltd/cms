@@ -61,14 +61,14 @@ def update_user(**kwargs):
     now = datetime.utcnow()
     try:
         query = db.session.query(User).filter_by(userid=kwargs.get('userid')).one()
-        if kwargs.get('password'):
+        if 'password' in kwargs.keys():
             query.password = kwargs.get('password')
             query.hash_password()
-        if kwargs.get('username'):
+        if 'username' in kwargs.keys():
             query.username = kwargs.get('username')
-        if kwargs.get('company'):
+        if 'company' in kwargs.keys():
             query.company = db.session.query(Company).filter_by(name=kwargs.get('company')).one()
-        if kwargs.get('is_admin'):
+        if 'is_admin' in kwargs.keys():
             query.is_admin = kwargs.get('is_admin')
         query.edited = now
         query.edited_by = current_user

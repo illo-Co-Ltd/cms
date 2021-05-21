@@ -62,15 +62,15 @@ def update_device(**kwargs):
     now = datetime.utcnow()
     try:
         query = db.session.query(Device).filter_by(serial=kwargs.get('serial')).one()
-        if kwargs.get('newserial'):
+        if 'newserial' in kwargs.keys():
             query.serial = kwargs.get('newserial')
-        if kwargs.get('model'):
+        if 'model' in kwargs.keys():
             query.model_post = kwargs.get('model')
-        if kwargs.get('company'):
+        if 'company' in kwargs.keys():
             query.company = db.session.query(Company).filter_by(name=kwargs.get('company')).one()
-        if kwargs.get('ip'):
+        if 'ip' in kwargs.keys():
             query.ip = kwargs.get('ip')
-        if kwargs.get('owner'):
+        if 'owner' in kwargs.keys():
             query.owner = db.session.query(User).filter_by(userid=kwargs.get('owner')).one()
         query.edited = now
         query.edited_by = current_user

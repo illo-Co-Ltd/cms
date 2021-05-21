@@ -87,23 +87,23 @@ def update_image_metadata(**kwargs):
     try:
         query = db.session.query(Image).filter_by(path=kwargs.get('path')).one()
 
-        if kwargs.get('cell'):
+        if 'cell' in kwargs.keys():
             query.cell = kwargs.get('cell')
-        if kwargs.get('device'):
+        if 'device' in kwargs.keys():
             query.device = db.session.query(Device).filter_by(serial=kwargs.get('device')).one()
-        if kwargs.get('label'):
+        if 'label' in kwargs.keys():
             query.label = kwargs.get('label')
-        if kwargs.get('offset_x'):
+        if 'offset_x' in kwargs.keys():
             query.offset_x = kwargs.get('offset_x')
-        if kwargs.get('offset_y'):
+        if 'offset_y' in kwargs.keys():
             query.offset_y = kwargs.get('offset_y')
-        if kwargs.get('offset_z'):
+        if 'offset_z' in kwargs.keys():
             query.offset_z = kwargs.get('offset_z')
-        if kwargs.get('pos_x'):
+        if 'pos_x' in kwargs.keys():
             query.pos_x = kwargs.get('pos_x')
-        if kwargs.get('pos_y'):
+        if 'pos_y' in kwargs.keys():
             query.pos_y = kwargs.get('pos_y')
-        if kwargs.get('pos_z'):
+        if 'pos_z' in kwargs.keys():
             query.pos_z = kwargs.get('pos_z')
 
         query.edited = now
