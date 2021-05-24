@@ -2,52 +2,21 @@
     <section>
         <!-- 디스플레이 컨트롤 영역 시작-->
         <div class="togleArea" >
+            <!-- 상대 좌표 제어 영역 시작 -->
+              <RelativeCoordinatesPanel id="relativeCoordinatesPanel" :projectName="projectName" :deviceId="deviceId" ></RelativeCoordinatesPanel>  
+            <!-- 상대 좌표 제어 영역 끝 -->
 
-            <!-- 상대 좌표 이동 영역 시작 -->
-            <div class="displayControlTogleBtnArea" >
-                <h3>상대 좌표 이동</h3>
-                <img src="@/assets/icon/icon_home.png" v-on:click="DisplayTogleEvent('relativeCoordinates')"> <!-- 토글 버튼 -->
-            </div>
-            <div id = "relativeCoordinates" class="displayControlTogleMainArea">
-                <div class="inputArea">
-                    <img src="@/assets/icon/icon_home.png">
-                    <input type="text"  id="relativeCoordinatesX" placeholder="x" maxlength="6" >
-                </div>
-                    <div class="inputArea">
-                    <img src="@/assets/icon/icon_home.png">
-                    <input type="text" id="relativeCoordinatesY" placeholder="y" maxlength="6">
-                </div>
-                    <div class="inputArea">
-                    <img src="@/assets/icon/icon_home.png">
-                    <input type="text"  id="relativeCoordinatesZ" placeholder="z" maxlength="6">
-                </div>
-                
-                <button  id="relativeCoordinatesInputBtn" class="InputBtn" v-on:click="projectInsert()">시작</button>
-            </div>
-            <!-- 상대 좌표 이동 영역 끝 -->
+            <!-- 절대 좌표 제어 영역 시작 -->
+              <AbsoluteCoordinatesPanel id="absoluteCoordinatesPanel" :projectName="projectName" :deviceId="deviceId" ></AbsoluteCoordinatesPanel>  
+            <!-- 절대 좌표 제어 영역 끝 -->
 
-            <!-- 절대 좌표 이동 영역 시작 -->
-            <div class="displayControlTogleBtnArea" >
-                <h3>절대 좌표 이동</h3>
-                <img src="@/assets/icon/icon_home.png" v-on:click="DisplayTogleEvent('absoluteCoordinates')"> <!-- 토글 버튼 -->
-            </div>
-            <div id = "absoluteCoordinates" class="displayControlTogleMainArea">
-                <div class="inputArea">
-                    <img src="@/assets/icon/icon_home.png">
-                    <input type="text"  id="absoluteCoordinatesX" placeholder="x" maxlength="6" >
-                </div>
-                    <div class="inputArea">
-                    <img src="@/assets/icon/icon_home.png">
-                    <input type="text" id="absoluteCoordinatesY" placeholder="y" maxlength="6">
-                </div>
-                    <div class="inputArea">
-                    <img src="@/assets/icon/icon_home.png">
-                    <input type="text"  id="absoluteCoordinatesZ" placeholder="z" maxlength="6">
-                </div>
-                
-                <button  id="absoluteCoordinatesInputBtn" class="InputBtn" v-on:click="projectInsert()">시작</button>
-            </div>
-            <!-- 절대 좌표 이동 영역 끝 -->
+            <!-- 포커스 제어 영역 시작 -->
+              <FocusPanel id="focusPanel" :projectName="projectName" :deviceId="deviceId" ></FocusPanel> 
+            <!-- 포커스 제어 영역 끝 -->
+
+            <!-- LED 제어 영역 시작 -->
+              <LedPanel id="ledPanel" :projectName="projectName" :deviceId="deviceId" ></LedPanel> 
+            <!-- LED 제어 영역 끝 -->
 
         </div>
     </section>
@@ -56,91 +25,43 @@
 
 <script>
 
-export default {
-    setup(){
-        // 토글 버튼 구현 함수
-        // param : 토글 하고자 하는 항목의 id
-        const DisplayTogleEvent = (id)=>{
-            if(document.getElementById(id).style.display == 'none')
-            {
-                document.getElementById(id).style.display ='block';
-            }
-            else
-            {
-                document.getElementById(id).style.display='none';
-            }
-         };
 
-         return {
-             DisplayTogleEvent
-         }
+import {baseURL} from "@/utils/BasicAxiosURL.ts"
+import axios from "axios";
+import AbsoluteCoordinatesPanel from "@/components/control/AbsoluteCoordinatesPanel.vue";
+import RelativeCoordinatesPanel from "@/components/control/RelativeCoordinatesPanel.vue";
+import FocusPanel from "@/components/control/FocusPanel.vue";
+import LedPanel from "@/components/control/LedPanel.vue";
+
+const ai = axios.create({
+  baseURL
+});
+
+export default {
+  // DeviceControl.vue에서 파라미터(props) 받아오는 부분
+  props : ['projectName','deviceId'],  
+  components : {
+    AbsoluteCoordinatesPanel,
+    RelativeCoordinatesPanel,
+    FocusPanel,
+    LedPanel
+    
+  },
+  setup(props){
+    ai; 
+
+    return {
+      props,                     // 시리얼, 프로젝트 명이 들어있는 파라미터
+      RelativeCoordinatesPanel,  // 상대 좌표 이동 컴포넌트
+      AbsoluteCoordinatesPanel,  // 절대 좌표 이동 컴포넌트
+      FocusPanel,                // 포커스 제어 컴포넌트
+      LedPanel                   // LED 제어 컴포넌트
     }
+  }
 }
 
 
 </script>
-
 <style lang="scss" scoped>
-  .inputArea{
-    width: 90%;
-    height: 30px;
-    margin: 10px 5%;
-    outline: 1px solid #aaa;
-
-    font-size: 13px;
-    >img{
-      width: 30px;
-      height: 30px;
-      float: left;
-    }
-    >input{
-      width: calc(100% - 52px);
-      height: 100%;
-      border: none;
-      margin: 0px;
-      padding: 0px 10px;
-      float: left;
-    }
-  }
-
-  .togleArea{
-    width: 100%;
-    height: 100vh; // 화면의 100%
-    border-left: 1px solid #aaa;
-
-    .displayControlTogleBtnArea{
-      width: 100%;
-      height: 30px;
-      border-bottom: 1px solid #aaa;
-      border-top: 1px solid #aaa;
-      text-align: center;
-      >img{
-        width: 30px;
-        height: 30px;
-        float: right;
-        display: inline;
-      }
-      >h3{
-        height: 30px;
-        padding-left: 30px;
-        color : #aaa;
-        line-height:35px;
-        display: inline;
-      }
-    }
-
-    .displayControlTogleMainArea{
-      border-bottom: 1px solid #aaa;
-    }
-  }
-
-    .InputBtn{
-    width: 90%;
-    height: 30PX;
-    margin: 10px 5%;
-
-    color: #fff;
-    background: #033E5D;
-    border: none;
-  }
+  @import "@/styles/control.scss";
 </style>

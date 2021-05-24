@@ -1,0 +1,89 @@
+.togleArea{
+width: 100%;
+height: 100vh; // 화면의 100%
+border-left: 1px solid #aaa;
+
+// 토글 버튼과 버튼 안에 속성
+.displayControlTogleBtnArea{
+    width: 100%;
+    height: 30px;
+    border-bottom: 1px solid #aaa;
+    border-top: 1px solid #aaa;
+    text-align: center;    
+    display: inline-block;
+    >img{
+    width: 30px;
+    height: 30px;
+    float: right;
+    display: inline-block;
+    }
+    >h3{
+    height: 30px;
+    padding-left: 30px;
+    color : #033E5D;
+    line-height:35px;
+    display: inline-block;
+    }
+}
+
+// 토글 버튼에 의해 출력되는 항목들의 속성
+.displayControlTogleMainArea{
+    border-bottom: 1px solid #aaa;
+    
+    >.rangeInput{
+    width: calc(80% - 2px);
+    height: 30px;
+    margin: 10px 5%;
+    margin-right: 0px;
+    display: inline-block;
+    float: left; 
+    
+    }
+
+    >.rangeValue{
+    width: 10%;
+    height: 30px;
+    margin: 10px 5%;
+    display: inline-block;
+    float: left;
+    line-height:30px;
+    margin-left: 2px;
+
+    font-size: 13px;
+    color : black;
+    }
+
+    .inputArea{
+    width: 90%;
+    height: 30px;
+    margin: 10px 5%;
+    outline: 1px solid #aaa;
+
+    font-size: 13px;
+    >img{
+        width: 30px;
+        height: 30px;
+        float: left;
+    }
+    >input{
+        width: calc(100% - 52px);
+        height: 100%;
+        border: none;
+        margin: 0px;
+        padding: 0px 10px;
+        float: left;
+    }
+    }
+}
+}
+
+// 인 풋 버튼의 속성
+.InputBtn{
+width: 90%;
+height: 30PX;
+margin: 10px 5%;
+
+color: #fff;
+background: #033E5D;
+border: none;
+}

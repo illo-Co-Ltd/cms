@@ -1,7 +1,7 @@
 <template>
   <section>
     <div id="projectInsertArea">
-      <h1>프로젝트 생성</h1>
+      <h1>프로젝트 업데이트</h1>
 
       <div class="inputArea">
         <img src="@/assets/icon/icon_home.png">
@@ -15,7 +15,6 @@
         <img src="@/assets/icon/icon_home.png">
         <input type="text" v-model="description" id="inputDescription" placeholder="설명" maxlength="30">
       </div>
-
       <div class="inputArea">
         <img src="@/assets/icon/icon_home.png">
         <input type="text" v-model="started" id="inputStarted" placeholder="시작 날짜" maxlength="30">
@@ -25,7 +24,8 @@
       <div :style="{display : state.alertDisplay}">
         <h3  id="alertMessage"></h3>
       </div>
-      <button id="inputBtn" v-on:click="projectInsert()">추가하기</button>
+
+      <button id="inputBtn" v-on:click="projectInsert()">수정하기</button>
 
       <h2>©liio Corp. All rights reserved.</h2>
 
@@ -36,11 +36,12 @@
 <script>
 /*eslint-disable*/
 
-import {watch, ref, reactive, inject} from 'vue'
+import {watch, ref, reactive, onMounted, inject} from 'vue'
 import {baseURL} from "@/utils/BasicAxiosURL.ts"
 import axios from "axios";
 import Swal from 'sweetalert2/dist/sweetalert2.js'
 import router from "@/routes/routes.js"
+import {useRoute} from 'vue-router'
 
 const storage = window.sessionStorage;
 
@@ -55,6 +56,10 @@ export default {
 
   setup(){
     const emitter = inject("emitter");
+    const {
+      params : {originName}
+    } = useRoute();
+
     const state = reactive({
       alertDisplay : "none"
     })
@@ -63,7 +68,22 @@ export default {
     const shorthand = ref("");
     const description = ref("");
     const started = ref("2021-05-20T12:31:54.911+09:00");
+    const ended = ref("2021-05-20T12:31:54.911+09:00");
     //2021-05-20T02:37:08.388089+00:00
+
+    onMounted(()=>{
+
+      ai.get('/data/project?name='+originName).then(res =>{
+        console.log(res);
+        projectName.value = res.data.data[0].name;
+        shorthand.value = res.data.data[0].shorthand;
+        description.value = res.data.data[0].description;
+        started.value = res.data.data[0].started;
+        ended.value = res.data.data[0].ended;
+
+      })
+
+    })
 
 
     const alertCloseEvent = () =>{
@@ -95,22 +115,22 @@ export default {
       }
       //db insert
 
-      ai.post("/data/project", {
+      ai.put("/data/project", {
         shorthand : shorthand.value,
-        name : projectName.value,
+        name : originName,
+        newname : projectName.value,
         description : description.value,
-        started : started.value
+        started : started.value,
         //created : started.value,
-        //ended : started.value
+        ended : ended.value
         //created_by : 'root'
-      }
-    ).then(res => {
-        if(res.status === 201){
+      }).then(res => {
+        if(res.status === 200){
           Swal.fire({
               toast: true,
               position: 'top',
               icon: 'success',
-              title: '생성',
+              title: '수정되었습니다.',
               showConfirmButton: false,
               timer: 3000
              })
@@ -165,6 +185,8 @@ export default {
       }
     })
 
+
+
     return {
       state,
       projectName,
@@ -191,7 +213,7 @@ export default {
   }
 
   h1{
-    font-size: 30px;
+    font-size: 25px;
     font-weight: bold;
     margin: 30px 0px;
     text-align: center;
