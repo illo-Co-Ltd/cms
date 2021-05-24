@@ -1,16 +1,17 @@
 <template lang="html">
   <section>
     <div id="introMainArea">
-
       <div id="titleArea">
         <h6 class="pageTitle">deviceControl</h6>
         <div class="pointLine"></div>
-        <h1>{{projectName}} : {{deviceId}} : {{deviceModel}}</h1>
+        <h1>{{projectName}} : {{deviceId}}}</h1>
       </div>
     </div>
     <div id="MainArea">
-      <div id = "liveCam" >aaa</div>
-      <DeviceControlPanel id="deviceControlPanel" ></DeviceControlPanel>
+      <div id = "liveCam" >
+        <LiveImage id="liveImagePanel" :projectName="projectName" :deviceId="deviceId" ></LiveImage>      
+      </div>
+      <DeviceControlPanel id="deviceControlPanel" :projectName="projectName" :deviceId="deviceId" ></DeviceControlPanel>
     </div>
 
   </section>
@@ -18,12 +19,12 @@
 
 <script>
 
-import router from "@/routes/routes.js"
-import {useRoute} from 'vue-router'
-import {onMounted} from 'vue'
-import {baseURL} from "@/utils/BasicAxiosURL.ts"
+import router from "@/routes/routes.js";
+import {useRoute} from 'vue-router';
+import {baseURL} from "@/utils/BasicAxiosURL.ts";
 import axios from "axios";
-import DeviceControlPanel from "@/components/control/DeviceControlPanel.vue"
+import DeviceControlPanel from "@/components/control/DeviceControlPanel.vue";
+import LiveImage from "@/components/control/LiveImage.vue";
 
 const storage = window.sessionStorage;
 
@@ -35,7 +36,8 @@ const ai = axios.create({
 export default {
   router,
   components : {
-    DeviceControlPanel
+    DeviceControlPanel,
+    LiveImage
   },
   setup(){
     ai;
@@ -46,42 +48,17 @@ export default {
       params : {deviceModel}
     } = useRoute()
 
-
-
-    onMounted(()=>{
-      alert(projectName+' : '+deviceId+' : '+deviceModel);
-
-
-
-/*    //sample
-      ai.post("/data/user", {
-        userid : adminID.value,
-        password : adminPass.value,
-        username : adminName.value,
-        company : adminBelong.value
-      },
-      {
-        headers: {
-          "Authorization": 'Bearer '+storage.getItem("access_token")
-        }
-      }
-      ).then(res => {
-
-      }).catch((e) =>{
-
-      })
-*/
-
-    })
-
     return{
       projectName,
       deviceId,
-      deviceModel
+      deviceModel,
+      LiveImage
     }
 
   }
 }
+
+
 </script>
 <style lang="scss" scoped>
 
@@ -98,12 +75,7 @@ export default {
 
     #titleArea{
       min-width: 350px;
-      .pointLine{
-        @include length(80px, 5px);
-        background: #000;
-        margin: 0 auto;
-        margin-bottom: 10px;
-      }
+      
       .pageTitle{
         font-size: 19px;
         margin: 0 auto;
@@ -114,23 +86,31 @@ export default {
     }
 
     #MainArea{
-      width: calc(100%);
+      width: calc(100% - 1px);
       min-height : 500px;
       margin-bottom: 20px;
+      float: none;
+      
+      #liveCam{
+        width: calc(100% - 250px);
+        margin-bottom: 20px;
+        height: 100vh; // 화면의 100%
+
+        background-color: aqua;
+        display:inline-block;
+      }
+
+      #deviceControlPanel{
+        min-width : 250px;
+        height : 100%;
+
+        background-color:cornsilk;
+        display:inline-block;
+        float: right;
+      }
+      
     }
     
-    #liveCam{
-      width: calc(100% - 250px);
-      min-height : 500px;
-      margin-bottom: 20px;
-      display:inline-block;
-    }
-
-    #deviceControlPanel{
-      min-width : 250px;
-      height : 100%;
-      display:inline-block;
-    }
 
 
 </style>
