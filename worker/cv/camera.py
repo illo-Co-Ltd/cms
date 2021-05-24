@@ -2,7 +2,6 @@ import os
 import cv2
 
 ds_factor = 1
-DEVICE_IP = os.getenv('DEVICE_IP')
 
 
 class VideoCamera:
@@ -10,12 +9,13 @@ class VideoCamera:
     Camera preprocess codes
     """
 
-    def __init__(self):
-        self.url = f'rtsp://{DEVICE_IP}/stream1'
+    def __init__(self, device_ip):
+        self.url_stream = f'rtsp://{device_ip}/stream1'
+        # self.url_jpeg =
         try:
-            self.video = cv2.VideoCapture(self.url)
+            self.video = cv2.VideoCapture(self.url_stream)
         except:
-            raise ConnectionError(f'Cannot connect to {self.url}')
+            raise ConnectionError(f'Cannot connect to {self.url_stream}')
 
     def __del__(self):
         # releasing camera
@@ -32,6 +32,6 @@ class VideoCamera:
     def reinitialize(self):
         self.video.release()
         try:
-            self.video = cv2.VideoCapture(self.url)
+            self.video = cv2.VideoCapture(self.url_stream)
         except:
             raise Exception(f'Cannot reinitialize')

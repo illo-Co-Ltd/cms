@@ -8,7 +8,6 @@ from router.dto.data_dto import DeviceDTO
 from service.data.device_service import *
 
 api = DeviceDTO.api
-DeviceDTO.model
 
 parser_get = reqparse.RequestParser()
 parser_get.add_argument('model', type=str, location='args')
@@ -16,8 +15,6 @@ parser_get.add_argument('serial', type=str, location='args')
 parser_get.add_argument('company', type=str, location='args')
 parser_get.add_argument('owner', type=str, location='args')
 parser_get.add_argument('ip', type=str, location='args')
-parser_get.add_argument('cgi_id', type=str, location='args')
-parser_get.add_argument('cgi_pw', type=str, location='args')
 
 parser_delete = reqparse.RequestParser()
 parser_delete.add_argument('serial', type=str, location='args', required=True)
@@ -40,7 +37,7 @@ class Device(Resource):
 
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
-    @api.expect(DeviceDTO.model, validate=True)
+    @api.expect(DeviceDTO.model_post, validate=True)
     @jwt_required()
     def post(self):
         data = request.get_json()
@@ -58,7 +55,7 @@ class Device(Resource):
 
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
-    @api.expect(DeviceDTO.model_update, validate=False)
+    @api.expect(DeviceDTO.model_put, validate=False)
     @jwt_required()
     def put(self):
         data = request.get_json()

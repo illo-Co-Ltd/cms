@@ -7,7 +7,7 @@ from werkzeug.exceptions import HTTPException
 from service.control_service import *
 
 from router.dto.control_dto import *
-from worker import cam_task
+from worker import camera
 
 api = api_control
 
@@ -69,7 +69,7 @@ class Timelapse(Resource):
         try:
             data = request.get_json()
             key = data.get('key')
-            if cam_task.send_stop_timelapse(key):
+            if camera.send_stop_timelapse(key):
                 return {'message': f'Timelapse task for key {key} deleted'}, 200
             else:
                 raise Exception('cannot stop timelapse')
@@ -121,6 +121,37 @@ class Position(Resource):
         except Exception as e:
             api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
+@api.route('/delay')
+class Delay(Resource):
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.expect(DelayDTO.model)
+    @jwt_required()
+    def put(self):
+        try:
+            data = request.get_json()
+            return set_delay(**data)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
+
+@api.route('/autofocus')
+class AutoFocus(Resource):
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.expect(SimpleSerialDTO.model)
+    @jwt_required()
+    def put(self):
+        try:
+            data = request.get_json()
+            return autofocus(**data)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
 
 @api.route('/focus')
 class Focus(Resource):
@@ -148,6 +179,22 @@ class Led(Resource):
         try:
             data = request.get_json()
             return set_led(**data)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
+
+@api.route('/stop')
+class Stop(Resource):
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.expect(SimpleSerialDTO.model)
+    @jwt_required()
+    def put(self):
+        try:
+            data = request.get_json()
+            return stop(**data)
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:

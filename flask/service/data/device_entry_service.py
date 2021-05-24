@@ -3,7 +3,7 @@ from datetime import datetime
 from flask_jwt_extended import get_jwt_identity, current_user
 
 from model.db_base import db
-from model.model_import import DeviceEntry, Project, Device
+from model import DeviceEntry, Project, Device
 
 from util.logger import logger
 

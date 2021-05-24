@@ -7,7 +7,7 @@ from requests.auth import HTTPDigestAuth
 
 from model.db_base import db
 from model import Project, Cell, Device
-from worker import cam_task
+from worker import camera
 from util.logger import logger
 from util.exc import CGIException
 
@@ -42,15 +42,15 @@ def capture(serial, project, cell, label, debug, ):
                 .filter_by(project=project.id) \
                 .filter_by(name=cell).one()
             device = db.session.query(Device).filter_by(serial=serial).one()
-            task_id = cam_task.capture_send(header=f'{project.shorthand}_{cell.name}',
-                                            data={'cell': cell.id,
-                                                  'device': device.id,
-                                                  'label': label})
+            task_id = camera.send_capture(header=f'{project.shorthand}_{cell.name}',
+                                          data={'cell': cell.id,
+                                                'device': device.id,
+                                                'label': label})
         else:
-            task_id = cam_task.capture_send(header=f'{project}_{cell}',
-                                            data={'cell': None,
-                                                  'device': None,
-                                                  'label': None})
+            task_id = camera.send_capture(header=f'{project}_{cell}',
+                                          data={'cell': None,
+                                                'device': None,
+                                                'label': None})
         return task_id, 200
     # TODO
     # 각 DB exception 에 따라 예외처리 세분화
@@ -92,7 +92,7 @@ def timelapse_start(serial, project, cell, label, run_every, expire_at, debug):
                 }
             }
         logger.info(kwargs)
-        status, key = cam_task.send_start_timelapse(**kwargs)
+        status, key = camera.send_start_timelapse(**kwargs)
         if status:
             return {
                        'message': f'Timelapse task for device {kwargs.get("data").get("serial")} queued',
@@ -161,10 +161,51 @@ def offset_position(serial, x, y, z):
         raise e
 
 
+def set_delay(serial, value):
+    logger.info('Change movement delay')
+    try:
+        logger.info(f'value: {value}')
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        resp = requests.get(
+            f'http://{device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_dly={value}',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code == 200:
+            return {
+                       'message': 'Successfully updated delay.',
+                       'result': value
+                   }, 200
+        else:
+            raise CGIException(resp)
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+
+def autofocus(serial):
+    logger.info('Auto adjust focus')
+    try:
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        resp = requests.get(
+            f'http://{device.ip}/isp/appispmu.cgi?i_c1_dirafc=+run+',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code == 200:
+            return {
+                       'message': 'Successfully adjusted focus.',
+                   }, 200
+        else:
+            raise CGIException(resp)
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+
 def set_focus(serial, value):
     logger.info('Update camera focus')
     try:
-        data = request.get_json()
         logger.info(f'focus: {value}')
         device = db.session.query(Device).filter_by(serial=serial).one()
         resp = requests.get(
@@ -197,6 +238,26 @@ def set_led(serial, value):
             return {
                        'message': 'Successfully updated led brightness.',
                        'result': value
+                   }, 200
+        else:
+            raise CGIException(resp)
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+
+def stop(serial):
+    logger.info('Stop moving position')
+    try:
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        resp = requests.get(
+            f'http://{device.ip}/isp/appispmu.cgi?i_mt_stop=submit',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code == 200:
+            return {
+                       'message': 'Successfully stopped movement.',
                    }, 200
         else:
             raise CGIException(resp)

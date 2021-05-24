@@ -6,7 +6,7 @@ from flask import after_this_request, current_app
 from flask_jwt_extended import create_access_token, create_refresh_token, set_access_cookies, set_refresh_cookies, \
     get_jwt, current_user
 
-from model.model_import import User
+from model import User
 from util.logger import logger
 
 app = current_app

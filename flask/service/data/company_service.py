@@ -1,6 +1,6 @@
 import traceback
 from model.db_base import db
-from model.model_import import Company
+from model import Company
 
 from util.logger import logger
 

@@ -1,7 +1,7 @@
 import traceback
 
 from model.db_base import db
-from model.model_import import Project, Cell
+from model import Project, Cell
 
 from util.logger import logger
 

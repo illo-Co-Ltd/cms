@@ -42,5 +42,5 @@ class Celery(Resource):
 class Test(Resource):
     @api.doc('test func')
     def get(self):
-        from model.model_import import Cell
+        from model import Cell
         return Cell.query.one().to_dict()

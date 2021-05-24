@@ -4,7 +4,7 @@ from functools import wraps
 from flask import make_response, current_app
 from flask_jwt_extended import unset_jwt_cookies, verify_jwt_in_request, get_jwt, create_access_token, current_user, set_access_cookies
 
-from model.model_import import User
+from model import User
 
 jwt = current_app.extensions['flask-jwt-extended']
 

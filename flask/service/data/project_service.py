@@ -1,7 +1,10 @@
 import traceback
+from datetime import datetime, timezone
 
+from flask_jwt_extended import current_user
+
+from model import User, Project
 from model.db_base import db
-from model.model_import import Project
 
 from util.logger import logger
 
@@ -22,7 +25,17 @@ def read_project(**kwargs):
 def create_project(**kwargs):
     logger.info('Register new project')
     try:
+        kwargs.update({
+            'created': datetime.now(timezone.utc).astimezone(),
+            'started': datetime.fromisoformat(kwargs.get('started')),
+            'ended': datetime.fromisoformat(kwargs.get('ended')) if kwargs.get('ended') else None,
+            'created_by': current_user
+        })
         project = Project(**kwargs)
+        logger.info(project.created)
+        logger.info(type(project.started))
+        logger.info(project.started)
+        logger.info(project.ended)
         db.session.add(project)
         db.session.commit()
         return {'message': f'Posted project<{kwargs.get("name")}> to db.'}, 201
@@ -37,12 +50,16 @@ def update_project(**kwargs):
     logger.info('Update existing project')
     try:
         query = db.session.query(Project).filter_by(name=kwargs.get('name')).one()
-        if kwargs.get('newname'):
+        if 'newname' in kwargs.keys():
             query.name = kwargs.get('newname')
-        if kwargs.get('shorthand'):
+        if 'shorthand' in kwargs.keys():
             query.shorthand = kwargs.get('shorthand')
-        if kwargs.get('description'):
+        if 'description' in kwargs.keys():
             query.description = kwargs.get('description')
+        if 'started' in kwargs.keys():
+            query.started = datetime.fromisoformat(kwargs.get('started')) if kwargs.get('started') else None
+        if 'ended' in kwargs.keys():
+            query.ended = datetime.fromisoformat(kwargs.get('ended')) if kwargs.get('ended') else None
         db.session.commit()
         return {'message': f'Updated project<{query.name}> from db.'}, 200
     except Exception as e:
