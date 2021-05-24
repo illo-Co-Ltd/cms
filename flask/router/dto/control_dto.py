@@ -62,5 +62,20 @@ class LedDTO:
     api = api_control
     model = api.model('led', {
         'serial': fields.String(required=True, description='Target device'),
-        'value': fields.Integer(required=True, description='Focus value', min=0, max=255),
+        'value': fields.Integer(required=True, description='Led brightness value', min=0, max=255),
+    })
+
+
+class DelayDTO:
+    api = api_control
+    model = api.model('delay', {
+        'serial': fields.String(required=True, description='Target device'),
+        'value': fields.Integer(required=True, description='Movement delay', min=0, max=9999),
+    })
+
+
+class SimpleSerialDTO:
+    api = api_control
+    model = api.model('serial', {
+        'serial': fields.String(required=True, description='Target device'),
     })

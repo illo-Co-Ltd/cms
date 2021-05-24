@@ -161,6 +161,48 @@ def offset_position(serial, x, y, z):
         raise e
 
 
+def set_delay(serial, value):
+    logger.info('Change movement delay')
+    try:
+        logger.info(f'value: {value}')
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        resp = requests.get(
+            f'http://{device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_dly={value}',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code == 200:
+            return {
+                       'message': 'Successfully updated delay.',
+                       'result': value
+                   }, 200
+        else:
+            raise CGIException(resp)
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+
+def autofocus(serial):
+    logger.info('Auto adjust focus')
+    try:
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        resp = requests.get(
+            f'http://{device.ip}/isp/appispmu.cgi?i_c1_dirafc=+run+',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code == 200:
+            return {
+                       'message': 'Successfully adjusted focus.',
+                   }, 200
+        else:
+            raise CGIException(resp)
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+
 def set_focus(serial, value):
     logger.info('Update camera focus')
     try:
@@ -196,6 +238,26 @@ def set_led(serial, value):
             return {
                        'message': 'Successfully updated led brightness.',
                        'result': value
+                   }, 200
+        else:
+            raise CGIException(resp)
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+
+def stop(serial):
+    logger.info('Stop moving position')
+    try:
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        resp = requests.get(
+            f'http://{device.ip}/isp/appispmu.cgi?i_mt_stop=submit',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code == 200:
+            return {
+                       'message': 'Successfully stopped movement.',
                    }, 200
         else:
             raise CGIException(resp)
