@@ -1,0 +1,408 @@
+
+  #mainHeaderArea{
+    @include length(100%, 65px);
+    min-width: 600px;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    z-index: 400;
+    overflow: hidden;
+    border-bottom: $frame-border;
+    background: $header-background;
+    box-shadow: 0px 0px 7px 0px rgba(12,13,14,0.15);
+    > img:nth-of-type(1){
+      display: none;
+      @include length(30px, auto);
+      margin-top: 10px;
+      margin-left: 17px;
+      vertical-align: middle;
+      float: left;
+      cursor: pointer;
+    }
+    > img:nth-of-type(2){
+      @include length(170px, auto);
+      margin-top: 9px;
+      margin-left: 29px;
+      vertical-align: middle;
+      float: left;
+      cursor: pointer;
+    }
+    > div{
+      @include length(300px, 70px);
+      float: right;
+      margin-top: 3px;
+      margin-right: 30px;
+      >#weatherImg{
+        float: right;
+        @include length(45px, 45px);
+        @include border-radius(25px);
+        margin-top: 8px;
+        cursor: pointer;
+      }
+      >p{
+        float: right;
+        cursor: pointer;
+        line-height: 60px;
+        font-size: 14px;
+        > span{
+          @include overtext();
+          max-width : 110px;
+          display:inline-block;
+          margin-right: 10px;
+        }
+      }
+    }
+  }
+
+
+
+  #mainAsideArea{
+    //visibility: hidden;
+    @include length(199px, calc(100% - 66px));
+    @include scroll-hide();
+    @include drag-provention();
+    overflow: auto;
+    position: fixed;
+    top: 66px;
+    left: 0px;
+    z-index: 300;
+    background: $aside-background;
+    border-right: $frame-border;
+    >#asideTitle{
+      border: 1px solid #acacac;
+      background: #dedede;
+      @include border-radius(5px);
+      position: relative;
+      width: 90%;
+      margin: 15px 5%;
+      height: 0;
+      overflow: hidden;
+      padding-bottom: 22.5%;
+      >button{
+        border: none;
+        background: #dedede;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        top: 0;
+      }
+    }
+
+    >#asideLoginInfo{
+      overflow: hidden;
+      width: 100%;
+      height: 90px;
+
+      >#loginInfoLeft{
+        float: left;
+        width: 30%;
+        >img{
+          width: 94%;
+          @include border-radius(50px);
+          border: 1px solid #000;
+          margin-top: 20px;
+          margin-left: 5px;
+        }
+      }
+      >#loginInfoRight{
+        float: left;
+        width: 70%;
+        font-size: 14px;
+        >#firstLine{
+          overflow: hidden;
+          >h5{
+            float: left;
+            margin-top: 2px;
+            margin-left: 9px;
+            line-height: 40px;
+          }
+          >img{
+            margin-top: 8px;
+            margin-right: 5px;
+            float: right;
+            width: 25px;
+            @include border-radius(50px);
+            border: 1px solid #000;
+          }
+        }
+        >.pointLine{
+          @include length(125px, 2px);
+          background: #999;
+          margin: 0 auto;
+          margin-bottom: 10px;
+        }
+        >h5{
+          margin-left: 9px;
+          line-height: 18px;
+          font-size: 13px;
+        }
+
+      }
+    }
+
+
+
+    > ul {
+      width: 85%;
+      max-width : 170px;
+      margin-left: 20px;
+      >.menuBigTitle{
+        overflow: hidden;
+        margin: 13px 0px 1px 0px;
+        > *{
+          float: left;
+        }
+        > img{
+          border: 1px solid #cacaca;
+          @include length(25px, 25px);
+          @include border-radius(15px);
+          cursor: pointer;
+        }
+        > li{
+          font-size: 15px;
+          line-height: 30px;
+          margin-left: 5px;
+          cursor: pointer;
+          width: calc(100% - 50px);
+          @include overtext();
+        }
+        > span{
+          width: 15px;
+          float: right;
+          font-weight: bold;
+          line-height: 30px;
+          cursor: pointer;
+        }
+        >.menuSmallTitle{
+          padding-left: 40px;
+          line-height: 16px;
+          cursor: pointer;
+          text-transform: lowercase;
+          >h5{
+            padding: 3px 0px;
+          }
+        }
+      }
+    }
+  }
+
+
+    #mobileMainAsideArea{
+      //visibility: hidden;
+      @include length(200px, 100%);
+      @include scroll-hide();
+      overflow: auto;
+      position: fixed;
+      left: 0px;
+      z-index: 450;
+      background: $aside-background;
+      border-right: $frame-border;
+      display: none;
+      box-shadow: 0px 0px 10px 5px rgba(12,13,14,0.15);
+
+      -webkit-transform: translate(0, 0);
+      -webkit-transition: -webkit-transform 400ms;
+      transform: translate(0, 0);
+      transition: transform 400ms;
+
+      > #asideHeader{
+        height: 54px;
+        border-bottom: $frame-border;
+        overflow: hidden;
+        >img{
+          float: left;
+          @include length(30px, auto);
+          margin-top: 12px;
+          margin-left: 17px;
+        }
+      }
+
+
+      >#asideLoginInfo{
+        overflow: hidden;
+        width: 100%;
+        height: 90px;
+
+        >#loginInfoLeft{
+          float: left;
+          width: 30%;
+          >img{
+            width: 94%;
+            @include border-radius(50px);
+            border: 1px solid #000;
+            margin-top: 20px;
+            margin-left: 5px;
+          }
+        }
+        >#loginInfoRight{
+          float: left;
+          width: 70%;
+          font-size: 14px;
+          >#firstLine{
+            overflow: hidden;
+            >h5{
+              float: left;
+              margin-top: 2px;
+              margin-left: 9px;
+              line-height: 40px;
+            }
+            >img{
+              margin-top: 8px;
+              margin-right: 5px;
+              float: right;
+              width: 25px;
+              @include border-radius(50px);
+              border: 1px solid #000;
+            }
+          }
+          >.pointLine{
+            @include length(125px, 2px);
+            background: #999;
+            margin: 0 auto;
+            margin-bottom: 10px;
+          }
+          >h5{
+            margin-left: 9px;
+            line-height: 18px;
+            font-size: 13px;
+          }
+
+        }
+      }
+
+
+
+      >#asideTitle{
+        @include length(90%, 50px);
+        @include border-radius(5px);
+        margin-top: 15px;
+        margin-left: calc(5% - 2px);
+        border: 1px solid #acacac;
+        background: #dedede;
+        >button{
+          border: none;
+          background: #dedede;
+          width: 100%;
+          height: 100%;
+        }
+      }
+      > ul {
+        width: 150px;
+        margin-left: 20px;
+        >.menuBigTitle{
+          overflow: hidden;
+          margin: 13px 0px 1px 0px;
+          > *{
+            float: left;
+          }
+          > img{
+            border: 1px solid #cacaca;
+            @include length(25px, 25px);
+            @include border-radius(15px);
+            cursor: pointer;
+          }
+          > li{
+            font-size: 17px;
+            line-height: 35px;
+            margin-left: 10px;
+            cursor: pointer;
+          }
+          > span{
+            float: right;
+            font-weight: bold;
+            line-height: 35px;
+            cursor: pointer;
+          }
+          &:last-child{
+            margin-bottom: 100px;
+          }
+          >.menuSmallTitle{
+            font-size: 16px;
+            padding-left: 40px;
+            line-height: 20px;
+            cursor: pointer;
+            text-transform: lowercase;
+
+            >h5{
+              padding: 5px 0px;
+            }
+          }
+        }
+
+      }
+    }
+
+
+
+  @media ( max-width: 1000px ) {
+
+    #mainAsideArea{
+      height: calc(100% - 46px);
+      top: 46px;
+    }
+
+
+
+
+    #mainHeaderArea{
+      @include length(100%, 49px);
+      min-width: 350px;
+      >img:nth-of-type(2){
+        @include length(120px, auto);
+        margin-top: 8px;
+      }
+      > div{
+        @include length(165px, 70px);
+        float: right;
+        margin-top: 3px;
+        >#weatherImg{
+          @include length(30px, 30px);
+          margin-top: 5px;
+        }
+        >p{
+          line-height: 45px;
+          > span{
+            @include overtext();
+            max-width : 120px;
+          }
+        }
+      }
+    }
+  }
+  @media ( max-width: 800px ) {
+        #mainAsideArea{
+          display: none;
+        }
+
+        #mobileMainAsideArea{
+          display: inline;
+        }
+
+
+        #mainHeaderArea{
+          >img:nth-of-type(1){
+            display: inline;
+            margin-left: 10px;
+          }
+          >img:nth-of-type(2){
+            margin-left: 10px;
+          }
+        }
+  }
+
+  // 800 이하가 되면 aside 감춤
+  @media ( max-width: 600px ) {
+
+    #mainHeaderArea{
+      >div{
+        margin-right: 15px;
+        >p{
+          margin-right: 5px;
+          >span{
+            margin-right: 5px;
+          }
+        }
+      }
+    }
+  }

@@ -79,36 +79,38 @@ export default {
         if(res.status == 200){
           //storage.setItem("access_token", res.headers["access_token"]);
           storage.setItem("access_token", res.data.access_token);
-
-
+          
           ai.get("/auth/whoami").then(res =>{
             storage.setItem("cms_username", res.data.username);
             storage.setItem("cms_company", res.data.company);
             storage.setItem("cms_userid", res.data.userid);
+
+            //쿠키 자동저장 진행한다
+            if(state.idSave == 'save'){
+              setCookie('m2_auto_id',state.id,2);
+            }else{
+              deleteCookie('m2_auto_id');
+            }
+
+            if(redirect == null){
+              router.push('/mainPage/dashBoard');
+            }else{
+              router.push(redirect)
+            }
+
+            Swal.fire({
+                toast: true,
+                position: 'top',
+                icon: 'success',
+                title: '로그인 성공',
+                showConfirmButton: false,
+                timer: 3000
+               })
+
           })
 
 
-          //쿠키 자동저장 진행한다
-          if(state.idSave == 'save'){
-            setCookie('m2_auto_id',state.id,2);
-          }else{
-            deleteCookie('m2_auto_id');
-          }
 
-          if(redirect == null){
-            router.push('/mainPage/dashBoard');
-          }else{
-            router.push(redirect)
-          }
-
-          Swal.fire({
-              toast: true,
-              position: 'top',
-              icon: 'success',
-              title: '로그인 성공',
-              showConfirmButton: false,
-              timer: 3000
-             })
         }
 
       }).catch(e => {

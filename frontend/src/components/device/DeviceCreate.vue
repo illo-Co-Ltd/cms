@@ -19,6 +19,15 @@
         <img src="@/assets/icon/icon_home.png">
         <input type="text" v-model="deviceIp" id="inputDeviceIp" placeholder="IP - EX) 192.168.0.1" maxlength="15">
       </div>
+      <div class="inputArea">
+        <img src="@/assets/icon/icon_home.png">
+        <input type="text" v-model="cgi_id" id="inputCgi_id" placeholder="device id" maxlength="15">
+      </div>
+      <div class="inputArea">
+        <img src="@/assets/icon/icon_home.png">
+        <input type="text" v-model="cgi_pw" id="inputCgi_pw" placeholder="device pass" maxlength="15">
+      </div>
+
 
       <div :style="{display : state.alertDisplay}">
         <h3  id="alertMessage"></h3>
@@ -59,7 +68,8 @@ export default {
     const model = ref("");
     const serial = ref("");
     const deviceIp = ref("");
-
+    const cgi_id = ref("");
+    const cgi_pw = ref("");
 
     const alertCloseEvent = () =>{
       state.alertDisplay = "none";
@@ -88,6 +98,20 @@ export default {
         event1 = setTimeout(alertCloseEvent,3000);
         return false;
       }
+      if(cgi_id.value==''){
+        document.getElementById("inputCgi_id").focus();
+        document.getElementById("alertMessage").innerHTML = "디바이스의 id를 입력해주세요.";
+        state.alertDisplay = "block";
+        event1 = setTimeout(alertCloseEvent,3000);
+        return false;
+      }
+      if(cgi_pw.value==''){
+        document.getElementById("inputCgi_pw").focus();
+        document.getElementById("alertMessage").innerHTML = "디바이스의 pw를 입력해주세요.";
+        state.alertDisplay = "block";
+        event1 = setTimeout(alertCloseEvent,3000);
+        return false;
+      }
       const reg = /^(?!.*\.$)((?!0\d)(1?\d?\d|25[0-5]|2[0-4]\d)(\.|$)){4}$/g;
       if(!reg.test(deviceIp.value)){
         clearTimeout(event1);
@@ -102,7 +126,9 @@ export default {
         model : model.value,
         ip : deviceIp.value,
         owner : storage.getItem("cms_userid"),
-        company : storage.getItem("cms_company")
+        company : storage.getItem("cms_company"),
+        cgi_id : cgi_id.value,
+        cgi_pw : cgi_pw.value
       }
     ).then(res => {
         if(res.status === 201){
@@ -140,6 +166,8 @@ export default {
       model,
       serial,
       deviceIp,
+      cgi_id,
+      cgi_pw,
       projectInsert
     }
   }
@@ -159,7 +187,7 @@ export default {
   }
 
   h1{
-    font-size: 30px;
+    font-size: 25px;
     font-weight: bold;
     margin: 30px 0px;
     text-align: center;

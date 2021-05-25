@@ -39,7 +39,6 @@ export default {
   // 1000 이하가 되면 aside 감춤
   @media ( max-width: 1000px ) {
     #mainpage{
-      margin-left: 20%;
       padding-top: 46px;
     }
     .mainFooter{

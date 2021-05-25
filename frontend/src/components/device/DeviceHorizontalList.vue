@@ -1,19 +1,13 @@
 <template>
   <section>
     <div id="deviceUpdateArea">
-      <h1>장비 리스트({{state.deviceCount}})</h1>
-
+      <h1>장비 리스트({{state.arrDevice.length}})</h1>
+      <h2 @click="moveDeviceManagement()">장비관리 ></h2>
       <div id="deviceScroll">
 
         <div id="deviceListArea" v-for="(array, i) in state.arrDevice" v-bind:key="`B-${i}`">
-          <div id="areaLeft">
-            <h6>이름 : {{array.serial}}({{array.model}})</h6>
-            <h6>담당 : {{array.owner}} : {{array.company}}</h6>
-            <h6>IP : {{array.ip}}</h6>
-          </div>
-          <div id="areaRight" v-on:click="deviceDelete(array)">
-            <img src="@/assets/icon/icon_sunny.png"/>
-          </div>
+          <img src="@/assets/icon/icon_sunny.png"/>
+          <h6>{{array.serial}}</h6>
         </div>
 
       </div>
@@ -26,6 +20,7 @@
 import {reactive, onMounted} from 'vue'
 import {baseURL} from "@/utils/BasicAxiosURL.ts"
 import axios from "axios";
+import router from "@/routes/routes.js"
 
 const ai = axios.create({
   baseURL
@@ -33,16 +28,15 @@ const ai = axios.create({
 
 
 export default {
-
   setup(){
     const state = reactive({
       arrDevice : new Array(),
-      deviceCount : 0
     });
 
     onMounted(()=>{
       deviceInquiry();
     })
+
     const deviceInquiry = () => {
       ai.get('/data/device').then(res =>{
         state.deviceCount = res.data.data.length;
@@ -60,21 +54,14 @@ export default {
       })
     }
 
-    const deviceDelete = (array) =>{
-      ai.delete('/data/device?serial='+array.serial).then(res =>{
-        if(res.status === 200){
-          console.log('성공');
-          state.arrDevice = new Array();
-          deviceInquiry();
-        }else{
-          console.log(res.status + ' : error');
-        }
-      })
+    const moveDeviceManagement = () => {
+      router.push('/mainPage/deviceManagement/');
     }
+
 
     return {
       state,
-      deviceDelete
+      moveDeviceManagement
     }
   }
 }
@@ -87,23 +74,33 @@ export default {
 
   #deviceUpdateArea{
     overflow: hidden;
-    width: 100%;
-    max-width: 500px;
+    width: calc( 100% - 20px);
+    padding: 0 10px;
     margin: 50px auto;
+    margin-top: 0px;
 
   }
 
   h1{
     font-size: 25px;
     font-weight: bold;
-    margin: 30px 0px;
-    text-align: center;
+    margin-left: 15px;
+    margin-bottom: 15px;
+    text-align: left;
   }
-
+  h2{
+    font-size: 13px;
+    margin-bottom: 5px;
+    text-align: right;
+  }
   #deviceScroll{
-    height: 400px;
-    overflow-y:scroll;
+    height: 120px;
+    width: 100%;
+    white-space : nowrap;
+    overflow-x : scroll;
+    overflow-y : hidden;
     border: 1px solid #999;
+    @include border-radius(10px);
   }
 
   #deviceScroll::-webkit-scrollbar {
@@ -123,29 +120,25 @@ export default {
 
 
   #deviceListArea{
-    overflow: hidden;
-    margin: 0 10px;
-    border-bottom: 1px solid #ccc;
-    >*{
-      float: left;
-      font-size: 18px;
-      padding: 4px;
-      height: 60px;
+    margin: 5px 5px;
+    border : 1px solid #ccc;
+    display: inline-block;
+
+    background: #00ff0044;
+
+    @include border-radius(10px);
+
+    width: 95px;
+    height: 90px;
+    >img{
+      margin-left: 13px;
+      margin-top: 2px;
+      width: 68px;
+      height: 68px;
     }
-    >#areaLeft{
-      width: 85%;
-      line-height: 21px;
-      font-size: 15px;
-    }
-    >#areaRight{
-      width: 10%;
-      float: right;
-      >img{
-        width: 25px;
-        margin-top: 19px;
-        margin-left: 5px;
-        background: #999;
-      }
+    >h6{
+      font-size: 14px;
+      text-align: center;
     }
   }
 
