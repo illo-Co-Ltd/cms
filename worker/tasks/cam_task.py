@@ -1,103 +1,102 @@
-import os, sys, inspect
-import requests
-import json
-from random import random
+import os
+import datetime, pytz
+from contextlib import contextmanager
 import traceback
 
 import celery
+import sqlalchemy
+from sqlalchemy import text
+from sqlalchemy.orm import sessionmaker
 from celery.signals import worker_process_init, worker_process_shutdown
-from celery.utils.log import get_logger, get_task_logger
+from celery.utils.log import get_task_logger
 from celery.exceptions import TaskError
 from redbeat import RedBeatSchedulerEntry
-import time
-import datetime, pytz
+import requests
+from requests.auth import HTTPDigestAuth
 import cv2
+import numpy as np
 
-# cwd = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-# parent = os.path.dirname(cwd)
-# sys.path.insert(0, parent)
-from cv import camera
 from app import app
-
-FLASK_BACKEND = os.environ.get('FLASK_BACKEND')
-CAM_MAX_RETRY = 100
-CAM_RETRY_INTERVAL = 3
-
+from .util import check_and_create
 logger = get_task_logger(__name__)
-vcam = None
+engine = None
 
 
-class CaptureTask(celery.Task):
+class M2Task(celery.Task):
+    @contextmanager
+    def session_scope(self):
+        session = sessionmaker(bind=engine)()
+        try:
+            yield session
+            session.commit()
+        except:
+            session.rollback()
+            raise
+        finally:
+            session.close()
+
     def on_success(self, retval, task_id, args, kwargs):
-        self.OperationalError()
-        logger.info(f'Task {task_id} suceeded. Sending callback to backend...')
-        resp = requests.get(f'{FLASK_BACKEND}/task_callback/on_capture_success/{task_id}')
-        logger.info(f'<{resp.status_code}> {resp.text}')
+        logger.info(f'Successfully processed <Task {task_id}>.')
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
-        logger.warning(f'Task {task_id} failed with exception[{exc}]')
+        logger.warning(f'Failed <Task {task_id}> with exception[{exc}]')
 
 
 @worker_process_init.connect
 def worker_init_handler(**kwargs):
-    global vcam
-    frame = None
-    for i in range(CAM_MAX_RETRY):
-        logger.debug(f'Initializing VideoCamera, try #{i + 1}', )
-        time.sleep(random() * CAM_RETRY_INTERVAL)
-        try:
-            vcam = camera.VideoCamera()
-            frame = vcam.get_frame()
-        except ValueError:
-            continue
-        except ConnectionError as e:
-            logger.error(traceback.format_exc())
-            raise e
-        if frame is not None:
-            logger.info(f'VideoCamera initialized (shape):{frame.shape}')
-            return
-    # TODO 초기화가 불가능하면 해당 worker pool을 종료하도록 구현
-    logger.warning(f'Cannot initialize VideoCamera after {CAM_MAX_RETRY} tries')
-    raise Exception
+    # do some initialization
+    global engine
+    try:
+        engine = sqlalchemy.create_engine(app.conf['mysql_uri'])
+        logger.info('Engine initialized.')
+    except KeyError as e:
+        logger.error('Cannot find mysql_uri.')
+        raise e
+    except Exception as e:
+        logger.error('Something went wrong.')
+        raise e
 
 
 @worker_process_shutdown.connect
 def worker_shutdown_handler(**kwargs):
-    global vcam
-    del vcam
+    # do some object deletions
+    global engine
+    if engine:
+        engine.dispose()
+        engine = None
 
 
-@app.task(name='cam_task.capture_task', base=CaptureTask)
-def capture_task(header: str, data: dict) -> dict:
+@app.task(name='cam_task.capture_task', base=M2Task, bind=True)
+def capture_task(self, data: dict) -> dict:
     try:
-        # vcam = camera.VideoCamera()
-        if not vcam:
-            raise TaskError('Video Camera not initialized')
-        else:
-            frame = vcam.get_frame()
         ctime = datetime.datetime.now(pytz.timezone("Asia/Seoul"))
-        fname = f'{header}_{ctime.strftime("%Y-%m-%dT%H-%M-%S-%f")}.jpg'
-        path = f'/data/{fname}'
-        res = cv2.imwrite(path, frame)
-        body = {
-            'target': data.get('target'),
-            'path': fname,
-            'device': data.get('device'),
-            'created': ctime.isoformat(),
-            # TODO 요청한 유저로 수정
-            'created_by': None,
-            'label': data.get('label'),
-            # TODO 현재 오프셋 받아오게 수정
-            'offset_x': 0,
-            'offset_y': 0,
-            'offset_z': 0,
-            'pos_x': 0,
-            'pos_y': 0,
-            'pos_z': 0
-        }
+        with self.session_scope() as session:
+            device = session.execute(
+                text("SELECT * FROM device WHERE id=:device_id"),
+                {'device_id':data.get('device')}
+            ).fetchone()
+        resp = requests.get(
+            f'http://{device.ip}/jpg/',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code != 200:
+            logger.error(resp.text)
+            raise TaskError(resp)
+        fname = f'{ctime.strftime("%Y-%m-%dT%H-%M-%S-%f")}.jpg'
+        fpath = f'/data/{data.get("path")}/{fname}'
+        check_and_create(os.path.dirname(fpath))
+
+        img = cv2.imdecode(np.frombuffer(resp.content, dtype=np.uint8), -1)
+        res = cv2.imwrite(fpath, img)
         if not res:
             raise TaskError('Nothing written by cv2')
         else:
+            # save metadata to db
+            with self.session_scope() as session:
+                session.execute(
+                    text(f'''INSERT INTO image('cell_id','path',)
+                    ''')
+                )
             return body
     except TaskError as e:
         raise e

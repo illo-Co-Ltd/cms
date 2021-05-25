@@ -7,14 +7,13 @@ from router.dto.data_dto import CellDTO
 from service.data.cell_service import create_cell, read_cell
 
 api = CellDTO.api
-_cell = CellDTO.model
 
 
 @api.route('/cell')
 class Cell(Resource):
     @api.doc('Query cell with filters')
     @api.response(404, 'No result found for query.')
-    @api.marshal_list_with(_cell, envelope='data')
+    @api.marshal_list_with(CellDTO.model, envelope='data')
     @jwt_required()
     def get(self):
         try:
@@ -31,7 +30,7 @@ class Cell(Resource):
     @api.doc('Create new cell')
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
-    @api.expect(_cell, validate=True)
+    @api.expect(CellDTO.model, validate=True)
     @jwt_required()
     def post(self):
         data = request.get_json()

@@ -99,8 +99,8 @@ class CellDTO:
         'name': fields.String(required=True, description='[Key] User defined name'),
         'project': fields.String(attribute='project.name', required=True, description='Parent project'),
         'type': fields.String(required=True, description='Type of the cell'),
-        'detail': fields.String(required=True, description='Specification'),
-        'description': fields.String(required=True, description='Additional info'),
+        'detail': fields.String(required=False, description='Specification'),
+        'description': fields.String(required=False, description='Additional info'),
     })
 
 

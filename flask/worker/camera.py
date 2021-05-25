@@ -4,9 +4,9 @@ from .taskmanager import celery_app
 from util import logger
 
 
-def send_capture(header: str, data: dict):
+def send_capture(data: dict):
     name = 'cam_task.capture_task'
-    task = celery_app.send_task(name, args=[header, data])
+    task = celery_app.send_task(name, args=[data])
     return task.id
 
 

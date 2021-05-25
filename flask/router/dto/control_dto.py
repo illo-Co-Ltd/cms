@@ -9,6 +9,7 @@ class CaptureDTO:
         'serial': fields.String(required=True, description='Target device'),
         'project': fields.String(required=True, description='Project name'),
         'cell': fields.String(required=True, description='Cell name'),
+        'path': fields.String(required=True, description='path to save image'),
         'label': fields.String(required=False, description='Label for extra data'),
         'debug': fields.Boolean(required=False, description='Flag for skipping integrity check'),
     })

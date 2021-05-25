@@ -4,6 +4,8 @@ import os
 broker_url = os.environ.get('BROKER')
 # Using the database to store task state and results.
 result_backend = os.environ.get('CELERY_BACKEND')
+# host for database for metadata
+mysql_uri= os.environ.get('MYSQL_URI')
 # List of modules to import when the Celery worker starts.
 imports = ('tasks.cam_task', 'tasks.cv_task')
 # task specific configuration

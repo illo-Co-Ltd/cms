@@ -32,25 +32,23 @@ def fetch_jpeg(serial):
         raise e
 
 
-def capture(serial, project, cell, label, debug, ):
+def capture(serial, project, cell, label, path):
     logger.info('Capture with camera')
     try:
-        # skip integrity check if debugging
-        if not debug:
-            project = db.session.query(Project).filter_by(name=project).one()
-            cell = db.session.query(Cell) \
-                .filter_by(project=project.id) \
-                .filter_by(name=cell).one()
-            device = db.session.query(Device).filter_by(serial=serial).one()
-            task_id = camera.send_capture(header=f'{project.shorthand}_{cell.name}',
-                                          data={'cell': cell.id,
-                                                'device': device.id,
-                                                'label': label})
-        else:
-            task_id = camera.send_capture(header=f'{project}_{cell}',
-                                          data={'cell': None,
-                                                'device': None,
-                                                'label': None})
+        project = db.session.query(Project).filter_by(name=project).one()
+        cell = db.session.query(Cell) \
+            .filter_by(project=project) \
+            .filter_by(name=cell).one()
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        task_id = camera.send_capture(
+            data={
+                'project':project.id,
+                'cell': cell.id,
+                'device': device.id,
+                'label': label,
+                'path': path
+            }
+        )
         return task_id, 200
     # TODO
     # 각 DB exception 에 따라 예외처리 세분화
