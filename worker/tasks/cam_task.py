@@ -1,5 +1,6 @@
 import os
-import datetime, pytz
+import pytz
+from datetime import datetime
 from contextlib import contextmanager
 import traceback
 
@@ -18,6 +19,7 @@ import numpy as np
 
 from app import app
 from .util import check_and_create
+
 logger = get_task_logger(__name__)
 engine = None
 
@@ -69,16 +71,28 @@ def worker_shutdown_handler(**kwargs):
 @app.task(name='cam_task.capture_task', base=M2Task, bind=True)
 def capture_task(self, data: dict) -> dict:
     try:
-        ctime = datetime.datetime.now(pytz.timezone("Asia/Seoul"))
+        ctime = datetime.now(pytz.timezone("Asia/Seoul"))
         with self.session_scope() as session:
             device = session.execute(
                 text("SELECT * FROM device WHERE id=:device_id"),
-                {'device_id':data.get('device')}
+                {'device_id': data.get('device')}
             ).fetchone()
         resp = requests.get(
             f'http://{device.ip}/jpg/',
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
+        '''
+        pos = requests.get(
+            f'http://{device.ip}/jpg/',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        pos_x, pos_y, pos_z =
+        offset = requests.get(
+            f'http://{device.ip}/jpg/',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        offset_x, offset_y,offset_z = 
+        '''
         if resp.status_code != 200:
             logger.error(resp.text)
             raise TaskError(resp)
@@ -92,12 +106,26 @@ def capture_task(self, data: dict) -> dict:
             raise TaskError('Nothing written by cv2')
         else:
             # save metadata to db
+            data = {
+                'cell_id': data.get('cell'),
+                'path': fpath,
+                'device_id': data.get('device'),
+                'created': datetime.utcnow(),
+                'created_by_id': data.get('created_by_id'),
+                'label': data.get('label'),
+                'offset_x': 0,
+                'offset_y': 0,
+                'offset_z': 0,
+                'pos_x': 0,
+                'pos_y': 0,
+                'pos_z': 0
+            }
             with self.session_scope() as session:
-                session.execute(
-                    text(f'''INSERT INTO image('cell_id','path',)
-                    ''')
-                )
-            return body
+                session.execute(text(
+                    '''INSERT INTO image(cell_id, path, device_id, created, created_by_id, label, offset_x, offset_y, offset_z, pos_x, pos_y, pos_z)
+                    VALUES(:cell_id, :path, :device_id, :created, :created_by_id, :label, :offset_x, :offset_y, :offset_z, :pos_x, :pos_y, :pos_z)'''),
+                    data)
+            return fpath
     except TaskError as e:
         raise e
 

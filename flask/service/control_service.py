@@ -2,6 +2,8 @@ import os
 import traceback
 
 import requests
+from flask_jwt_extended import get_jwt_identity
+
 from flask import request
 from requests.auth import HTTPDigestAuth
 
@@ -42,11 +44,12 @@ def capture(serial, project, cell, label, path):
         device = db.session.query(Device).filter_by(serial=serial).one()
         task_id = camera.send_capture(
             data={
-                'project':project.id,
+                'project': project.id,
                 'cell': cell.id,
                 'device': device.id,
                 'label': label,
-                'path': path
+                'path': path,
+                'created_by_id':get_jwt_identity()
             }
         )
         return task_id, 200
@@ -109,6 +112,14 @@ def timelapse_start(serial, project, cell, label, run_every, expire_at, debug):
 
 def get_position_range():
     logger.info('Fetch camera min/max range')
+    pass
+
+
+def get_position():
+    pass
+
+
+def get_offset():
     pass
 
 
