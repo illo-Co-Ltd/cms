@@ -1,5 +1,5 @@
 import os
-import datetime
+from datetime import datetime, timedelta
 
 
 class Config(object):
@@ -30,8 +30,8 @@ class DevelopmentConfig(Config):
     JWT_SECRET_KEY = os.getenv('SECRET_KEY')
     JWT_COOKIE_SECURE = False
     JWT_TOKEN_LOCATION = ['headers', 'cookies']
-    JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(minutes=30)
-    JWT_REFRESH_TOKEN_EXPIRES = datetime.timedelta(days=14)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=30)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=14)
     JWT_ACCESS_COOKIE_PATH = '/'
     JWT_REFRESH_COOKIE_PATH = '/'
     JWT_ALGORITHM = 'HS256'

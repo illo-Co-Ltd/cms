@@ -25,17 +25,17 @@ def read_project(**kwargs):
 def create_project(**kwargs):
     logger.info('Register new project')
     try:
+        query = Project.query.filter_by(name=kwargs.get('name')).first()
+        if query is not None:
+            logger.error("Project already exists")
+            return {'message': 'project already exists'}, 409
         kwargs.update({
             'created': datetime.now(timezone.utc).astimezone(),
             'started': datetime.fromisoformat(kwargs.get('started')),
             'ended': datetime.fromisoformat(kwargs.get('ended')) if kwargs.get('ended') else None,
-            'created_by': current_user
+            'created_by': kwargs.get('created_by', current_user)
         })
         project = Project(**kwargs)
-        logger.info(project.created)
-        logger.info(type(project.started))
-        logger.info(project.started)
-        logger.info(project.ended)
         db.session.add(project)
         db.session.commit()
         return {'message': f'Posted project<{kwargs.get("name")}> to db.'}, 201

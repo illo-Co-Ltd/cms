@@ -19,20 +19,25 @@ def read_cell(data):
         raise e
 
 
-def create_cell(data):
+def create_cell(**kwargs):
     logger.info('Register new cell')
     try:
-        pid = db.session.query(Project).filter_by(name=data.get('project')).one().id
+        query = Cell.query.filter_by(name=kwargs.get('name')).first()
+        if query is not None:
+            logger.error("Cell already exists")
+            return {'message': 'Cell already exists'}, 409
+
+        pid = db.session.query(Project).filter_by(name=kwargs.get('project')).one().id
         cell = Cell(
             project_id=pid,
-            type=data.get('type'),
-            detail=data.get('detail'),
-            name=data.get('name'),
-            description=data.get('description')
+            type=kwargs.get('type'),
+            detail=kwargs.get('detail'),
+            name=kwargs.get('name'),
+            description=kwargs.get('description')
         )
         db.session.add(cell)
         db.session.commit()
-        return {'message': f'Posted cell<{data.get("name")}> to db.'}, 201
+        return {'message': f'Posted cell<{kwargs.get("name")}> to db.'}, 201
     except Exception as e:
         db.session.rollback()
         logger.error(e)

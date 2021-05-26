@@ -1,4 +1,4 @@
-import os
+from datetime import datetime, timezone, timedelta
 
 from flask import Flask
 from flask_cors import CORS
@@ -39,7 +39,7 @@ if app.env == 'development':
         create_company({
             'name': 'illo',
             'subscription': True,
-            'expiration_date': datetime.datetime.now() + datetime.timedelta(days=365)
+            'expiration_date': datetime.now() + timedelta(days=365)
         })
         create_user(
             userid='root',
@@ -60,6 +60,25 @@ if app.env == 'development':
             is_deleted=False,
             created_by=root_user,
             edited_by=root_user,
+        )
+        # TODO
+        # for dev
+        from service.data.project_service import create_project
+
+        create_project(
+            name='test',
+            shorthand='test',
+            started=datetime.now(timezone.utc).astimezone().isoformat(),
+            created_by=root_user,
+        )
+        from service.data.cell_service import create_cell
+
+        create_cell(
+            project='test',
+            type='test',
+            detail='test',
+            name='test',
+            description='test'
         )
 
         if __name__ == '__main__':

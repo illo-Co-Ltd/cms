@@ -41,6 +41,8 @@ class Capture(Resource):
     def post(self):
         try:
             return capture(**(request.get_json()))
+        except TypeError as e:
+            api.abort(400, message=f'Wrong field. Check API documentation', reason=str(type(e)))
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
