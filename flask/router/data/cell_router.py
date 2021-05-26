@@ -35,7 +35,7 @@ class Cell(Resource):
     def post(self):
         data = request.get_json()
         try:
-            return create_cell(data)
+            return create_cell(**data)
         except NoResultFound as e:
             api.abort(400, message=f'Cannot find project<{data.get("project")}>.', reason=str(type(e)))
         except Exception as e:
