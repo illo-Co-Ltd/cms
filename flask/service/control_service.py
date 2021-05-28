@@ -226,19 +226,19 @@ def get_delay(serial):
         raise e
 
 
-def set_delay(serial, value):
+def set_delay(serial, delay):
     logger.info('Change movement delay')
     try:
-        logger.info(f'value: {value}')
+        logger.info(f'delay: {delay}')
         device = db.session.query(Device).filter_by(serial=serial).one()
         resp = requests.get(
-            f'http://{device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_dly={value}',
+            f'http://{device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_dly={delay}',
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
         if resp.status_code == 200:
             return {
                        'message': 'Successfully updated delay.',
-                       'result': value
+                       'result': delay
                    }, 200
         else:
             raise CGIException(resp)
@@ -290,19 +290,19 @@ def get_focus(serial):
         raise e
 
 
-def set_focus(serial, value):
+def set_focus(serial, focus):
     logger.info('Update camera focus')
     try:
-        logger.info(f'focus: {value}')
+        logger.info(f'focus: {focus}')
         device = db.session.query(Device).filter_by(serial=serial).one()
         resp = requests.get(
-            f'http://{device.ip}/isp/appispmu.cgi?i_c1_dirfcs={value}&btOK=move',
+            f'http://{device.ip}/isp/appispmu.cgi?i_c1_dirfcs={focus}&btOK=move',
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
         if resp.status_code == 200:
             return {
                        'message': 'Successfully updated camera focus.',
-                       'result': value
+                       'result': focus
                    }, 200
         else:
             raise CGIException(resp)
@@ -336,7 +336,7 @@ def get_led(serial):
 def set_led(serial, led):
     logger.info('Update led brightness')
     try:
-        logger.info(f'value: {led}')
+        logger.info(f'led: {led}')
         device = db.session.query(Device).filter_by(serial=serial).one()
         resp = requests.get(
             f'http://{device.ip}/isp/appispmu.cgi?i_c1_dirled={led}&btOK=run',
