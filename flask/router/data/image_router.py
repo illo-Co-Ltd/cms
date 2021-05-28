@@ -42,6 +42,7 @@ class Image(Resource):
 
     @api.response(201, 'Created')
     @api.response(400, 'Bad Request')
+    @api.response(404, 'No result found for query.')
     @jwt_required()
     def post(self):
         data = request.get_json()
@@ -50,12 +51,13 @@ class Image(Resource):
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except NoResultFound:
-            api.abort(400, message=f'Cannot find result for keys.')
+            api.abort(404, message=f'Cannot find result for keys.')
         except Exception:
             api.abort(500, message='Failed to register image')
 
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
+    @api.response(404, 'No result found for query.')
     @api.expect(parser_path)
     @jwt_required()
     def delete(self):
@@ -65,7 +67,7 @@ class Image(Resource):
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except NoResultFound as e:
-            api.abort(400, message=f'Cannot find image<{args.get("path")}>.', reason=str(type(e)))
+            api.abort(404, message=f'Cannot find image<{args.get("path")}>.', reason=str(type(e)))
         except Exception as e:
             api.abort(500, message='Something went wrong.', reason=str(type(e)))
 
@@ -81,11 +83,14 @@ class ImageMetadata(Resource):
             return read_image_metadata(**parser_metadata.parse_args())
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
+        except NoResultFound:
+            api.abort(404, message=f'Cannot find result for filters.')
         except Exception:
-            api.abort(404)
+            api.abort(500, message='Failed to read metadata')
+
 
     @api.response(201, 'Created')
-    @api.response(400, 'Bad Request')
+    @api.response(404, 'No result found for query.')
     @api.expect(_image_metadata, validate=True)
     @jwt_required()
     def post(self):
@@ -95,6 +100,6 @@ class ImageMetadata(Resource):
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except NoResultFound:
-            api.abort(400, message=f'Cannot find result for keys.')
+            api.abort(404, message=f'Cannot find result for keys.')
         except Exception:
             api.abort(500, message='Failed to register image')

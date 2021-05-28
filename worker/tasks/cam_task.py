@@ -3,6 +3,7 @@ import pytz
 from datetime import datetime
 from contextlib import contextmanager
 import traceback
+import xml.etree.ElementTree as ETree
 
 import celery
 import sqlalchemy
@@ -18,6 +19,7 @@ import cv2
 import numpy as np
 
 from app import app
+from util.exc import CGIException
 from .util import check_and_create, refine_path
 
 logger = get_task_logger(__name__)
@@ -81,21 +83,24 @@ def capture_task(self, data: dict) -> dict:
             f'http://{device.ip}/jpg/',
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
-        '''
-        pos = requests.get(
-            f'http://{device.ip}/jpg/',
-            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
-        )
-        pos_x, pos_y, pos_z =
-        offset = requests.get(
-            f'http://{device.ip}/jpg/',
-            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
-        )
-        offset_x, offset_y,offset_z = 
-        '''
         if resp.status_code != 200:
-            logger.error(resp.text)
-            raise TaskError(resp)
+            raise CGIException(resp)
+        resp2 = requests.get(
+            f'http://{device.ip}/isp/st_d100.xml',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp2.status_code != 200:
+            raise CGIException(resp2)
+        resp2.encoding = None
+        tree = ETree.fromstring(resp2.text)
+        d100 = tree.find('D100')
+        curx = d100.find('CURX').text
+        cury = d100.find('CURY').text
+        curz = d100.find('CURZ').text
+        endx = d100.find('ENDX').text
+        endy = d100.find('ENDY').text
+        endz = d100.find('ENDZ').text
+
         fname = f'{ctime.strftime("%Y-%m-%dT%H-%M-%S-%f")}.jpg'
         fpath = refine_path(f'/data/{data.get("path")}/{fname}')
         logger.info(fpath)
@@ -116,17 +121,17 @@ def capture_task(self, data: dict) -> dict:
                 'created': datetime.utcnow(),
                 'created_by_id': data.get('created_by_id'),
                 'label': data.get('label'),
-                'offset_x': 0,
-                'offset_y': 0,
-                'offset_z': 0,
-                'pos_x': 0,
-                'pos_y': 0,
-                'pos_z': 0
+                'end_x': endx,
+                'end_y': endy,
+                'end_z': endz,
+                'pos_x': curx,
+                'pos_y': cury,
+                'pos_z': curz
             }
             with self.session_scope() as session:
                 session.execute(text(
-                    '''INSERT INTO image(cell_id, path, device_id, created, created_by_id, label, offset_x, offset_y, offset_z, pos_x, pos_y, pos_z)
-                    VALUES(:cell_id, :path, :device_id, :created, :created_by_id, :label, :offset_x, :offset_y, :offset_z, :pos_x, :pos_y, :pos_z)'''),
+                    '''INSERT INTO image(cell_id, path, device_id, created, created_by_id, label, end_x, end_y, end_z, pos_x, pos_y, pos_z)
+                    VALUES(:cell_id, :path, :device_id, :created, :created_by_id, :label, :end_x, :end_y, :end_z, :pos_x, :pos_y, :pos_z)'''),
                     data)
             return fpath
     except TaskError as e:

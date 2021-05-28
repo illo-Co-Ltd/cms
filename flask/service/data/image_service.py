@@ -11,6 +11,7 @@ from model import Image, Cell, Device
 
 from util.logger import logger
 
+
 def read_image(path):
     try:
         fpath = str(pathlib.Path('/data/' + path))
@@ -40,13 +41,20 @@ def delete_image(**kwargs):
         raise e
 
 
-
 def read_image_metadata(**kwargs):
     logger.info('Get image list')
     logger.info(f'Filter: {kwargs}')
     try:
-        condition = {k: v for k, v in kwargs.items() if v is not None}
-        query = db.session.query(Image).filter_by(**condition).all()
+        kwargs.update({
+            'cell': db.session.query(Cell)
+                .filter_by(name=kwargs.get('cell')).one() if kwargs.get('cell') else None,
+            'device': db.session.query(Device)
+                .filter_by(name=kwargs.get('device')).one() if kwargs.get('device') else None,
+            'created': datetime.fromisoformat(kwargs.get('created')) if kwargs.get('created') else None,
+            'path': str(pathlib.Path('/data/' + kwargs.get('path'))) if kwargs.get('path') else None,
+        })
+        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        query = db.session.query(Image).filter_by(**kwargs).all()
         return query
     except Exception as e:
         logger.error(e)
@@ -67,9 +75,9 @@ def create_image_metadata(**kwargs):
             created=now,
             created_by=kwargs.get('created_by', current_user),
             label=kwargs.get('label'),
-            offset_x=kwargs.get('offset_x'),
-            offset_y=kwargs.get('offset_y'),
-            offset_z=kwargs.get('offset_z'),
+            end_x=kwargs.get('end_x'),
+            end_y=kwargs.get('end_y'),
+            end_z=kwargs.get('end_z'),
             pos_x=kwargs.get('pos_x'),
             pos_y=kwargs.get('pos_y'),
             pos_z=kwargs.get('pos_z')
@@ -96,12 +104,12 @@ def update_image_metadata(**kwargs):
             query.device = db.session.query(Device).filter_by(serial=kwargs.get('device')).one()
         if 'label' in kwargs.keys():
             query.label = kwargs.get('label')
-        if 'offset_x' in kwargs.keys():
-            query.offset_x = kwargs.get('offset_x')
-        if 'offset_y' in kwargs.keys():
-            query.offset_y = kwargs.get('offset_y')
-        if 'offset_z' in kwargs.keys():
-            query.offset_z = kwargs.get('offset_z')
+        if 'end_x' in kwargs.keys():
+            query.end_x = kwargs.get('end_x')
+        if 'end_y' in kwargs.keys():
+            query.end_y = kwargs.get('end_y')
+        if 'end_z' in kwargs.keys():
+            query.end_z = kwargs.get('end_z')
         if 'pos_x' in kwargs.keys():
             query.pos_x = kwargs.get('pos_x')
         if 'pos_y' in kwargs.keys():

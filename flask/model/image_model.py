@@ -12,9 +12,9 @@ class Image(db.Model):
         created = db.Column(db.DateTime)
         created_by_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
         label = db.Column(db.String(20, 'utf8mb4_unicode_ci'))
-        offset_x = db.Column(db.Integer)
-        offset_y = db.Column(db.Integer)
-        offset_z = db.Column(db.Integer)
+        end_x = db.Column(db.Integer)
+        end_y = db.Column(db.Integer)
+        end_z = db.Column(db.Integer)
         pos_x = db.Column(db.Integer)
         pos_y = db.Column(db.Integer)
         pos_z = db.Column(db.Integer)
@@ -25,9 +25,9 @@ class Image(db.Model):
         created = db.Column(db.DateTime, nullable=False)
         created_by_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
         label = db.Column(db.String(20, 'utf8mb4_unicode_ci'))
-        offset_x = db.Column(db.Integer, nullable=False)
-        offset_y = db.Column(db.Integer, nullable=False)
-        offset_z = db.Column(db.Integer, nullable=False)
+        end_x = db.Column(db.Integer, nullable=False)
+        end_y = db.Column(db.Integer, nullable=False)
+        end_z = db.Column(db.Integer, nullable=False)
         pos_x = db.Column(db.Integer, nullable=False)
         pos_y = db.Column(db.Integer, nullable=False)
         pos_z = db.Column(db.Integer, nullable=False)
@@ -48,9 +48,9 @@ class Image(db.Model):
             created=self.created,
             created_by=self.created_by,
             label=self.label,
-            offset_x=self.offset_x,
-            offset_y=self.offset_y,
-            offset_z=self.offset_z,
+            end_x=self.end_x,
+            end_y=self.end_y,
+            end_z=self.end_z,
             pos_x=self.pos_x,
             pos_y=self.pos_y,
             pos_z=self.pos_z
