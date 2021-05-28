@@ -1,5 +1,5 @@
 from flask import make_response
-from flask_restplus import Resource
+from flask_restplus import Resource, reqparse
 from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import HTTPException
@@ -10,6 +10,8 @@ from router.dto.control_dto import *
 from worker import camera
 
 api = api_control
+parser = reqparse.RequestParser()
+parser.add_argument('serial', type=str, location='args', required=True)
 
 
 @api.route('/jpeg/<serial>')
@@ -99,6 +101,20 @@ class Range(Resource):
 class Position(Resource):
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
+    @api.expect(parser)
+    @api.marshal_with(PositionDTO.model, mask='x,y,z')
+    @jwt_required()
+    def get(self):
+        try:
+            serial = parser.parse_args().get('serial')
+            return get_position(serial)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
     @api.expect(PositionDTO.model)
     @jwt_required()
     def put(self):
@@ -122,6 +138,7 @@ class Position(Resource):
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
             api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
 
 @api.route('/delay')
 class Delay(Resource):

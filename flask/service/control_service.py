@@ -2,10 +2,10 @@ import os
 import traceback
 
 import requests
-from flask_jwt_extended import get_jwt_identity
-
-from flask import request
 from requests.auth import HTTPDigestAuth
+import xml.etree.ElementTree as ETree
+from flask_jwt_extended import get_jwt_identity
+from flask import request
 
 from model.db_base import db
 from model import Project, Cell, Device
@@ -49,7 +49,7 @@ def capture(serial, project, cell, label, path):
                 'device': device.id,
                 'label': label,
                 'path': path,
-                'created_by_id':get_jwt_identity()
+                'created_by_id': get_jwt_identity()
             }
         )
         return task_id, 200
@@ -115,8 +115,28 @@ def get_position_range():
     pass
 
 
-def get_position():
-    pass
+def get_position(serial):
+    logger.info('Update absolute camera position')
+    try:
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        cgi_d100 = f'http://{device.ip}/isp/st_d100.xml'
+        resp = requests.get(
+            cgi_d100,
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code != 200:
+            raise CGIException(resp)
+        resp.encoding = None
+        tree = ETree.fromstring(resp.text)
+        d100 = tree.find('D100')
+        curx = d100.find('CURX').text
+        cury = d100.find('CURY').text
+        curz = d100.find('CURZ').text
+        return {'x': curx, 'y': cury, 'z': curz}
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
 
 
 def get_offset():
@@ -126,7 +146,6 @@ def get_offset():
 def set_position(serial, x, y, z):
     logger.info('Update absolute camera position')
     try:
-
         logger.info('newpos: ', {"x": x, "y": y, "z": z})
         device = db.session.query(Device).filter_by(serial=serial).one()
         resp = requests.get(
