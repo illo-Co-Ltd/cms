@@ -226,6 +226,20 @@ class Focus(Resource):
 class Led(Resource):
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
+    @api.expect(parser)
+    @api.marshal_with(LedDTO.model, mask='led')
+    @jwt_required()
+    def get(self):
+        try:
+            serial = parser.parse_args().get('serial')
+            return get_led(serial)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
     @api.expect(LedDTO.model)
     @jwt_required()
     def put(self):

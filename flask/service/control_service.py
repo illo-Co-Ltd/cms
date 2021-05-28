@@ -311,20 +311,41 @@ def set_focus(serial, value):
         logger.debug(traceback.format_exc())
         raise e
 
+def get_led(serial):
+    logger.info('Get led brightness')
+    try:
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        cgi_c100 = f'http://{device.ip}/isp/st_c100.xml'
+        resp = requests.get(
+            cgi_c100,
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code != 200:
+            raise CGIException(resp)
+        resp.encoding = None
+        tree = ETree.fromstring(resp.text)
+        c100 = tree.find('C100')
+        led= c100.find('CURLED').text
+        return {'led': led}
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
 
-def set_led(serial, value):
+
+def set_led(serial, led):
     logger.info('Update led brightness')
     try:
-        logger.info(f'value: {value}')
+        logger.info(f'value: {led}')
         device = db.session.query(Device).filter_by(serial=serial).one()
         resp = requests.get(
-            f'http://{device.ip}/isp/appispmu.cgi?i_c1_dirled={value}&btOK=run',
+            f'http://{device.ip}/isp/appispmu.cgi?i_c1_dirled={led}&btOK=run',
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
         if resp.status_code == 200:
             return {
                        'message': 'Successfully updated led brightness.',
-                       'result': value
+                       'result': led
                    }, 200
         else:
             raise CGIException(resp)

@@ -63,7 +63,7 @@ class LedDTO:
     api = api_control
     model = api.model('led', {
         'serial': fields.String(required=True, description='Target device'),
-        'value': fields.Integer(required=True, description='Led brightness value', min=0, max=255),
+        'led': fields.Integer(required=True, description='Led brightness value', min=0, max=255),
     })
 
 
