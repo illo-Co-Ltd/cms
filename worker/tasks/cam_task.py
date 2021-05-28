@@ -18,7 +18,7 @@ import cv2
 import numpy as np
 
 from app import app
-from .util import check_and_create
+from .util import check_and_create, refine_path
 
 logger = get_task_logger(__name__)
 engine = None
@@ -97,7 +97,8 @@ def capture_task(self, data: dict) -> dict:
             logger.error(resp.text)
             raise TaskError(resp)
         fname = f'{ctime.strftime("%Y-%m-%dT%H-%M-%S-%f")}.jpg'
-        fpath = f'/data/{data.get("path")}/{fname}'
+        fpath = refine_path(f'/data/{data.get("path")}/{fname}')
+        logger.info(fpath)
         check_and_create(os.path.dirname(fpath))
 
         img = cv2.imdecode(np.frombuffer(resp.content, dtype=np.uint8), -1)
@@ -106,6 +107,8 @@ def capture_task(self, data: dict) -> dict:
             raise TaskError('Nothing written by cv2')
         else:
             # save metadata to db
+            # TODO
+            # fpath 포맷 한번 필터링하기
             data = {
                 'cell_id': data.get('cell'),
                 'path': fpath,

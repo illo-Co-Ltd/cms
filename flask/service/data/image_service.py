@@ -1,4 +1,5 @@
 import os
+import pathlib
 import traceback
 from datetime import datetime
 
@@ -12,8 +13,10 @@ from util.logger import logger
 
 def read_image(path):
     try:
-        if os.path.isfile(path):
-            return send_file('/data/' + path, mimetype='image/jpg')
+        fpath = str(pathlib.Path('/data/' + path))
+        if os.path.isfile(fpath):
+            logger.info(f'Reading image at {fpath}')
+            return send_file(fpath, mimetype='image/jpg')
         else:
             raise FileNotFoundError
     except Exception as e:

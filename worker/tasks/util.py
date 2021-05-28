@@ -1,4 +1,8 @@
 import os
+import pathlib
+
+def refine_path(path):
+    return str(pathlib.Path(path))
 
 
 def check_and_create(dirname):

@@ -2,6 +2,7 @@ from flask import request, send_file
 from flask_restplus import Resource, reqparse
 from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
+from werkzeug.exceptions import BadRequest, HTTPException
 
 from router.dto.data_dto import ImageMetadataDTO
 from service.data.image_service import *
@@ -32,7 +33,9 @@ class Image(Resource):
     def get(self):
         try:
             return read_image(parser_path.parse_args().get('path'))
-        except NoResultFound as e:
+        except HTTPException as e:
+            api.abort(e.code, message='Need a path field in query string', reason=str(type(e)))
+        except FileNotFoundError as e:
             api.abort(404, message=f'Cannot find image.', reason=str(type(e)))
         except Exception as e:
             api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
@@ -44,6 +47,8 @@ class Image(Resource):
         data = request.get_json()
         try:
             return create_image(data)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
         except NoResultFound:
             api.abort(400, message=f'Cannot find result for keys.')
         except Exception:
@@ -57,6 +62,8 @@ class Image(Resource):
         try:
             args = parser_path.parse_args()
             return delete_image(**args)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
         except NoResultFound as e:
             api.abort(400, message=f'Cannot find image<{args.get("path")}>.', reason=str(type(e)))
         except Exception as e:
@@ -67,11 +74,13 @@ class Image(Resource):
 class ImageMetadata(Resource):
     @api.response(404, 'No result found for query.')
     @api.marshal_list_with(_image_metadata, envelope='data')
+    @api.expect(parser_metadata)
     @jwt_required()
     def get(self):
         try:
-            return read_image_metadata({
-            })
+            return read_image_metadata(**parser_metadata.parse_args())
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception:
             api.abort(404)
 
@@ -83,6 +92,8 @@ class ImageMetadata(Resource):
         data = request.get_json()
         try:
             return create_image_metadata(**data)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
         except NoResultFound:
             api.abort(400, message=f'Cannot find result for keys.')
         except Exception:
