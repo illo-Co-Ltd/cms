@@ -110,13 +110,32 @@ def timelapse_start(serial, project, cell, label, run_every, expire_at, debug):
         raise e
 
 
-def get_position_range():
-    logger.info('Fetch camera min/max range')
-    pass
+def get_position_range(serial):
+    logger.info('Get camera max position')
+    try:
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        cgi_d100 = f'http://{device.ip}/isp/st_d100.xml'
+        resp = requests.get(
+            cgi_d100,
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code != 200:
+            raise CGIException(resp)
+        resp.encoding = None
+        tree = ETree.fromstring(resp.text)
+        d100 = tree.find('D100')
+        endx = d100.find('ENDX').text
+        endy = d100.find('ENDY').text
+        endz = d100.find('ENDZ').text
+        return {'x': endx, 'y': endy, 'z': endz}
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
 
 
 def get_position(serial):
-    logger.info('Update absolute camera position')
+    logger.info('Get absolute camera position')
     try:
         device = db.session.query(Device).filter_by(serial=serial).one()
         cgi_d100 = f'http://{device.ip}/isp/st_d100.xml'

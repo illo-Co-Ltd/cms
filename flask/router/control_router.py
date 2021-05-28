@@ -87,10 +87,14 @@ class Timelapse(Resource):
 class Range(Resource):
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
+    @api.expect(parser)
     @jwt_required()
     def get(self):
         try:
-            return get_position_range()
+            serial = parser.parse_args().get('serial')
+            return get_position_range(serial)
+        except NoResultFound as e:
+            api.abort(404, message=f'Cannot find device.', reason=str(type(e)))
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
@@ -108,6 +112,8 @@ class Position(Resource):
         try:
             serial = parser.parse_args().get('serial')
             return get_position(serial)
+        except NoResultFound as e:
+            api.abort(404, message=f'Cannot find device.', reason=str(type(e)))
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
