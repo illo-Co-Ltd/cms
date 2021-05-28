@@ -55,7 +55,7 @@ class FocusDTO:
     api = api_control
     model = api.model('focus', {
         'serial': fields.String(required=True, description='Target device'),
-        'value': fields.Integer(required=True, description='Focus value', min=0, max=255),
+        'focus': fields.Integer(required=True, description='Focus value', min=0, max=255),
     })
 
 
@@ -71,7 +71,7 @@ class DelayDTO:
     api = api_control
     model = api.model('delay', {
         'serial': fields.String(required=True, description='Target device'),
-        'value': fields.Integer(required=True, description='Movement delay', min=0, max=9999),
+        'delay': fields.Integer(required=True, description='Movement delay', min=0, max=9999),
     })
 
 

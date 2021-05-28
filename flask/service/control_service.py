@@ -158,10 +158,6 @@ def get_position(serial):
         raise e
 
 
-def get_offset():
-    pass
-
-
 def set_position(serial, x, y, z):
     logger.info('Update absolute camera position')
     try:
@@ -208,6 +204,28 @@ def offset_position(serial, x, y, z):
         raise e
 
 
+def get_delay(serial):
+    logger.info('Get camera movement delay')
+    try:
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        cgi_d100 = f'http://{device.ip}/isp/st_d100.xml'
+        resp = requests.get(
+            cgi_d100,
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code != 200:
+            raise CGIException(resp)
+        resp.encoding = None
+        tree = ETree.fromstring(resp.text)
+        d100 = tree.find('D100')
+        delay = d100.find('DLY').text
+        return {'delay': delay}
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+
 def set_delay(serial, value):
     logger.info('Change movement delay')
     try:
@@ -244,6 +262,28 @@ def autofocus(serial):
                    }, 200
         else:
             raise CGIException(resp)
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+
+def get_focus(serial):
+    logger.info('Get camera focus')
+    try:
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        cgi_c100 = f'http://{device.ip}/isp/st_c100.xml'
+        resp = requests.get(
+            cgi_c100,
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code != 200:
+            raise CGIException(resp)
+        resp.encoding = None
+        tree = ETree.fromstring(resp.text)
+        c100 = tree.find('C100')
+        focus = c100.find('CURFCS').text
+        return {'focus': focus}
     except Exception as e:
         logger.error(e)
         logger.debug(traceback.format_exc())

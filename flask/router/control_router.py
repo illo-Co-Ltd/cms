@@ -150,6 +150,20 @@ class Position(Resource):
 class Delay(Resource):
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
+    @api.expect(parser)
+    @api.marshal_with(DelayDTO.model, mask='delay')
+    @jwt_required()
+    def get(self):
+        try:
+            serial = parser.parse_args().get('serial')
+            return get_delay(serial)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
     @api.expect(DelayDTO.model)
     @jwt_required()
     def put(self):
@@ -180,6 +194,20 @@ class AutoFocus(Resource):
 
 @api.route('/focus')
 class Focus(Resource):
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.expect(parser)
+    @api.marshal_with(FocusDTO.model, mask='focus')
+    @jwt_required()
+    def get(self):
+        try:
+            serial = parser.parse_args().get('serial')
+            return get_focus(serial)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
     @api.expect(FocusDTO.model)
