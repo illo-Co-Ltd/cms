@@ -330,8 +330,8 @@ def offset_focus(serial, focus):
         c100 = tree.find('C100')
         current = int(c100.find('CURFCS').text)
         target = current+focus
-        if target<0:
-            target=0
+        if target<1:
+            target=1
         if target>255:
             target=255
         # update
