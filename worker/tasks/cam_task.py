@@ -19,7 +19,6 @@ import cv2
 import numpy as np
 
 from app import app
-from util.exc import CGIException
 from .util import check_and_create, refine_path
 
 logger = get_task_logger(__name__)
@@ -84,13 +83,13 @@ def capture_task(self, data: dict) -> dict:
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
         if resp.status_code != 200:
-            raise CGIException(resp)
+            raise TaskError(resp)
         resp2 = requests.get(
             f'http://{device.ip}/isp/st_d100.xml',
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
         if resp2.status_code != 200:
-            raise CGIException(resp2)
+            raise TaskError(resp2)
         resp2.encoding = None
         tree = ETree.fromstring(resp2.text)
         d100 = tree.find('D100')

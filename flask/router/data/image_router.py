@@ -66,8 +66,10 @@ class Image(Resource):
             return delete_image(**args)
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
-        except NoResultFound as e:
+        except FileNotFoundError as e:
             api.abort(404, message=f'Cannot find image<{args.get("path")}>.', reason=str(type(e)))
+        except NoResultFound as e:
+            api.abort(404, message=f'Cannot find imagemetadata with <{args.get("path")}>.', reason=str(type(e)))
         except Exception as e:
             api.abort(500, message='Something went wrong.', reason=str(type(e)))
 

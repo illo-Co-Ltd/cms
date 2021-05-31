@@ -31,10 +31,17 @@ def create_image(path):
 
 
 def delete_image(**kwargs):
-    logger.info('Delete image file')
-    logger.info(f'Args: {kwargs}')
     try:
-        os.remove()
+        fpath = str(pathlib.Path('/data/' + kwargs.get('path')))
+        logger.info(f'Deleting image at {fpath}')
+        if os.path.isfile(fpath):
+            os.remove(fpath)
+            db.session.query(Image)\
+                .filter_by(path=fpath).delete()
+            db.session.commit()
+        else:
+            logger.info(f'Cannot find {fpath}')
+            raise FileNotFoundError
     except Exception as e:
         logger.error(e),
         logger.debug(traceback.format_exc())
