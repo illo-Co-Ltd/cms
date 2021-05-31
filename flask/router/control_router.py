@@ -215,6 +215,19 @@ class Focus(Resource):
     def put(self):
         try:
             data = request.get_json()
+            return offset_focus(**data)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.expect(FocusDTO.model)
+    @jwt_required()
+    def post(self):
+        try:
+            data = request.get_json()
             return set_focus(**data)
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
