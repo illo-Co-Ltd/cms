@@ -329,16 +329,20 @@ def offset_focus(serial, focus):
         tree = ETree.fromstring(resp.text)
         c100 = tree.find('C100')
         current = int(c100.find('CURFCS').text)
-
+        target = current+focus
+        if target<0:
+            target=0
+        if target>255:
+            target=255
         # update
         resp = requests.get(
-            f'http://{device.ip}/isp/appispmu.cgi?i_c1_dirfcs={str(current + focus)}&btOK=move',
+            f'http://{device.ip}/isp/appispmu.cgi?i_c1_dirfcs={str(target)}&btOK=move',
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
         if resp.status_code == 200:
             return {
                        'message': 'Successfully updated camera focus.',
-                       'result': current + focus
+                       'result': target
                    }, 200
         else:
             raise CGIException(resp)
