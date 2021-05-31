@@ -80,3 +80,10 @@ class SimpleSerialDTO:
     model = api.model('serial', {
         'serial': fields.String(required=True, description='Target device'),
     })
+
+class CGIDTO:
+    api = api_control
+    model = api.model('cgi', {
+        'serial': fields.String(required=True, description='Target device'),
+        'cgi': fields.String(required=True, description='cgi(after ip)'),
+    })

@@ -1,4 +1,4 @@
-from flask import make_response
+from flask import make_response, request
 from flask_restplus import Resource, reqparse
 from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
@@ -275,6 +275,21 @@ class Stop(Resource):
         try:
             data = request.get_json()
             return stop(**data)
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
+@api.route('/cgi')
+class CGI(Resource):
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.expect(CGIDTO.model)
+    @jwt_required()
+    def post(self):
+        try:
+            data = request.get_json()
+            return raw_cgi(**data)
         except HTTPException as e:
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:

@@ -2,10 +2,10 @@ import os
 import traceback
 
 import requests
+from flask import make_response
 from requests.auth import HTTPDigestAuth
 import xml.etree.ElementTree as ETree
 from flask_jwt_extended import get_jwt_identity
-from flask import request
 
 from model.db_base import db
 from model import Project, Cell, Device
@@ -329,11 +329,11 @@ def offset_focus(serial, focus):
         tree = ETree.fromstring(resp.text)
         c100 = tree.find('C100')
         current = int(c100.find('CURFCS').text)
-        target = current+focus
-        if target<1:
-            target=1
-        if target>255:
-            target=255
+        target = current + focus
+        if target < 1:
+            target = 1
+        if target > 255:
+            target = 255
         # update
         resp = requests.get(
             f'http://{device.ip}/isp/appispmu.cgi?i_c1_dirfcs={str(target)}&btOK=move',
@@ -410,6 +410,22 @@ def stop(serial):
                    }, 200
         else:
             raise CGIException(resp)
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+
+def raw_cgi(serial, cgi):
+    logger.info('Send raw cgi')
+    try:
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        resp = requests.get(
+            f'http://{device.ip}{cgi}',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        #return make_response(resp.text, resp.status_code, resp.headers.items())
+        return make_response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(e)
         logger.debug(traceback.format_exc())

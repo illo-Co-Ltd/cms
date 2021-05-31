@@ -1,12 +1,22 @@
 from flask import request
-from flask_restplus import Resource
+from flask_restplus import Resource, reqparse
 from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
 
 from router.dto.data_dto import CellDTO
-from service.data.cell_service import create_cell, read_cell
+from service.data.cell_service import *
 
 api = CellDTO.api
+
+parser_get = reqparse.RequestParser()
+parser_get.add_argument('model', type=str, location='args')
+parser_get.add_argument('serial', type=str, location='args')
+parser_get.add_argument('company', type=str, location='args')
+parser_get.add_argument('owner', type=str, location='args')
+parser_get.add_argument('ip', type=str, location='args')
+
+parser_delete = reqparse.RequestParser()
+parser_delete.add_argument('serial', type=str, location='args', required=True)
 
 
 @api.route('/cell')
@@ -43,13 +53,7 @@ class Cell(Resource):
 
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
-    @api.doc(params={
-        'name': 'Key to find cell(required)',
-        'project': 'New project',
-        'type': 'New type',
-        'detail': 'New detail',
-        'description': 'New description',
-    })
+    @api.expect(CellDTO.model, validate=True)
     @jwt_required()
     def put(self):
         data = request.get_json()
@@ -62,9 +66,6 @@ class Cell(Resource):
 
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
-    @api.doc(params={
-        'name': 'Key to find cell(required)',
-    })
     @jwt_required()
     def delete(self):
         data = request.get_json()
