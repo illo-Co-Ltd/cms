@@ -1,7 +1,6 @@
 from datetime import datetime
 import traceback
-from sqlalchemy.orm.exc import NoResultFound
-from flask_jwt_extended import get_jwt_identity, current_user
+from flask_jwt_extended import current_user
 
 from model.db_base import db
 from model import User, Company
@@ -13,8 +12,11 @@ def read_user(**kwargs):
     logger.info('Get user list')
     logger.info(f'Filter: {kwargs}')
     try:
-        condition = {k: v for k, v in kwargs.items() if v is not None}
-        query = db.session.query(User).filter_by(**condition).all()
+        kwargs.update({
+            'company': Company.query.filter_by(name=kwargs.get('company')).first(),
+        })
+        kwargs= {k: v for k, v in kwargs.items() if v is not None}
+        query = db.session.query(User).filter_by(**kwargs).all()
         return query
     except Exception as e:
         logger.error(e)
