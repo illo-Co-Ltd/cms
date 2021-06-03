@@ -1,7 +1,13 @@
 import traceback
 
+from celery import Signature
+
 from .taskmanager import celery_app
 from util import logger
+
+
+def test_connection():
+    return celery_app.send_task('test_task.connection_test', args=['Hello']).get()
 
 
 def send_capture(data: dict):
@@ -26,3 +32,13 @@ def send_stop_timelapse(key):
     except Exception as e:
         logger.error(traceback.format_exc())
         raise e
+
+
+def chain_test():
+    celery_app.send_task(
+        'cam_task.test1',
+        chain=[
+            Signature('cam_task.test2'),
+            Signature('cam_task.test3')
+        ]
+    )

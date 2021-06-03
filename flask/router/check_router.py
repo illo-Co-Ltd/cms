@@ -1,11 +1,12 @@
-from flask import Blueprint, jsonify, current_app
+from flask import current_app
 from flask_jwt_extended import jwt_required
 from flask_restplus import Resource, Namespace
 
+from router.dto.status_dto import api_status
 from util.logger import logger
-from tasks import cam_task
+from service.celery import camera
 
-api = Namespace('check', description='Status check API')
+api = api_status
 
 
 # sanity check route
@@ -14,8 +15,8 @@ api = Namespace('check', description='Status check API')
 class Health(Resource):
     @api.doc('Check backend health')
     def get(self):
-        logger.info("This is root url.")
-        return {'msg': 'Server is ok.'}
+        logger.info("Health checking")
+        return {'msg': 'Server online'}
 
 
 @api.route('/config')
@@ -23,8 +24,13 @@ class Health(Resource):
 class Config(Resource):
     @api.doc('Check flask config')
     def get(self):
-        logger.info("This is config check url.")
-        return dict(current_app.config)
+        logger.info('Checking config')
+        # TODO
+        # 권한에 따라 다르게 동작하도록 변경
+        if current_app.config['ENV'] == 'development':
+            return {k:str(v) for k,v in current_app.config.items()}
+        else:
+            return None
 
 
 @api.route('/celery')
@@ -33,8 +39,7 @@ class Celery(Resource):
     @api.doc('Check celery status')
     def get(self):
         logger.info("This is celery check url.")
-        task_id = cam_task.add(1, 2, 1)
-        return task_id
+        return camera.test_connection()
 
 
 @api.route('/test')
@@ -42,5 +47,5 @@ class Celery(Resource):
 class Test(Resource):
     @api.doc('test func')
     def get(self):
-        from model import Cell
-        return Cell.query.one().to_dict()
+        from service.celery.camera import chain_test
+        return chain_test()

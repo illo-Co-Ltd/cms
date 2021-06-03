@@ -38,6 +38,14 @@ class M2Task(celery.Task):
         finally:
             session.close()
 
+    @property
+    def device(self):
+        with self.session_scope() as session:
+            return session.execute(
+                text("SELECT * FROM device WHERE id=:device_id"),
+                {'device_id': self.data.get('device')}
+            ).fetchone()
+
     def on_success(self, retval, task_id, args, kwargs):
         logger.info(f'Successfully processed <Task {task_id}>.')
 
@@ -72,21 +80,18 @@ def worker_shutdown_handler(**kwargs):
 @app.task(name='cam_task.capture_task', base=M2Task, bind=True)
 def capture_task(self, data: dict) -> dict:
     try:
+        self.data = data
         ctime = datetime.now(pytz.timezone("Asia/Seoul"))
-        with self.session_scope() as session:
-            device = session.execute(
-                text("SELECT * FROM device WHERE id=:device_id"),
-                {'device_id': data.get('device')}
-            ).fetchone()
+
         resp = requests.get(
-            f'http://{device.ip}/jpg/',
-            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+            f'http://{self.device.ip}/jpg/',
+            auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
         )
         if resp.status_code != 200:
             raise TaskError(resp)
         resp2 = requests.get(
-            f'http://{device.ip}/isp/st_d100.xml',
-            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+            f'http://{self.device.ip}/isp/st_d100.xml',
+            auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
         )
         if resp2.status_code != 200:
             raise TaskError(resp2)
@@ -111,8 +116,6 @@ def capture_task(self, data: dict) -> dict:
             raise TaskError('Nothing written by cv2')
         else:
             # save metadata to db
-            # TODO
-            # fpath 포맷 한번 필터링하기
             data = {
                 'cell_id': data.get('cell'),
                 'path': fpath,
@@ -164,3 +167,24 @@ def stop_timelapse_task(key: str) -> bool:
     except Exception as e:
         logger.error(traceback.format_exc())
         raise TaskError(e)
+
+
+@app.task(name='cam_task.test1', )
+def test1(*args, **kwargs):
+    logger.info(f'args: {args}')
+    logger.info(f'kwargs: {kwargs}')
+    logger.info('Test task 1')
+
+
+@app.task(name='cam_task.test2')
+def test2(*args, **kwargs):
+    logger.info(f'args: {args}')
+    logger.info(f'kwargs: {kwargs}')
+    logger.info('Test task 2')
+
+
+@app.task(name='cam_task.test3')
+def test3(*args, **kwargs):
+    logger.info(f'args: {args}')
+    logger.info(f'kwargs: {kwargs}')
+    logger.info('Test task 3')

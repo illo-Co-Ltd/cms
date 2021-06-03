@@ -1,4 +1,4 @@
-from flask import make_response, request
+from flask import request
 from flask_restplus import Resource, reqparse
 from flask_jwt_extended import jwt_required
 from sqlalchemy.orm.exc import NoResultFound
@@ -7,7 +7,7 @@ from werkzeug.exceptions import HTTPException
 from service.control_service import *
 
 from router.dto.control_dto import *
-from worker import camera
+from service.celery import camera
 
 api = api_control
 parser = reqparse.RequestParser()

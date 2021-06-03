@@ -1,4 +1,3 @@
-import os
 import traceback
 
 import requests
@@ -9,7 +8,7 @@ from flask_jwt_extended import get_jwt_identity
 
 from model.db_base import db
 from model import Project, Cell, Device
-from worker import camera
+from service.celery import camera
 from util.logger import logger
 from util.exc import CGIException
 

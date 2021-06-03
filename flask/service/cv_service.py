@@ -1,6 +1,6 @@
 import traceback
 
-from worker import cv
+from service.celery import cv
 from util.logger import logger
 
 

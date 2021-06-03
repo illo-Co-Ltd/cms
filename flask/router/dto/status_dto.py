@@ -13,19 +13,19 @@ class FlaskStatusDTO:
 class FlaskConfigDTO:
     api = api_status
     config = api.model('config', {
-        'name': fields.String(required=True, description='Flask config'),
+        'test': fields.String(required=True, description='test'),
     })
 
 
 class CeleryStatusDTO:
     api = api_status
     status = api.model('celery_status', {
-        'name': fields.String(required=True, description='Flask status for healthcheck'),
+        'alive': fields.Boolean(required=True, description='Connection status'),
     })
 
 
 class DeviceStatusDTO:
     api = api_status
     status = api.model('device_status', {
-        'name': fields.String(required=True, description='Name of the company'),
+        'alive': fields.Boolean(required=True, description='Connection status'),
     })

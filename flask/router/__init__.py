@@ -11,6 +11,7 @@ from .data.company_router import api as _
 from .auth_router import api as _
 from .control_router import api as _
 from .explorer_router import api as _
+from .check_router import api as api_check
 
 from router.dto.data_dto import api_data
 from router.dto.auth_dto import api_auth
@@ -29,4 +30,4 @@ api.add_namespace(api_control, path='/control')
 # File explorer API
 api.add_namespace(api_explorer, path='/explorer')
 # Status check
-#api.add_namespace(api_status, path='/status')
+api.add_namespace(api_status, path='/status')
