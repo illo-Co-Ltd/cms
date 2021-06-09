@@ -45,8 +45,8 @@ class PositionDTO:
     api = api_control
     model = api.model('position', {
         'serial': fields.String(required=True, description='Target device'),
-        'x': fields.Integer(required=True, description='x position of camera'),
-        'y': fields.Integer(required=True, description='y position of camera'),
+        'x': fields.Integer(required=False, description='x position of camera'),
+        'y': fields.Integer(required=False, description='y position of camera'),
         'z': fields.Integer(required=False, description='z position of camera'),
     })
 

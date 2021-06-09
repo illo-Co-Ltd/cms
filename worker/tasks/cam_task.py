@@ -174,8 +174,10 @@ def stop_timelapse_task(key: str) -> bool:
 def move_task(self, did, x, y, z) -> dict:
     try:
         self.did = did
+        base = f'http://{self.device.ip}/isp/appispmu.cgi?btOK=submit'
+        params = [f'&i_mt_dir{k}={v}' if v is not None else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
         resp = requests.get(
-            f'http://{self.device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_dirx={x}&i_mt_diry={y}&i_mt_dirz={z}',
+            base + ''.join(params),
             auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
         )
         if resp.status_code != 200:
@@ -188,8 +190,10 @@ def move_task(self, did, x, y, z) -> dict:
 def offset_task(self, did, x, y, z) -> dict:
     try:
         self.did = did
+        base = f'http://{self.device.ip}/isp/appispmu.cgi?btOK=submit'
+        params = [f'&i_mt_dir{k}={v}' if v is not None else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
         resp = requests.get(
-            f'http://{self.device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_incx={x}&i_mt_incy={y}&i_mt_incz={z}',
+            base + ''.join(params),
             auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
         )
         if resp.status_code != 200:

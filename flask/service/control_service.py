@@ -43,6 +43,7 @@ def capture(serial, project, cell, label, path):
             .filter_by(project=project) \
             .filter_by(name=cell).one()
         device = db.session.query(Device).filter_by(serial=serial).one()
+        set_position(device.serial, None, None, device.last_z)
         task_id = camera.send_capture(
             data={
                 'project': project.id,
@@ -156,9 +157,9 @@ def get_position(serial):
         resp.encoding = None
         tree = ETree.fromstring(resp.text)
         d100 = tree.find('D100')
-        curx = d100.find('CURX').text
-        cury = d100.find('CURY').text
-        curz = d100.find('CURZ').text
+        curx = int(d100.find('CURX').text)
+        cury = int(d100.find('CURY').text)
+        curz = int(d100.find('CURZ').text)
         return {'x': curx, 'y': cury, 'z': curz}
     except Exception as e:
         logger.error(e)
@@ -166,24 +167,28 @@ def get_position(serial):
         raise e
 
 
-def set_position(serial, x, y, z):
+def set_position(serial, x=None, y=None, z=None):
     logger.info('Update absolute camera position')
     try:
-        logger.info('newpos: ', {"x": x, "y": y, "z": z})
+        args = {"x": x, "y": y, "z": z}
+        logger.info('newpos: ', args)
+        args = {k: v for k, v in args.items() if v is not None}
         device = db.session.query(Device).filter_by(serial=serial).one()
         base = f'http://{device.ip}/isp/appispmu.cgi?btOK=submit'
-        params = [f'&i_mt_dir{k}={v}' if v is not None else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
+        query = [f'&i_mt_dir{k}={v}' if v is not None else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
         resp = requests.get(
-            base + ''.join(params),
+            base + ''.join(query),
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
         # logger.info(resp.text)
         if resp.status_code == 200:
             device.last_z = z
             db.session.commit()
+            curpos = get_position(serial)
+            curpos.update(args)
             return {
                        'message': 'Successfully updated camera position.',
-                       'result': {"x": x, "y": y, "z": z}
+                       'result': curpos
                    }, 200
         else:
             raise CGIException(resp)
@@ -193,38 +198,32 @@ def set_position(serial, x, y, z):
         raise e
 
 
-def offset_position(serial, x, y, z):
+def offset_position(serial, x=0, y=0, z=0):
     logger.info('Update relative camera position')
     try:
         logger.info('offset: ' + str({"x": x, "y": y, "z": z}))
         device = db.session.query(Device).filter_by(serial=serial).one()
         base = f'http://{device.ip}/isp/appispmu.cgi?btOK=submit'
-        params = [f'&i_mt_inc{k}={v}' if v is not None else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
+        params = [f'&i_mt_inc{k}={v}' if v != 0 else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
         resp = requests.get(
             base + ''.join(params),
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
-
-        # Get current Z
-        resp2 = requests.get(
-            f'http://{device.ip}/isp/st_d100.xml',
-            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        curpos = get_position(serial)
+        curpos.update(
+            {
+                'x': curpos.get('x') + x,
+                'y': curpos.get('y') + y,
+                'z': curpos.get('z') + z,
+            }
         )
-        if resp2.status_code != 200:
-            raise CGIException(resp2)
-        resp2.encoding = None
-        tree = ETree.fromstring(resp2.text)
-        d100 = tree.find('D100')
-        curx = d100.find('CURX').text
-        cury = d100.find('CURY').text
-        curz = d100.find('CURZ').text
 
         if resp.status_code == 200:
-            device.last_z = curz
+            device.last_z = curpos.get('z')
             db.session.commit()
             return {
                        'message': 'Successfully updated camera position.',
-                       'result': {"x": curx, "y": cury, "z": curz}
+                       'result': curpos
                    }, 200
         else:
             raise CGIException(resp)
