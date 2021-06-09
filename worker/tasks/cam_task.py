@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ETree
 
 import celery
 import sqlalchemy
+from celery import chain, group
 from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 from celery.signals import worker_process_init, worker_process_shutdown
@@ -43,7 +44,7 @@ class M2Task(celery.Task):
         with self.session_scope() as session:
             return session.execute(
                 text("SELECT * FROM device WHERE id=:device_id"),
-                {'device_id': self.data.get('device')}
+                {'device_id': self.did}
             ).fetchone()
 
     def on_success(self, retval, task_id, args, kwargs):
@@ -169,22 +170,48 @@ def stop_timelapse_task(key: str) -> bool:
         raise TaskError(e)
 
 
-@app.task(name='cam_task.test1', )
-def test1(*args, **kwargs):
+@app.task(name='cam_task.move_task', base=M2Task, bind=True)
+def move_task(self, did, x, y, z) -> dict:
+    try:
+        self.did = did
+        resp = requests.get(
+            f'http://{self.device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_dirx={x}&i_mt_diry={y}&i_mt_dirz={z}',
+            auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
+        )
+        if resp.status_code != 200:
+            raise TaskError(resp)
+    except TaskError as e:
+        raise e
+
+
+@app.task(name='cam_task.offset_task', base=M2Task, bind=True)
+def offset_task(self, did, x, y, z) -> dict:
+    try:
+        self.did = did
+        resp = requests.get(
+            f'http://{self.device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_incx={x}&i_mt_incy={y}&i_mt_incz={z}',
+            auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
+        )
+        if resp.status_code != 200:
+            raise TaskError(resp)
+    except TaskError as e:
+        raise e
+
+
+@app.task(name='cam_task.test_callback')
+def test_callback(*args, **kwargs):
+    logger.info('Test callback')
     logger.info(f'args: {args}')
     logger.info(f'kwargs: {kwargs}')
-    logger.info('Test task 1')
+    return args
 
 
-@app.task(name='cam_task.test2')
-def test2(*args, **kwargs):
+@app.task(name='cam_task.test4', )
+def test4(*args, **kwargs):
     logger.info(f'args: {args}')
     logger.info(f'kwargs: {kwargs}')
-    logger.info('Test task 2')
-
-
-@app.task(name='cam_task.test3')
-def test3(*args, **kwargs):
-    logger.info(f'args: {args}')
-    logger.info(f'kwargs: {kwargs}')
-    logger.info('Test task 3')
+    group_tasks = [app.signature(f'cam_task.test{i + 1}') for i in range(3)]
+    async_result = chain(
+        group(group_tasks), test_callback.s()
+    ).apply_async()
+    logger.info(async_result)

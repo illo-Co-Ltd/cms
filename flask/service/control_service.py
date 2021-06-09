@@ -1,4 +1,5 @@
 import traceback
+import xml.etree.ElementTree as ETree
 
 import requests
 from flask import make_response
@@ -9,6 +10,7 @@ from flask_jwt_extended import get_jwt_identity
 from model.db_base import db
 from model import Project, Cell, Device
 from service.celery import camera
+from service.celery.taskmanager import celery_app
 from util.logger import logger
 from util.exc import CGIException
 
@@ -58,6 +60,13 @@ def capture(serial, project, cell, label, path):
         logger.error(e)
         logger.debug(traceback.format_exc())
         raise e
+
+
+def add_schedule():  # serial, project, cell, start_at, end_at, start_x, start_y, end_x, end_y, z):
+    logger.info('Add capture schedule')
+    name = 'cam_task.test4'
+    task = celery_app.send_task(name)
+    return task.get()
 
 
 def timelapse_start(serial, project, cell, label, run_every, expire_at, debug):
@@ -168,6 +177,8 @@ def set_position(serial, x, y, z):
         )
         # logger.info(resp.text)
         if resp.status_code == 200:
+            device.last_z = z
+            db.session.commit()
             return {
                        'message': 'Successfully updated camera position.',
                        'result': {"x": x, "y": y, "z": z}
@@ -189,11 +200,27 @@ def offset_position(serial, x, y, z):
             f'http://{device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_incx={x}&i_mt_incy={y}&i_mt_incz={z}',
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
-        logger.info(resp.text)
+
+        # Get current Z
+        resp2 = requests.get(
+            f'http://{device.ip}/isp/st_d100.xml',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp2.status_code != 200:
+            raise CGIException(resp2)
+        resp2.encoding = None
+        tree = ETree.fromstring(resp2.text)
+        d100 = tree.find('D100')
+        curx = d100.find('CURX').text
+        cury = d100.find('CURY').text
+        curz = d100.find('CURZ').text
+
         if resp.status_code == 200:
+            device.last_z = curz
+            db.session.commit()
             return {
                        'message': 'Successfully updated camera position.',
-                       'result': {"x": x, "y": y, "z": z}
+                       'result': {"x": curx, "y": cury, "z": curz}
                    }, 200
         else:
             raise CGIException(resp)
@@ -232,6 +259,50 @@ def set_delay(serial, delay):
         device = db.session.query(Device).filter_by(serial=serial).one()
         resp = requests.get(
             f'http://{device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_dly={delay}',
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code == 200:
+            return {
+                       'message': 'Successfully updated delay.',
+                       'result': delay
+                   }, 200
+        else:
+            raise CGIException(resp)
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+
+def get_zoff_delay(serial):
+    logger.info('Get Z axis idle mode delay')
+    try:
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        cgi_d100 = f'http://{device.ip}/isp/st_d100.xml'
+        resp = requests.get(
+            cgi_d100,
+            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+        )
+        if resp.status_code != 200:
+            raise CGIException(resp)
+        resp.encoding = None
+        tree = ETree.fromstring(resp.text)
+        d100 = tree.find('D100')
+        delay = d100.find('ZOFFDLY').text
+        return {'zoffdly': delay}
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+
+def set_zoff_delay(serial, delay):
+    logger.info('Get Z axis idle mode delay')
+    try:
+        logger.info(f'delay: {delay}')
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        resp = requests.get(
+            f'http://{device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_zoff_dly={delay}',
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
         if resp.status_code == 200:
@@ -423,7 +494,7 @@ def raw_cgi(serial, cgi):
             f'http://{device.ip}{cgi}',
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
-        #return make_response(resp.text, resp.status_code, resp.headers.items())
+        # return make_response(resp.text, resp.status_code, resp.headers.items())
         return make_response(resp.content, resp.status_code, resp.headers.items())
     except Exception as e:
         logger.error(e)

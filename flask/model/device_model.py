@@ -21,8 +21,9 @@ class Device(db.Model):
         owner_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), nullable=False, index=True)
         ip = db.Column(db.String(15, 'utf8mb4_unicode_ci'), nullable=False, unique=True,
                        server_default=db.FetchedValue())
-    cgi_id= db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
-    cgi_pw= db.Column(db.String(60, 'utf8mb4_unicode_ci'), nullable=False)
+    last_z = db.Column(db.Integer)
+    cgi_id = db.Column(db.String(16, 'utf8mb4_unicode_ci'), nullable=False)
+    cgi_pw = db.Column(db.String(60, 'utf8mb4_unicode_ci'), nullable=False)
     created = db.Column(db.DateTime)
     created_by_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
     last_edited = db.Column(db.DateTime)
@@ -53,6 +54,7 @@ class Device(db.Model):
             company=self.company,
             owner=self.owner,
             ip=self.ip,
+            last_z=self.last_z,
             cgi_id=self.cgi_id,
             cgi_pw=self.cgi_pw,
             created=self.created,
