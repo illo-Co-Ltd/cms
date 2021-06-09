@@ -171,8 +171,10 @@ def set_position(serial, x, y, z):
     try:
         logger.info('newpos: ', {"x": x, "y": y, "z": z})
         device = db.session.query(Device).filter_by(serial=serial).one()
+        base = f'http://{device.ip}/isp/appispmu.cgi?btOK=submit'
+        params = [f'&i_mt_dir{k}={v}' if v is not None else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
         resp = requests.get(
-            f'http://{device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_dirx={x}&i_mt_diry={y}&i_mt_dirz={z}',
+            base + ''.join(params),
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
         # logger.info(resp.text)
@@ -196,8 +198,10 @@ def offset_position(serial, x, y, z):
     try:
         logger.info('offset: ' + str({"x": x, "y": y, "z": z}))
         device = db.session.query(Device).filter_by(serial=serial).one()
+        base = f'http://{device.ip}/isp/appispmu.cgi?btOK=submit'
+        params = [f'&i_mt_inc{k}={v}' if v is not None else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
         resp = requests.get(
-            f'http://{device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_incx={x}&i_mt_incy={y}&i_mt_incz={z}',
+            base + ''.join(params),
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
 
