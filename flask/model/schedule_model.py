@@ -35,5 +35,5 @@ class Schedule(db.Model):
             interval=self.interval,
             last_executed=self.last_executed,
             created=self.created,
-            created_by_id=self.created_by_id
+            created_by=self.created_by
         )

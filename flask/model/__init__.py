@@ -6,3 +6,4 @@ from .project_model import Project
 from .cell_model import Cell
 from .user_model import User
 from .schedule_model import Schedule
+from .bulletin_model import Bulletin
