@@ -34,6 +34,23 @@ class Jpeg(Resource):
             api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
 
+@api.route('/regional_capture')
+class RegionalCapture(Resource):
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.expect(RegionalCaptureDTO.model, validate=True)
+    @jwt_required()
+    def post(self):
+        try:
+            regional_capture(**(request.get_json()))
+        except TypeError as e:
+            api.abort(400, message=f'Wrong field. Check API documentation', reason=str(type(e)))
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
+
 @api.route('/capture')
 class Capture(Resource):
     @api.response(200, 'OK')
@@ -279,6 +296,7 @@ class Stop(Resource):
             api.abort(e.code, message=e.description, reason=str(type(e)))
         except Exception as e:
             api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
 
 @api.route('/cgi')
 class CGI(Resource):

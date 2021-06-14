@@ -15,6 +15,25 @@ class CaptureDTO:
     })
 
 
+class RegionalCaptureDTO:
+    api = api_control
+    model = api.model('regional_capture', {
+        'serial': fields.String(required=True, description='Target device'),
+        'project': fields.String(required=True, description='Project name'),
+        'cell': fields.String(required=True, description='Cell name'),
+        'path': fields.String(required=True, description='path to save image'),
+        'label': fields.String(required=False, description='Label for extra data'),
+        'start_x': fields.Integer(required=True, description='Start x position'),
+        'start_y': fields.Integer(required=True, description='Start y position'),
+        'end_x': fields.Integer(required=True, description='End x position'),
+        'end_y': fields.Integer(required=True, description='End y positionLabel for extra data'),
+        'z': fields.Integer(required=True, description='z position'),
+        'width': fields.Integer(required=True, description='Position width of capture area'),
+        'height': fields.Integer(required=True, description='Position height of capture area'),
+        'debug': fields.Boolean(required=False, description='Flag for skipping integrity check'),
+    })
+
+
 class TimelapseDTO:
     api = api_control
     model = api.model('timelapse', {
@@ -80,6 +99,7 @@ class SimpleSerialDTO:
     model = api.model('serial', {
         'serial': fields.String(required=True, description='Target device'),
     })
+
 
 class CGIDTO:
     api = api_control

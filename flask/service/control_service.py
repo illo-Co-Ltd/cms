@@ -329,6 +329,7 @@ def autofocus(serial):
             auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
         )
         if resp.status_code == 200:
+            logger.info(resp)
             return {
                        'message': 'Successfully adjusted focus.',
                    }, 200
@@ -502,3 +503,40 @@ def raw_cgi(serial, cgi):
         logger.error(e)
         logger.debug(traceback.format_exc())
         raise e
+
+
+def regional_capture(serial, project, cell, label, path, start_x, start_y, end_x, end_y, z, width, height):
+    logger.info('Capture with camera')
+    try:
+        project = db.session.query(Project).filter_by(name=project).one()
+        cell = db.session.query(Cell) \
+            .filter_by(project=project) \
+            .filter_by(name=cell).one()
+        device = db.session.query(Device).filter_by(serial=serial).one()
+        task_id = camera.send_regional_capture(
+            start_x, start_y, end_x, end_y, z, width, height,
+            data={
+                'project': project.id,
+                'cell': cell.id,
+                'device': device.id,
+                'label': label,
+                'path': path,
+                'created_by_id': get_jwt_identity()
+            }
+        )
+        return task_id, 200
+    # TODO
+    # 각 DB exception 에 따라 예외처리 세분화
+    except Exception as e:
+        logger.error(e)
+        logger.debug(traceback.format_exc())
+        raise e
+
+    data = {
+        'project': project.id,
+        'cell': cell.id,
+        'device': device.id,
+        'label': label,
+        'path': path,
+        'created_by_id': get_jwt_identity()
+    }

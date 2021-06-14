@@ -1,4 +1,5 @@
 import os
+import time
 from math import ceil
 import pytz
 from datetime import datetime
@@ -21,7 +22,7 @@ import cv2
 import numpy as np
 
 from app import app
-from .util import check_and_create, refine_path, flatten
+from .util import check_and_create, refine_path, flatten, autofocus, is_stopped
 
 logger = get_task_logger(__name__)
 engine = None
@@ -83,20 +84,27 @@ def worker_shutdown_handler(**kwargs):
         engine = None
 
 
-@app.task(name='cam_task.capture_task')
-def capture_task(device, data: dict) -> dict:
+@app.task(name='cam_task.capture_task', base=M2Task, bind=True)
+def capture_task(self, dummy=None, did=None, data=None, af=True) -> dict:
     try:
+        self.did = did
         ctime = datetime.now(pytz.timezone("Asia/Seoul"))
 
+        if af:
+            autofocus(self.device)
+            logger.info('Autofocusing...')
+            for i in range(3):
+                logger.info(3-i)
+                time.sleep(1)
         resp = requests.get(
-            f'http://{device.ip}/jpg/',
-            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+            f'http://{self.device.ip}/jpg/',
+            auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
         )
         if resp.status_code != 200:
             raise TaskError(resp)
         resp2 = requests.get(
-            f'http://{device.ip}/isp/st_d100.xml',
-            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+            f'http://{self.device.ip}/isp/st_d100.xml',
+            auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
         )
         if resp2.status_code != 200:
             raise TaskError(resp2)
@@ -174,12 +182,13 @@ def stop_timelapse_task(key: str) -> bool:
         raise TaskError(e)
 
 
-@app.task(name='cam_task.restore_z')
-def restore_z_task(device, *args):
+@app.task(name='cam_task.restore_z_task', base=M2Task, bind=True)
+def restore_z_task(self, dummy=None, did=None, *args):
+    self.did = did
     try:
         resp = requests.get(
-            f'http://{device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_dirz={device.last_z}',
-            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+            f'http://{self.device.ip}/isp/appispmu.cgi?btOK=submit&i_mt_dirz={self.device.last_z}',
+            auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
         )
         if resp.status_code != 200:
             raise TaskError(resp)
@@ -187,63 +196,92 @@ def restore_z_task(device, *args):
         raise e
 
 
-@app.task(name='cam_task.move_task')
-def move_task(device, x, y, z, *args) -> dict:
+@app.task(name='cam_task.move_task', base=M2Task, bind=True)
+def move_task(self, dummy=None, did=None, x=None, y=None, z=None, *args) -> dict:
+    self.did = did
+    logger.info(f'MOVE_TASK X<{x}> Y<{y}> Z<{z}>')
     try:
-        base = f'http://{device.ip}/isp/appispmu.cgi?btOK=submit'
+        base = f'http://{self.device.ip}/isp/appispmu.cgi?btOK=submit'
         params = [f'&i_mt_dir{k}={v}' if v is not None else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
         resp = requests.get(
             base + ''.join(params),
-            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+            auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
         )
         if resp.status_code != 200:
             raise TaskError(resp)
+        if is_stopped(self.device, x,y,z):
+            return
+        else:
+            raise TaskError
     except TaskError as e:
         raise e
 
 
-@app.task(name='cam_task.offset_task')
-def offset_task(device, x, y, z, *args):
+@app.task(name='cam_task.offset_task', base=M2Task, bind=True)
+def offset_task(self, dummy=None, did=None, x=None, y=None, z=None, *args):
+    self.did = did
+    logger.info(f'OFFSET_TASK X<{x}> Y<{y}> Z<{z}>')
     try:
-        base = f'http://{device.ip}/isp/appispmu.cgi?btOK=submit'
-        params = [f'&i_mt_dir{k}={v}' if v is not None else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
+        resp = requests.get(
+            f'http://{self.device.ip}/isp/st_d100.xml',
+            auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
+        )
+        if resp.status_code != 200:
+            return False
+        resp.encoding = None
+        tree = ETree.fromstring(resp.text)
+        d100 = tree.find('D100')
+        curx = int(d100.find('CURX').text)
+        cury = int(d100.find('CURY').text)
+        curz = int(d100.find('CURZ').text)
+
+        base = f'http://{self.device.ip}/isp/appispmu.cgi?btOK=submit'
+        params = [f'&i_mt_inc{k}={v}' if v is not None else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
         resp = requests.get(
             base + ''.join(params),
-            auth=HTTPDigestAuth(device.cgi_id, device.cgi_pw)
+            auth=HTTPDigestAuth(self.device.cgi_id, self.device.cgi_pw)
         )
         if resp.status_code != 200:
             raise TaskError(resp)
+        if is_stopped(self.device, curx+x, cury+y, curz+z):
+            return
+        else:
+            raise TaskError
     except TaskError as e:
         raise e
 
 
-def move_and_capture(device, off_x, off_y, off_z, data, *args):
-    return [move_task.s(device=device, x=off_x, y=off_y, z=off_z), capture_task.s(device=device, data=data)]
+def move_and_capture(off_x, off_y, off_z, data, *args):
+    did = data.get('device')
+    return [move_task.s(did=did, x=off_x, y=off_y, z=off_z), capture_task.s(did=did, data=data)]
 
 
-def offset_and_capture(device, off_x, off_y, off_z, data, *args):
-    return [offset_task.s(device=device, x=off_x, y=off_y, z=off_z), capture_task.s(device=device, data=data)]
+def offset_and_capture(off_x, off_y, off_z, data, *args):
+    did = data.get('device')
+    return [offset_task.s(did=did, x=off_x, y=off_y, z=off_z), capture_task.s(did=did, data=data)]
 
 
-@app.task(name='cam_task.regional_capture', base=M2Task, bind=True)
-def regional_capture_task(self, did, start_x, start_y, end_x, end_y, z, width, height, data):
+@app.task(name='cam_task.regional_capture_task', base=M2Task, bind=True)
+def regional_capture_task(self, start_x, start_y, end_x, end_y, z, width, height, data):
     try:
-        self.did = did
+        self.did = data.get('device')
+        logger.info(f'Regional capture at device <{self.device.id}>')
         logger.info(f'Capture from <{(start_x, start_y, z)}> to <{(end_x, end_y, z)}> with distance<{(width, height)}>')
         ncol = ceil((end_x - start_x) / width)
         nrow = ceil((end_y - start_y) / height)
         offx = int((end_x - start_x) / ncol)
         offy = int((end_y - start_y) / nrow)
         # 좌에서 우로 스캔(짝수면 +, 홀수면 -)
-        sequence = [None] * (nrow + ncol - 1)
+        sequence = [None] * (2 * nrow - 1)
         sequence[::2] = [
             [
-                offset_and_capture(self.device, offx * (1 - i % 2 * 2), 0, 0, data) for _ in range(ncol - 1)
+                offset_and_capture(offx * (1 - i % 2 * 2), 0, 0, data) for _ in range(ncol - 1)
             ] for i in range(nrow)
         ]
-        sequence[1::2] = [offset_and_capture(self.device, 0, offy, 0, data) for _ in range(nrow - 1)]
-        sequence = list(flatten([move_and_capture(self.device, start_x, start_y, z, data)]+sequence))
-        sequence.insert(0, restore_z_task.s(self.device))
+        sequence[1::2] = [offset_and_capture(0, offy, 0, data) for _ in range(nrow - 1)]
+        sequence = list(flatten([move_and_capture(start_x, start_y, z, data)] + sequence))
+        sequence.insert(0, restore_z_task.s(did=self.did))
+        return chain(sequence).apply_async()
     except Exception as e:
         logger.error(traceback.format_exc())
         raise e

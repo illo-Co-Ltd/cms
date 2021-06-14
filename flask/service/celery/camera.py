@@ -3,7 +3,7 @@ import traceback
 from celery import Signature
 
 from .taskmanager import celery_app
-from util import logger
+from util.logger import logger
 
 
 def test_connection():
@@ -14,6 +14,18 @@ def send_capture(data: dict):
     name = 'cam_task.capture_task'
     task = celery_app.send_task(name, args=[data])
     return task.id
+
+
+def send_regional_capture(start_x, start_y, end_x, end_y, z, width, height, data):
+    try:
+        task = celery_app.send_task(
+            'cam_task.regional_capture_task',
+            args=[start_x, start_y, end_x, end_y, z, width, height, data]
+        )
+        return task.id
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        raise e
 
 
 def send_start_timelapse(header: str, run_every: float, expire_at: str, data: dict):
