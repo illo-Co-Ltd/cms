@@ -226,7 +226,7 @@ def offset_and_capture(device, off_x, off_y, off_z, data, *args):
 
 
 @app.task(name='cam_task.regional_capture', base=M2Task, bind=True)
-def regional_capture(self, did, start_x, start_y, end_x, end_y, z, width, height, data):
+def regional_capture_task(self, did, start_x, start_y, end_x, end_y, z, width, height, data):
     try:
         self.did = did
         logger.info(f'Capture from <{(start_x, start_y, z)}> to <{(end_x, end_y, z)}> with distance<{(width, height)}>')
@@ -247,25 +247,3 @@ def regional_capture(self, did, start_x, start_y, end_x, end_y, z, width, height
     except Exception as e:
         logger.error(traceback.format_exc())
         raise e
-
-
-@app.task(name='cam_task.printlog')
-def printlog(n, a, *args, **kwargs):
-    logger.info(f'args: <{args}>')
-    logger.info(f'kwargs: <{kwargs}>')
-    logger.info(f'this is print <{a}>')
-    return n
-
-
-def unit(maxn, *args, **kwargs):
-    logger.info(f'args: <{args}>')
-    logger.info(f'kwargs: <{kwargs}>')
-    return chain([printlog.s(999, 0)] + [printlog.s(n + 1) for n in range(maxn)])
-
-
-@app.task(name='cam_task.test', )
-def test(*args, **kwargs):
-    async_result = regional_capture.s(did=1, start_x=0, start_y=0, end_x=1000, end_y=500, z=2400, width=400,
-                                      height=225, data=None).apply_async()
-    # async_result = chain([printlog.s(0, 0) for _ in range(3)]).apply_async()
-    logger.info(async_result)
