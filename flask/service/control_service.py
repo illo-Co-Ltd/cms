@@ -63,9 +63,8 @@ def capture(serial, project, cell, label, path):
         raise e
 
 
-def add_schedule():  # serial, project, cell, start_at, end_at, start_x, start_y, end_x, end_y, z):
-    logger.info('Add capture schedule')
-    name = 'cam_task.test4'
+def grouptest():  # serial, project, cell, start_at, end_at, start_x, start_y, end_x, end_y, z):
+    name = 'cam_task.test'
     task = celery_app.send_task(name)
     return task.get()
 

@@ -3,7 +3,7 @@ from flask_jwt_extended import jwt_required
 from flask_restplus import Resource, Namespace
 
 from router.dto.status_dto import api_status
-from service.control_service import add_schedule
+from service.control_service import grouptest
 from util.logger import logger
 from service.celery import camera
 
@@ -48,4 +48,4 @@ class Celery(Resource):
 class Test(Resource):
     @api.doc('test func')
     def get(self):
-        add_schedule()
+        grouptest()
