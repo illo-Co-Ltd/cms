@@ -30,6 +30,7 @@ class RegionalCaptureDTO:
         'z': fields.Integer(required=True, description='z position'),
         'width': fields.Integer(required=True, description='Position width of capture area'),
         'height': fields.Integer(required=True, description='Position height of capture area'),
+        'focus': fields.Integer(required=True, description='Focus value'),
         'debug': fields.Boolean(required=False, description='Flag for skipping integrity check'),
     })
 

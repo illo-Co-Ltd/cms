@@ -505,7 +505,7 @@ def raw_cgi(serial, cgi):
         raise e
 
 
-def regional_capture(serial, project, cell, label, path, start_x, start_y, end_x, end_y, z, width, height):
+def regional_capture(serial, project, cell, label, path, start_x, start_y, end_x, end_y, z, width, height, focus):
     logger.info('Capture with camera')
     try:
         project = db.session.query(Project).filter_by(name=project).one()
@@ -514,7 +514,7 @@ def regional_capture(serial, project, cell, label, path, start_x, start_y, end_x
             .filter_by(name=cell).one()
         device = db.session.query(Device).filter_by(serial=serial).one()
         task_id = camera.send_regional_capture(
-            start_x, start_y, end_x, end_y, z, width, height,
+            start_x, start_y, end_x, end_y, z, width, height, focus,
             data={
                 'project': project.id,
                 'cell': cell.id,

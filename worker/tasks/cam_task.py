@@ -85,12 +85,12 @@ def worker_shutdown_handler(**kwargs):
 
 
 @app.task(name='cam_task.capture_task', base=M2Task, bind=True)
-def capture_task(self, dummy=None, did=None, data=None, af=True) -> dict:
+def capture_task(self, dummy=None, did=None, focus=None, data=None) -> dict:
     try:
         self.did = did
         ctime = datetime.now(pytz.timezone("Asia/Seoul"))
 
-        if af:
+        if focus is None:
             autofocus(self.device)
             logger.info('Autofocusing...')
             for i in range(3):
@@ -251,18 +251,18 @@ def offset_task(self, dummy=None, did=None, x=None, y=None, z=None, *args):
         raise e
 
 
-def move_and_capture(off_x, off_y, off_z, data, *args):
+def move_and_capture(off_x, off_y, off_z, focus, data, *args):
     did = data.get('device')
-    return [move_task.s(did=did, x=off_x, y=off_y, z=off_z), capture_task.s(did=did, data=data)]
+    return [move_task.s(did=did, x=off_x, y=off_y, z=off_z), capture_task.s(did=did, focus=focus, data=data)]
 
 
-def offset_and_capture(off_x, off_y, off_z, data, *args):
+def offset_and_capture(off_x, off_y, off_z, focus, data, *args):
     did = data.get('device')
-    return [offset_task.s(did=did, x=off_x, y=off_y, z=off_z), capture_task.s(did=did, data=data)]
+    return [offset_task.s(did=did, x=off_x, y=off_y, z=off_z), capture_task.s(did=did, focus=focus, data=data)]
 
 
 @app.task(name='cam_task.regional_capture_task', base=M2Task, bind=True)
-def regional_capture_task(self, start_x, start_y, end_x, end_y, z, width, height, data):
+def regional_capture_task(self, start_x, start_y, end_x, end_y, z, width, height, focus, data):
     try:
         self.did = data.get('device')
         logger.info(f'Regional capture at device <{self.device.id}>')
@@ -275,11 +275,11 @@ def regional_capture_task(self, start_x, start_y, end_x, end_y, z, width, height
         sequence = [None] * (2 * nrow - 1)
         sequence[::2] = [
             [
-                offset_and_capture(offx * (1 - i % 2 * 2), 0, 0, data) for _ in range(ncol - 1)
+                offset_and_capture(offx * (1 - i % 2 * 2), 0, 0, focus, data) for _ in range(ncol - 1)
             ] for i in range(nrow)
         ]
-        sequence[1::2] = [offset_and_capture(0, offy, 0, data) for _ in range(nrow - 1)]
-        sequence = list(flatten([move_and_capture(start_x, start_y, z, data)] + sequence))
+        sequence[1::2] = [offset_and_capture(0, offy, 0, focus, data) for _ in range(nrow - 1)]
+        sequence = list(flatten([move_and_capture(start_x, start_y, z, focus, data)] + sequence))
         sequence.insert(0, restore_z_task.s(did=self.did))
         return chain(sequence).apply_async()
     except Exception as e:
