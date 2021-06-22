@@ -3,6 +3,7 @@ import time
 from math import ceil
 import pytz
 from datetime import datetime
+from datetime import timezone as tz
 from contextlib import contextmanager
 import traceback
 import xml.etree.ElementTree as ETree
@@ -94,7 +95,7 @@ def capture_task(self, dummy=None, did=None, focus=None, data=None) -> dict:
             autofocus(self.device)
             logger.info('Autofocusing...')
             for i in range(3):
-                logger.info(3-i)
+                logger.info(3 - i)
                 time.sleep(1)
         resp = requests.get(
             f'http://{self.device.ip}/jpg/',
@@ -119,8 +120,8 @@ def capture_task(self, dummy=None, did=None, focus=None, data=None) -> dict:
         endz = d100.find('ENDZ').text
 
         fname = f'{ctime.strftime("%Y-%m-%dT%H-%M-%S-%f")}.jpg'
-        fpath = refine_path(f'/data/{data.get("path")}/{fname}')
-        logger.info(fpath)
+        fpath = refine_path(f'/data/{data.get("path")}/{data.get("well_no")}/{fname}')
+        logger.info(f'capture at {fpath}')
         check_and_create(os.path.dirname(fpath))
 
         img = cv2.imdecode(np.frombuffer(resp.content, dtype=np.uint8), -1)
@@ -192,6 +193,8 @@ def restore_z_task(self, dummy=None, did=None, *args):
         )
         if resp.status_code != 200:
             raise TaskError(resp)
+        if is_stopped(self.device, z=self.device.last_z):
+            return True
     except TaskError as e:
         raise e
 
@@ -209,7 +212,7 @@ def move_task(self, dummy=None, did=None, x=None, y=None, z=None, *args) -> dict
         )
         if resp.status_code != 200:
             raise TaskError(resp)
-        if is_stopped(self.device, x,y,z):
+        if is_stopped(self.device, x, y, z):
             return
         else:
             raise TaskError
@@ -218,9 +221,8 @@ def move_task(self, dummy=None, did=None, x=None, y=None, z=None, *args) -> dict
 
 
 @app.task(name='cam_task.offset_task', base=M2Task, bind=True)
-def offset_task(self, dummy=None, did=None, x=None, y=None, z=None, *args):
+def offset_task(self, dummy=None, did=None, x=0, y=0, z=0, *args):
     self.did = did
-    logger.info(f'OFFSET_TASK X<{x}> Y<{y}> Z<{z}>')
     try:
         resp = requests.get(
             f'http://{self.device.ip}/isp/st_d100.xml',
@@ -234,7 +236,7 @@ def offset_task(self, dummy=None, did=None, x=None, y=None, z=None, *args):
         curx = int(d100.find('CURX').text)
         cury = int(d100.find('CURY').text)
         curz = int(d100.find('CURZ').text)
-
+        logger.info(f'OFFSET_TASK\nX<{curx}> Y<{cury}> Z<{curz}> to\nX<{curx+x}> Y<{cury+y}> Z<{curz+z}>')
         base = f'http://{self.device.ip}/isp/appispmu.cgi?btOK=submit'
         params = [f'&i_mt_inc{k}={v}' if v is not None else '' for k, v in {'x': x, 'y': y, 'z': z}.items()]
         resp = requests.get(
@@ -243,7 +245,7 @@ def offset_task(self, dummy=None, did=None, x=None, y=None, z=None, *args):
         )
         if resp.status_code != 200:
             raise TaskError(resp)
-        if is_stopped(self.device, curx+x, cury+y, curz+z):
+        if is_stopped(self.device, curx + x, cury + y, curz + z):
             return
         else:
             raise TaskError
@@ -262,11 +264,12 @@ def offset_and_capture(off_x, off_y, off_z, focus, data, *args):
 
 
 @app.task(name='cam_task.regional_capture_task', base=M2Task, bind=True)
-def regional_capture_task(self, start_x, start_y, end_x, end_y, z, width, height, focus, data):
+def regional_capture_task(self, dummy=None, well_no=None, start_x=None, start_y=None, end_x=None, end_y=None, z=None,
+                          width=None, height=None, focus=None, data=None):
     try:
+        data.update({'well_no': well_no})
         self.did = data.get('device')
-        logger.info(f'Regional capture at device <{self.device.id}>')
-        logger.info(f'Capture from <{(start_x, start_y, z)}> to <{(end_x, end_y, z)}> with distance<{(width, height)}>')
+        logger.info(f'Regional capture from <{(start_x, start_y, z)}> to <{(end_x, end_y, z)}>')
         ncol = ceil((end_x - start_x) / width)
         nrow = ceil((end_y - start_y) / height)
         offx = int((end_x - start_x) / ncol)
@@ -281,7 +284,65 @@ def regional_capture_task(self, start_x, start_y, end_x, end_y, z, width, height
         sequence[1::2] = [offset_and_capture(0, offy, 0, focus, data) for _ in range(nrow - 1)]
         sequence = list(flatten([move_and_capture(start_x, start_y, z, focus, data)] + sequence))
         sequence.insert(0, restore_z_task.s(did=self.did))
-        return chain(sequence).apply_async()
+        chain(sequence).delay()
     except Exception as e:
         logger.error(traceback.format_exc())
         raise e
+
+
+@app.task(name='cam_task.multi_regional_capture_task', base=M2Task, bind=True)
+def multi_regional_capture_task(self, data, regions, **kwargs):
+    try:
+        self.did = data.get('device')
+        logger.info(f'MultiRegional capture from with {len(regions)} regions')
+        # if expired
+        now = datetime.now(tz=tz.utc)
+        then = datetime.fromisoformat(data.get('expire_at'))
+        logger.info(f'NOW: {now}')
+        logger.info(f'EXPIRE: {then}')
+        if kwargs.get('redbeat_key') and now > then:
+            logger.info(f'Schedule expired. Deleting...')
+            entry = RedBeatSchedulerEntry.from_key(kwargs.get('redbeat_key'), app=app)
+            entry.delete()
+            return False
+        sequence = [
+            regional_capture_task.s(
+                **{
+                    'well_no': region.get('well_no'),
+                    'start_x': region.get('start_x'),
+                    'start_y': region.get('start_y'),
+                    'end_x': region.get('end_x'),
+                    'end_y': region.get('end_y'),
+                    'z': region.get('z'),
+                    'width': data.get('width'),
+                    'height': data.get('height'),
+                    'focus': data.get('focus'),
+                    'data': data
+                }
+            ) for region in regions
+        ]
+        chain(sequence).delay()
+        return True
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        raise e
+
+
+@app.task(name='cam_task.regional_schedule_task', base=M2Task, bind=True)
+def regional_schedule_task(self, data, regions):
+    try:
+        self.did = data.get('device')
+        schedule = celery.schedules.schedule(run_every=data.get('run_every'))  # seconds
+        entry = RedBeatSchedulerEntry(
+            f'regional_schedule<device {self.device.serial}>',
+            'cam_task.multi_regional_capture_task',
+            schedule,
+            kwargs={'data': data, 'regions': regions},
+            app=app
+        )
+        entry.kwargs.update({'redbeat_key': entry.key})
+        entry.save()
+        return entry.key
+    except Exception as e:
+        logger.error(traceback.format_exc())
+        raise TaskError(e)

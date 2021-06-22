@@ -25,7 +25,7 @@ class UserDTO:
 
 class ProjectDTO:
     api = api_data
-    iso_example = datetime.now(timezone.utc).astimezone().isoformat()
+    iso_example = '2021-01-01T00:00:00.000000+09:00'
     model = api.model('project', {
         'name': fields.String(description='[Key] Name of the project'),
         'shorthand': fields.String(description='Initial of project (Maximum 5 letters)'),

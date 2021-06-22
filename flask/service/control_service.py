@@ -540,3 +540,32 @@ def regional_capture(serial, project, cell, label, path, start_x, start_y, end_x
         'path': path,
         'created_by_id': get_jwt_identity()
     }
+
+
+def regional_schedule(serial, project, cell, run_every, expire_at, path, width, height, focus, label, regions):
+    project = db.session.query(Project).filter_by(name=project).one()
+    cell = db.session.query(Cell) \
+        .filter_by(project=project) \
+        .filter_by(name=cell).one()
+    device = db.session.query(Device).filter_by(serial=serial).one()
+    kwargs = {
+        'data': {
+            'cell': cell.id,
+            'device': device.id,
+            'created_by_id': get_jwt_identity(),
+            'label': label,
+            'run_every': run_every,
+            'expire_at': expire_at,
+            'path': path,
+            'width': width,
+            'height': height,
+            'focus': focus,
+        },
+        'regions': regions
+    }
+    logger.info(kwargs)
+    task = celery_app.send_task(
+        'cam_task.regional_schedule_task',
+        kwargs=kwargs
+    )
+    return task.get()

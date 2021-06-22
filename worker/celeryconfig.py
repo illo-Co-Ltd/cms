@@ -15,4 +15,7 @@ task_annotations = {
 }
 # redbeat config
 redbeat_redis_url = os.environ.get('REDBEAT_BACKEND')
-redbeat_lock_key = None
+#redbeat_lock_key = None
+beat_max_loop_interval=1
+redbeat_lock_timeout=5
+beat_sync_every = 1

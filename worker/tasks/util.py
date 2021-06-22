@@ -56,7 +56,7 @@ def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
     return decorator
 
 @timeout(10)
-def is_stopped(device, x, y, z):
+def is_stopped(device, x=None, y=None, z=None):
     logger = get_task_logger(__name__)
     while True:
         resp = requests.get(
@@ -69,13 +69,18 @@ def is_stopped(device, x, y, z):
         tree = ETree.fromstring(resp.text)
         d100 = tree.find('D100')
         curx = int(d100.find('CURX').text)
+        if x is None:
+            x=curx
         cury = int(d100.find('CURY').text)
+        if y is None:
+            y=cury
         curz = int(d100.find('CURZ').text)
+        if z is None:
+            z=curz
         if curx==x and cury==y and curz==z:
             return True
         else:
-            logger.info(f'curx:<{curx}>  cury:<{cury}>  curz:<{curz}')
-            logger.info(f'tgtx:<{x}>  tgty:<{y}>  tgtz:<{z}')
+            logger.info('Moving...')
             time.sleep(0.5)
 
 

@@ -29,6 +29,7 @@ class Device(db.Model):
     last_edited = db.Column(db.DateTime)
     edited_by_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
     is_deleted = db.Column(db.Integer)
+    in_use = db.Column(db.Boolean, default=False)
 
     company = db.relationship('Company', primaryjoin='Device.company_id == Company.id',
                               backref='devices')
@@ -61,5 +62,6 @@ class Device(db.Model):
             created_by=self.created_by,
             last_edited=self.last_edited,
             edited_by=self.edited_by,
-            is_deleted=self.is_deleted
+            is_deleted=self.is_deleted,
+            in_use=self.in_use
         )

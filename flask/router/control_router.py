@@ -5,6 +5,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import HTTPException
 
 from service.control_service import *
+from service.celery.taskmanager import *
 
 from router.dto.control_dto import *
 from service.celery import camera
@@ -33,6 +34,70 @@ class Jpeg(Resource):
         except Exception as e:
             api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
+@api.route('/tasks/<serial>')
+class Tasks(Resource):
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @jwt_required()
+    def get(self, serial):
+        try:
+            list_all_tasks(serial)
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
+@api.route('/regional_schedule')
+class RegionalSchedule(Resource):
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.expect(RegionalScheduleDTO.model, validate=True)
+    @jwt_required()
+    def post(self):
+        try:
+            return regional_schedule(**(request.get_json()))
+        except NoResultFound as e:
+            api.abort(404, message=f'Cannot find device, project or cell.', reason=str(type(e)))
+        except TypeError as e:
+            api.abort(400, message=f'Wrong field. Check API documentation', reason=str(type(e)))
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.expect(parser, validate=True)
+    @jwt_required()
+    def get(self):
+        try:
+            serial = parser.parse_args().get('serial')
+            if serial:
+                return get_schedule(serial)
+            else:
+                return list_schedule()
+        except NoResultFound as e:
+            api.abort(404, message=f'Cannot find device, project or cell.', reason=str(type(e)))
+        except TypeError as e:
+            api.abort(400, message=f'Wrong field. Check API documentation', reason=str(type(e)))
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
+
+    @api.response(200, 'OK')
+    @api.response(400, 'Bad Request')
+    @api.expect(parser, validate=True)
+    @jwt_required()
+    def delete(self):
+        try:
+            return delete_schedule(parser.parse_args().get('serial'))
+        except NoResultFound as e:
+            api.abort(404, message=f'Cannot find device, project or cell.', reason=str(type(e)))
+        except TypeError as e:
+            api.abort(400, message=f'Wrong field. Check API documentation', reason=str(type(e)))
+        except HTTPException as e:
+            api.abort(e.code, message=e.description, reason=str(type(e)))
+        except Exception as e:
+            api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 
 @api.route('/regional_capture')
 class RegionalCapture(Resource):
@@ -42,7 +107,9 @@ class RegionalCapture(Resource):
     @jwt_required()
     def post(self):
         try:
-            regional_capture(**(request.get_json()))
+            return regional_capture(**(request.get_json()))
+        except NoResultFound as e:
+            api.abort(404, message=f'Cannot find device, project or cell.', reason=str(type(e)))
         except TypeError as e:
             api.abort(400, message=f'Wrong field. Check API documentation', reason=str(type(e)))
         except HTTPException as e:

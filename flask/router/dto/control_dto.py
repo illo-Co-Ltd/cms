@@ -34,6 +34,30 @@ class RegionalCaptureDTO:
         'debug': fields.Boolean(required=False, description='Flag for skipping integrity check'),
     })
 
+class RegionalScheduleDTO:
+    api = api_control
+    region_model = api.model('region',{
+        'well_no': fields.Integer(required=True, description='Cell number'),
+        'start_x': fields.Integer(required=True, description='Start x position'),
+        'start_y': fields.Integer(required=True, description='Start y position'),
+        'end_x': fields.Integer(required=True, description='End x position'),
+        'end_y': fields.Integer(required=True, description='End y positionLabel for extra data'),
+        'z': fields.Integer(required=True, description='z position'),
+    })
+    model = api.model('regional_capture', {
+        'serial': fields.String(required=True, description='Target device'),
+        'project': fields.String(required=True, description='Project name'),
+        'cell': fields.String(required=True, description='Cell name'),
+        'run_every': fields.Float(required=True, description='Timelapse interval.(float seconds)'),
+        'expire_at': fields.DateTime(required=True, description='Expiration time'),
+        'path': fields.String(required=True, description='path to save image'),
+        'width': fields.Integer(required=True, description='Position width of capture area'),
+        'height': fields.Integer(required=True, description='Position height of capture area'),
+        'focus': fields.Integer(required=True, description='Focus value'),
+        'label': fields.String(required=False, description='Label for extra data'),
+        'regions':fields.List(fields.Nested(region_model))
+    })
+
 
 class TimelapseDTO:
     api = api_control
