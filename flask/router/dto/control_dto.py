@@ -44,7 +44,7 @@ class RegionalScheduleDTO:
         'end_y': fields.Integer(required=True, description='End y positionLabel for extra data'),
         'z': fields.Integer(required=True, description='z position'),
     })
-    model = api.model('regional_capture', {
+    model = api.model('regional_schedule', {
         'serial': fields.String(required=True, description='Target device'),
         'project': fields.String(required=True, description='Project name'),
         'cell': fields.String(required=True, description='Cell name'),

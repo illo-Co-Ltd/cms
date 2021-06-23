@@ -55,7 +55,7 @@ def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
         return wraps(func)(wrapper)
     return decorator
 
-@timeout(10)
+@timeout(20)
 def is_stopped(device, x=None, y=None, z=None):
     logger = get_task_logger(__name__)
     while True:
