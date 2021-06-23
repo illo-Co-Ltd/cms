@@ -513,18 +513,19 @@ def regional_capture(serial, project, cell, label, path, start_x, start_y, end_x
             .filter_by(project=project) \
             .filter_by(name=cell).one()
         device = db.session.query(Device).filter_by(serial=serial).one()
-        task_id = camera.send_regional_capture(
-            start_x, start_y, end_x, end_y, z, width, height, focus,
-            data={
-                'project': project.id,
-                'cell': cell.id,
-                'device': device.id,
-                'label': label,
-                'path': path,
-                'created_by_id': get_jwt_identity()
-            }
+        data = {
+            'project': project.id,
+            'cell': cell.id,
+            'device': device.id,
+            'label': label,
+            'path': path,
+            'created_by_id': get_jwt_identity()
+        }
+        task = celery_app.send_task(
+            'cam_task.regional_capture_task',
+            args=[start_x, start_y, end_x, end_y, z, width, height, focus, data]
         )
-        return task_id, 200
+        return task.id, 200
     # TODO
     # 각 DB exception 에 따라 예외처리 세분화
     except Exception as e:

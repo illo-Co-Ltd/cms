@@ -16,18 +16,6 @@ def send_capture(data: dict):
     return task.id
 
 
-def send_regional_capture(start_x, start_y, end_x, end_y, z, width, height, data):
-    try:
-        task = celery_app.send_task(
-            'cam_task.regional_capture_task',
-            args=[start_x, start_y, end_x, end_y, z, width, height, data]
-        )
-        return task.id
-    except Exception as e:
-        logger.error(traceback.format_exc())
-        raise e
-
-
 def send_start_timelapse(header: str, run_every: float, expire_at: str, data: dict):
     try:
         task = celery_app.send_task('cam_task.start_timelapse_task', args=[header, run_every, expire_at, data])
