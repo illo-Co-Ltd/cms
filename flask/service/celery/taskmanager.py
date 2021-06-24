@@ -48,6 +48,8 @@ def get_schedule(serial):
         match = list(filter(None, match))
         if len(match) > 0:
             htable = rd1.hgetall(match[0])
+            #run_count = json.loads(htable.get('meta')).get('total_run_count')
+            #return run_count
             ret = {k: json.loads(v) for k, v in htable.items()}
             return ret
         else:

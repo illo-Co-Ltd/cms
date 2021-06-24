@@ -1,3 +1,4 @@
+import json
 import os
 import re
 import time
@@ -126,7 +127,8 @@ def capture_task(self, dummy=None, did=None, focus=None, data=None) -> dict:
         # construct file path
         fname = f'{ctime.strftime("%Y-%m-%dT%H-%M-%S-%f")}.jpg'
         pathbase = f'/data/{data.get("path")}'
-        if data.get('run_count'):
+        logger.info(data)
+        if data.get('run_count') is not None:
             pathbase += f'/c_{data.get("run_count")}'
         if data.get('well_no'):
             pathbase += f'/w_{data.get("well_no")}'
@@ -340,15 +342,19 @@ def multi_regional_capture_task(self, data, regions, **kwargs):
             return False
 
         # fetching run count
-            schedules = rd1.zrange('redbeat::schedule', 0, -1)
+        schedules = rd1.zrange('redbeat::schedule', 0, -1)
+        if len(schedules)==0: # first run
+            data.update({'run_count': 0})
+        else:
             match = [s if re.search(f'<device {self.device.serial}>', s) else None for s in schedules]
             match = list(filter(None, match))
             if len(match) > 0:
                 htable = rd1.hgetall(match[0])
                 run_count = json.loads(htable.get('meta')).get('total_run_count')
-                data.update({'run_count':run_count})
+                data.update({'run_count': run_count})
             else:
                 raise TaskError
+
         # combine task sequence
         sequence_list = [
             regional_capture(
@@ -379,9 +385,7 @@ def regional_schedule_task(self, data, regions):
     try:
         self.did = data.get('device')
         # run once
-        data.update({'run_count':0})
         multi_regional_capture_task.apply_async(kwargs={'data': data, 'regions': regions})
-
 
         # schedule after
         schedule = celery.schedules.schedule(run_every=data.get('run_every'))  # seconds

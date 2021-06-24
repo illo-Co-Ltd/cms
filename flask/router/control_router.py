@@ -13,6 +13,8 @@ from service.celery import camera
 api = api_control
 parser = reqparse.RequestParser()
 parser.add_argument('serial', type=str, location='args', required=True)
+parser_optional = reqparse.RequestParser()
+parser_optional.add_argument('serial', type=str, location='args', required=False)
 
 
 @api.route('/jpeg/<serial>')
@@ -65,11 +67,11 @@ class RegionalSchedule(Resource):
 
     @api.response(200, 'OK')
     @api.response(400, 'Bad Request')
-    @api.expect(parser, validate=True)
+    @api.expect(parser_optional, validate=True)
     @jwt_required()
     def get(self):
         try:
-            serial = parser.parse_args().get('serial')
+            serial = parser_optional.parse_args().get('serial')
             if serial:
                 return get_schedule(serial)
             else:
