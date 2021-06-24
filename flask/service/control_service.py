@@ -35,7 +35,7 @@ def fetch_jpeg(serial):
         raise e
 
 
-def capture(serial, project, cell, label, path):
+def capture(serial, project, cell, label, path, focus):
     logger.info('Capture with camera')
     try:
         project = db.session.query(Project).filter_by(name=project).one()
@@ -45,6 +45,8 @@ def capture(serial, project, cell, label, path):
         device = db.session.query(Device).filter_by(serial=serial).one()
         set_position(device.serial, None, None, device.last_z)
         task_id = camera.send_capture(
+            did=device.id,
+            focus=focus,
             data={
                 'project': project.id,
                 'cell': cell.id,
@@ -523,7 +525,7 @@ def regional_capture(serial, project, cell, label, path, start_x, start_y, end_x
         }
         task = celery_app.send_task(
             'cam_task.regional_capture_task',
-            args=[start_x, start_y, end_x, end_y, z, width, height, focus, data]
+            args=[None, start_x, start_y, end_x, end_y, z, width, height, focus, data]
         )
         return task.id, 200
     # TODO

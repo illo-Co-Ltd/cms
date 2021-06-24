@@ -10,6 +10,7 @@ class CaptureDTO:
         'project': fields.String(required=True, description='Project name'),
         'cell': fields.String(required=True, description='Cell name'),
         'path': fields.String(required=True, description='path to save image'),
+        'focus': fields.Integer(required=True, description='Focus value'),
         'label': fields.String(required=False, description='Label for extra data'),
         'debug': fields.Boolean(required=False, description='Flag for skipping integrity check'),
     })

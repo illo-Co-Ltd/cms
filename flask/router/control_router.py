@@ -41,7 +41,7 @@ class Tasks(Resource):
     @jwt_required()
     def get(self, serial):
         try:
-            list_all_tasks(serial)
+            return list_all_tasks(serial)
         except Exception as e:
             api.abort(500, message=f'Something went wrong.', reason=str(type(e)))
 

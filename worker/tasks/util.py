@@ -80,7 +80,7 @@ def is_stopped(device, x=None, y=None, z=None):
         if curx==x and cury==y and curz==z:
             return True
         else:
-            logger.info('Moving...')
+            logger.info(f'Moving...<{curx},{cury},{curz}>')
             time.sleep(0.5)
 
 

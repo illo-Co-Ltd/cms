@@ -17,9 +17,18 @@ rd1 = redis.StrictRedis(host='redis', port=6379, db=1, charset='utf-8', decode_r
 
 def list_all_tasks(serial):
     i = celery_app.control.inspect()
-    logger.info(i.scheduled())
-    logger.info(i.active())
-    logger.info(i.reserved())
+    scheduled = i.scheduled()
+    active = i.active()
+    reserved = i.reserved()
+    logger.info(scheduled)
+    logger.info(active)
+    logger.info(reserved)
+    return {
+        'scheduled': scheduled,
+        'active': active,
+        'reserved': reserved
+    }
+
 
 def list_schedule():
     try:

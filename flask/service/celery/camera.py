@@ -10,9 +10,9 @@ def test_connection():
     return celery_app.send_task('test_task.connection_test', args=['Hello']).get()
 
 
-def send_capture(data: dict):
+def send_capture(did, focus, data: dict):
     name = 'cam_task.capture_task'
-    task = celery_app.send_task(name, args=[data])
+    task = celery_app.send_task(name, kwargs={'did':did, 'focus':focus, 'data':data})
     return task.id
 
 
