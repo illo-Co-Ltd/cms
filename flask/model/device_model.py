@@ -10,7 +10,7 @@ class Device(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     if env == 'development':
         model = db.Column(db.String(16, 'utf8mb4_unicode_ci'))
-        serial = db.Column(db.String(20, 'utf8mb4_unicode_ci'))
+        serial = db.Column(db.String(20, 'utf8mb4_unicode_ci'), unique=True)
         company_id = db.Column(db.ForeignKey('company.id', onupdate='CASCADE'), index=True)
         owner_id = db.Column(db.ForeignKey('user.id', onupdate='CASCADE'), index=True)
         ip = db.Column(db.String(15, 'utf8mb4_unicode_ci'), server_default=db.FetchedValue())
